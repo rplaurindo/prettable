@@ -1,0 +1,26 @@
+{
+  "name": "rplaurindo/prettable",
+  "version": "1.0.0",
+  "homepage": "https://github.com/rplaurindo/prettable",
+  "description": "A abstraction of Relational Queries for PHP.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Rafael Laurindo",
+      "email": "rafaelplaurindo@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "~5.6"
+  },
+  "autoload": {
+    "classmap": [
+      
+    ],
+    "psr-4": {
+      "PReTTable\\": "lib/",
+      "PReTTable\\": "src/"
+    }
+  }
+}
