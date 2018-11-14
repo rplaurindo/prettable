@@ -20,31 +20,18 @@ class Model {
     
     private $map;
     
-//     function __construct($tableName) {
-    function __construct() {
-        echo gettype(__NAMESPACE__) . "\n\n";
-        
-        $this->tableName = get_class($this);
-        
-//         $this->tableName = $tableName;
-//         if (!is_subclass_of($this->tableName, __NAMESPACE__ . '\AbstractTable')) {
-//             throw new Exception('The table must be an AbstractTable');
-//         }
+    function __construct($tableName) {
+        if (!is_subclass_of($tableName, __NAMESPACE__ . '\AbstractTable')) {
+            throw new Exception('The table must be an ' . __NAMESPACE__ . '\AbstractTable');
+        }
 
+        $this->tableName = $tableName;
         $this->table = self::getClassConstant($this->tableName);
         
         $this->contains = [];
         $this->isContained = [];
         
         $this->select = new ArrayObject();
-    }
-    
-    function where() {
-        $this->map = [
-            'select' => '',
-            'from' => '',
-            'where' => ''
-        ];
     }
     
     function getRow($field, $value = '') {

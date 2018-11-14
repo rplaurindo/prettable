@@ -31,22 +31,18 @@ class Table1 implements AbstractTable {
     
 }
 
-class Table2 extends Model implements AbstractTable {
-// class Table2 implements AbstractTable {
+class Table2 implements AbstractTable {
     
-    private $table;
+    private $model;
     
     function __construct() {
-//         $this->table = new Table(self::class);
-//         $this->table->hasOne('Table1', 'table2_id');
-
-        parent::__construct();
-
-//         $this->contains('Table1', 'table2_id');
-        $this->contains('Table1', 'table2_id', 'AssociativeTable');
+        $this->model = new Model(self::class);
         
-//         $this->isContained('Table1', 'table1_id');
-//         $this->isContained('Table1', 'table1_id', 'AssociativeTable');
+//         $this->model->contains('Table1', 'table2_id');
+        $this->model->contains('Table1', 'table2_id', 'AssociativeTable');
+
+//         $this->model->isContained('Table1', 'table1_id');
+//         $this->model->isContained('Table1', 'table1_id', 'AssociativeTable');
     }
     
     static function getPrimaryKey() {
@@ -58,6 +54,10 @@ class Table2 extends Model implements AbstractTable {
             'id' => 'idAlias',
             'field1' => 'field1Alias'
         ];
+    }
+    
+    function select($tableName) {
+        return $this->model->select($tableName);
     }
     
 }
@@ -77,9 +77,9 @@ class AssociativeTable implements AbstractAssociativeTable {
 
 $table2 = new Table2();
 
-print_r($table2->select('Table1'));
+// print_r($table2->getAll());
 
 // print_r($table2->getRow(1));
 // print_r($table2->getRow('field1', 1));
 
-// print_r($table2->getAll());
+print_r($table2->select('Table1'));
