@@ -93,11 +93,12 @@ class Model {
             $this->map['from']   = $relatedTableName;
             
             if (array_key_exists($modelName, $this->contains)) {
-                if (array_key_exists('associativeTable', $this->contains[$modelName])) {
-                    $this->map['from'] = $this->contains[$modelName]['associativeTable'];
-                    $associativeTableName = $this->map['from'];
+                if (array_key_exists('associativeModel', $this->contains[$modelName])) {
+                    $associativeModel = $this->contains[$modelName]['associativeModel'];
+                    $associativeTableName = self::resolveTableName($associativeModel);
+                    $this->map['from'] = $associativeTableName;
                     
-                    $associativeModel = self::getClassDeclaration($associativeTableName);
+                    $associativeModel = self::getClassDeclaration($associativeModel);
                     
                     $fk = $associativeModel::getForeignKeyOf($this->modelName);
                     
@@ -107,17 +108,18 @@ class Model {
                     $fk = $associativeModel::getForeignKeyOf($modelName);
                     
                     array_push($this->map['joins'],
-                        "$relatedTableNameName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
+                        "$relatedTableName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
                 } else {
                     array_push($this->map['joins'],
                         "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.{$relatedModel::getPrimaryKey()}");
                 }
             } else {
                 if (array_key_exists('associativeModel', $this->isContained[$modelName])) {
-                    $this->map['from'] = $this->isContained[$modelName]['associativeTable'];
-                    $associativeTableName = $this->map['from'];
+                    $associativeModel = $this->contains[$modelName]['associativeModel'];
+                    $associativeTableName = self::resolveTableName($associativeModel);
+                    $this->map['from'] = $associativeTableName;
                     
-                    $associativeModel = self::getClassDeclaration($associativeTableName);
+                    $associativeModel = self::getClassDeclaration($associativeModel);
                     
                     $fk = $associativeModel::getForeignKeyOf($this->modelName);
                     
@@ -127,10 +129,10 @@ class Model {
                     $fk = $associativeModel::getForeignKeyOf($modelName);
                     
                     array_push($this->map['joins'],
-                        "$tableName ON $tableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
+                        "$relatedTableName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
                 } else {
                     array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $tableName.{$relatedModel::getPrimaryKey()}");
+                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.{$relatedModel::getPrimaryKey()}");
                 }
             }
             
@@ -153,28 +155,35 @@ class Model {
         $relatedTableSpecifications = $this->contains[$modelName];
         
         if (!empty($through)) {
+            
             if (!is_subclass_of($through, __NAMESPACE__ . '\AbstractAssociativeModel')) {
-                throw new Exception('The associative model must be an AbstractAssociativeModel');
+                throw new Exception('The associative model must be an '. __NAMESPACE__ . '\AbstractAssociativeModel');
             }
+            
             $this->contains[$modelName]['associativeModel'] = $through;
         }
         
     }
     
-    function isContained($tableName, $foreignKey, $through = '') {
+    function isContained($modelName, $foreignKey, $through = '') {
         
-        if (!is_subclass_of($tableName, __NAMESPACE__ . '\AbstractModel')) {
-            throw new Exception('The model must be an AbstractModel');
+        if (!is_subclass_of($modelName, __NAMESPACE__ . '\AbstractModel')) {
+            throw new Exception('The model must be an ' . __NAMESPACE__ . '\AbstractModel');
         }
         
-        $this->isContained[$tableName] = [
+        $this->isContained[$modelName] = [
             'foreignKey' => $foreignKey
         ];
         
-        $relatedTableSpecifications = $this->isContained[$tableName];
+        $relatedTableSpecifications = $this->isContained[$modelName];
         
         if (!empty($through)) {
-            $this->isContained[$tableName]['associativeTable'] = $through;
+            
+            if (!is_subclass_of($through, __NAMESPACE__ . '\AbstractAssociativeModel')) {
+                throw new Exception('The associative model must be an ' . __NAMESPACE__ . '\AbstractAssociativeModel');
+            }
+            
+            $this->isContained[$modelName]['associativeModel'] = $through;
         }
     }
     
