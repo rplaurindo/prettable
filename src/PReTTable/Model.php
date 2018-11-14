@@ -177,10 +177,10 @@ class Model {
         
         $table = self::getClassConstant($tableName);
         if ($attachTable) {
-            return SQLHelp::mountFieldsStatement($table::getFields(), $tableName);
+            return Helpers\SQL::mountFieldsStatement($table::getFields(), $tableName);
         }
         
-        return SQLHelp::mountFieldsStatement($table::getFields());
+        return Helpers\SQL::mountFieldsStatement($table::getFields());
     }
     
     private static function attachesAt(ArrayObject $list, $statement) {

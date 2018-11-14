@@ -1,8 +1,8 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\Helpers;
 
-class SQLHelp {
+class SQL {
     
     static function mountFieldsStatement($fields, $tableName = '') {
         $mountedFields = [];
