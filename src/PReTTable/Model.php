@@ -47,7 +47,7 @@ class Model {
         ];
     }
     
-    function find($field, $value = '') {
+    function getRow($field, $value = '') {
         $this->map = [
             'select' => '',
             'from' => '',

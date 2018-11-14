@@ -43,9 +43,9 @@ class Table2 extends Model implements AbstractTable {
         parent::__construct();
 
 //         $this->contains('Table1', 'table2_id');
-        $this->isContained('Table1', 'table1_id');
+        $this->contains('Table1', 'table2_id', 'AssociativeTable');
         
-//         $this->contains('Table1', 'table2_id', 'AssociativeTable');
+//         $this->isContained('Table1', 'table1_id');
 //         $this->isContained('Table1', 'table1_id', 'AssociativeTable');
     }
     
@@ -79,7 +79,7 @@ $table2 = new Table2();
 
 print_r($table2->select('Table1'));
 
-// print_r($table2->find(1));
-// print_r($table2->find('field1', 1));
+// print_r($table2->getRow(1));
+// print_r($table2->getRow('field1', 1));
 
 // print_r($table2->getAll());
