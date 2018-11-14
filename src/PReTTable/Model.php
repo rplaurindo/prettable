@@ -2,6 +2,10 @@
 
 namespace PReTTable;
 
+use ArrayObject;
+use Exception;
+use ReflectionClass;
+
 class Model {
     
     private $tableName;
@@ -18,14 +22,16 @@ class Model {
     
 //     function __construct($tableName) {
     function __construct() {
+        echo gettype(__NAMESPACE__) . "\n\n";
         
         $this->tableName = get_class($this);
-        $this->table = self::getClassConstant($this->tableName);
         
 //         $this->tableName = $tableName;
-//         if (!is_subclass_of($this->tableName, 'AbstractTable')) {
+//         if (!is_subclass_of($this->tableName, __NAMESPACE__ . '\AbstractTable')) {
 //             throw new Exception('The table must be an AbstractTable');
 //         }
+
+        $this->table = self::getClassConstant($this->tableName);
         
         $this->contains = [];
         $this->isContained = [];
@@ -143,7 +149,7 @@ class Model {
     
     function contains($tableName, $foreignKey, $through = '') {
         
-        if (!is_subclass_of($tableName, 'AbstractTable')) {
+        if (!is_subclass_of($tableName, __NAMESPACE__ . '\AbstractTable')) {
             throw new Exception('The table must be an AbstractTable');
         }
 
@@ -154,7 +160,7 @@ class Model {
         $relatedTableSpecifications = $this->contains[$tableName];
         
         if (!empty($through)) {
-            if (!is_subclass_of($through, 'AbstractAssociativeTable')) {
+            if (!is_subclass_of($through, __NAMESPACE__ . '\AbstractAssociativeTable')) {
                 throw new Exception('The associative table must be an AbstractAssociativeTable');
             }
             $this->contains[$tableName]['associativeTable'] = $through;
@@ -164,7 +170,7 @@ class Model {
     
     function isContained($tableName, $foreignKey, $through = '') {
         
-        if (!is_subclass_of($tableName, 'AbstractTable')) {
+        if (!is_subclass_of($tableName, __NAMESPACE__ . '\AbstractTable')) {
             throw new Exception('The table must be an AbstractTable');
         }
         
