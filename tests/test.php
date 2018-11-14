@@ -6,16 +6,18 @@ require $settingsPath . DIRECTORY_SEPARATOR . 'loadPath.php';
 
 require 'autoload.php';
 
-use PReTTable\AbstractTable;
-use PReTTable\AbstractAssociativeTable;
+use PReTTable\AbstractModel;
+use PReTTable\AbstractAssociativeModel;
 use PReTTable\Model;
 
-class Table1 implements AbstractTable {
-    
-    private $table;
+class Model1 implements AbstractModel {
     
     function __construct() {
         parent::__construct();
+    }
+    
+    static function getTableName() {
+        return 'table1';
     }
     
     static function getPrimaryKey() {
@@ -31,7 +33,7 @@ class Table1 implements AbstractTable {
     
 }
 
-class Table2 implements AbstractTable {
+class Model2 implements AbstractModel {
     
     private $model;
     
@@ -39,10 +41,14 @@ class Table2 implements AbstractTable {
         $this->model = new Model(self::class);
         
 //         $this->model->contains('Table1', 'table2_id');
-        $this->model->contains('Table1', 'table2_id', 'AssociativeTable');
+        $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
 
 //         $this->model->isContained('Table1', 'table1_id');
 //         $this->model->isContained('Table1', 'table1_id', 'AssociativeTable');
+    }
+    
+    static function getTableName() {
+        return 'table2';
     }
     
     static function getPrimaryKey() {
@@ -62,24 +68,28 @@ class Table2 implements AbstractTable {
     
 }
 
-class AssociativeTable implements AbstractAssociativeTable {
+class AssociativeModel implements AbstractAssociativeModel {
     
-    private static $foreignKeys = [
-        'Table1' => 'table1_id',
-        'Table2' => 'table2_id'
+    private static $association = [
+        'Model1' => 'table1_id',
+        'Model2' => 'table2_id'
     ];
     
-    static function getForeignKeyOf($tableName) {
-        return self::$foreignKeys[$tableName]; 
+    static function getTableName() {
+        return 'associative_table';
+    }
+    
+    static function getForeignKeyOf($modelName) {
+        return self::$association[$modelName]; 
     }
     
 }
 
-$table2 = new Table2();
+$model2 = new Model2();
 
 // print_r($table2->getAll());
 
 // print_r($table2->getRow(1));
 // print_r($table2->getRow('field1', 1));
 
-print_r($table2->select('Table1'));
+print_r($model2->select('Model1'));

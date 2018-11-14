@@ -8,9 +8,11 @@ use ReflectionClass;
 
 class Model {
     
-    private $tableName;
+    private $modelName;
     
-    private $table;
+    private $model;
+    
+    private $tableName;
     
     private $contains;
     
@@ -20,13 +22,14 @@ class Model {
     
     private $map;
     
-    function __construct($tableName) {
-        if (!is_subclass_of($tableName, __NAMESPACE__ . '\AbstractTable')) {
-            throw new Exception('The table must be an ' . __NAMESPACE__ . '\AbstractTable');
+    function __construct($modelName) {
+        if (!is_subclass_of($modelName, __NAMESPACE__ . '\AbstractModel')) {
+            throw new Exception('The model must be an ' . __NAMESPACE__ . '\AbstractModel');
         }
-
-        $this->tableName = $tableName;
-        $this->table = self::getClassConstant($this->tableName);
+        
+        $this->modelName = $modelName;
+        $this->model = self::getClassDeclaration($modelName);
+        $this->tableName = self::resolveTableName($modelName);
         
         $this->contains = [];
         $this->isContained = [];
@@ -43,10 +46,10 @@ class Model {
         
         if (count(func_get_args()) == 1) {
             $value = $field;
-            $field = $this->table::getPrimaryKey();
+            $field = $this->model::getPrimaryKey();
         }
         
-        self::attachesAt($this->select, self::mountFieldsStatement($this->tableName));
+        self::attachesAt($this->select, self::mountFieldsStatement($this->modelName));
         
         $this->map['select'] = implode(", ", $this->select->getArrayCopy());
         $this->map['from']   = $this->tableName;
@@ -61,7 +64,7 @@ class Model {
             'from' => ''
         ];
         
-        self::attachesAt($this->select, self::mountFieldsStatement($this->tableName));
+        self::attachesAt($this->select, self::mountFieldsStatement($this->modelName));
         
         $this->map['select'] = implode(", ", $this->select->getArrayCopy());
         $this->map['from']   = $this->tableName;
@@ -69,7 +72,7 @@ class Model {
         return $this->map;
     }
     
-    function select($tableName) {
+    function select($modelName) {
         
         $fields = [];
         
@@ -79,52 +82,55 @@ class Model {
             'joins' => []
         ];
         
-        $relatedTable = self::getClassConstant($tableName);
+        $relatedModel = self::getClassDeclaration($modelName);
+        $relatedTableName = self::resolveTableName($modelName);
         
-        if (array_key_exists($tableName, $this->contains) || 
-            array_key_exists($tableName, $this->isContained)) {
+        if (array_key_exists($modelName, $this->contains) || 
+            array_key_exists($modelName, $this->isContained)) {
             
-            self::attachesAt($this->select, self::mountFieldsStatement($tableName, true));
+            self::attachesAt($this->select, self::mountFieldsStatement($modelName, true));
             $this->map['select'] = implode(", ", $this->select->getArrayCopy());
-            $this->map['from']   = $tableName;
+            $this->map['from']   = $relatedTableName;
             
-            if (array_key_exists($tableName, $this->contains)) {
-                if (array_key_exists('associativeTable', $this->contains[$tableName])) {
-                    $this->map['from'] = $this->contains[$tableName]['associativeTable'];
+            if (array_key_exists($modelName, $this->contains)) {
+                if (array_key_exists('associativeTable', $this->contains[$modelName])) {
+                    $this->map['from'] = $this->contains[$modelName]['associativeTable'];
                     $associativeTableName = $this->map['from'];
-                    $associativeTable = self::getClassConstant($associativeTableName);
                     
-                    $fk = $associativeTable::getForeignKeyOf($this->tableName);
+                    $associativeModel = self::getClassDeclaration($associativeTableName);
                     
-                    array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->table::getPrimaryKey()} = $associativeTableName.{$fk}");
-                    
-                    $fk = $associativeTable::getForeignKeyOf($tableName);
+                    $fk = $associativeModel::getForeignKeyOf($this->modelName);
                     
                     array_push($this->map['joins'],
-                        "$tableName ON $tableName.{$relatedTable::getPrimaryKey()} = $associativeTableName.{$fk}");
+                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $associativeTableName.{$fk}");
+                    
+                    $fk = $associativeModel::getForeignKeyOf($modelName);
+                    
+                    array_push($this->map['joins'],
+                        "$relatedTableNameName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
                 } else {
                     array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->table::getPrimaryKey()} = $tableName.{$relatedTable::getPrimaryKey()}");
+                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.{$relatedModel::getPrimaryKey()}");
                 }
             } else {
-                if (array_key_exists('associativeTable', $this->isContained[$tableName])) {
-                    $this->map['from'] = $this->isContained[$tableName]['associativeTable'];
+                if (array_key_exists('associativeModel', $this->isContained[$modelName])) {
+                    $this->map['from'] = $this->isContained[$modelName]['associativeTable'];
                     $associativeTableName = $this->map['from'];
-                    $associativeTable = self::getClassConstant($associativeTableName);
                     
-                    $fk = $associativeTable::getForeignKeyOf($this->tableName);
+                    $associativeModel = self::getClassDeclaration($associativeTableName);
                     
-                    array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->table::getPrimaryKey()} = $associativeTableName.{$fk}");
-                    
-                    $fk = $associativeTable::getForeignKeyOf($tableName);
+                    $fk = $associativeModel::getForeignKeyOf($this->modelName);
                     
                     array_push($this->map['joins'],
-                        "$tableName ON $tableName.{$relatedTable::getPrimaryKey()} = $associativeTableName.{$fk}");
+                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $associativeTableName.{$fk}");
+                    
+                    $fk = $associativeModel::getForeignKeyOf($modelName);
+                    
+                    array_push($this->map['joins'],
+                        "$tableName ON $tableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
                 } else {
                     array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->table::getPrimaryKey()} = $tableName.{$relatedTable::getPrimaryKey()}");
+                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $tableName.{$relatedModel::getPrimaryKey()}");
                 }
             }
             
@@ -134,31 +140,31 @@ class Model {
         
     }
     
-    function contains($tableName, $foreignKey, $through = '') {
+    function contains($modelName, $foreignKey, $through = '') {
         
-        if (!is_subclass_of($tableName, __NAMESPACE__ . '\AbstractTable')) {
-            throw new Exception('The table must be an AbstractTable');
+        if (!is_subclass_of($modelName, __NAMESPACE__ . '\AbstractModel')) {
+            throw new Exception('The model must be an AbstractModel');
         }
 
-        $this->contains[$tableName] = [
+        $this->contains[$modelName] = [
             'foreignKey' => $foreignKey
         ];
         
-        $relatedTableSpecifications = $this->contains[$tableName];
+        $relatedTableSpecifications = $this->contains[$modelName];
         
         if (!empty($through)) {
-            if (!is_subclass_of($through, __NAMESPACE__ . '\AbstractAssociativeTable')) {
-                throw new Exception('The associative table must be an AbstractAssociativeTable');
+            if (!is_subclass_of($through, __NAMESPACE__ . '\AbstractAssociativeModel')) {
+                throw new Exception('The associative model must be an AbstractAssociativeModel');
             }
-            $this->contains[$tableName]['associativeTable'] = $through;
+            $this->contains[$modelName]['associativeModel'] = $through;
         }
         
     }
     
     function isContained($tableName, $foreignKey, $through = '') {
         
-        if (!is_subclass_of($tableName, __NAMESPACE__ . '\AbstractTable')) {
-            throw new Exception('The table must be an AbstractTable');
+        if (!is_subclass_of($tableName, __NAMESPACE__ . '\AbstractModel')) {
+            throw new Exception('The model must be an AbstractModel');
         }
         
         $this->isContained[$tableName] = [
@@ -172,15 +178,26 @@ class Model {
         }
     }
     
-    private static function mountFieldsStatement($tableName = '', $attachTable = false) {
-        $fields = [];
+    private static function resolveTableName($modelName) {
+        $model = self::getClassDeclaration($modelName);
         
-        $table = self::getClassConstant($tableName);
-        if ($attachTable) {
-            return Helpers\SQL::mountFieldsStatement($table::getFields(), $tableName);
+        $tableName = $model::getTableName();
+        if (empty ($tableName)) {
+            return $modelName;
         }
         
-        return Helpers\SQL::mountFieldsStatement($table::getFields());
+        return $tableName;
+    }
+    
+    private static function mountFieldsStatement($modelName, $attachTable = false) {
+        $fields = [];
+        $model = self::getClassDeclaration($modelName);
+        if ($attachTable) {
+            $tableName = self::resolveTableName($modelName);
+            return Helpers\SQL::mountFieldsStatement($model::getFields(), $tableName);
+        }
+        
+        return Helpers\SQL::mountFieldsStatement($model::getFields());
     }
     
     private static function attachesAt(ArrayObject $list, $statement) {
@@ -189,8 +206,8 @@ class Model {
         }
     }
     
-    private static function getClassConstant($tableName) {
-        $reflection = new ReflectionClass($tableName);
+    private static function getClassDeclaration($modelName) {
+        $reflection = new ReflectionClass($modelName);
         return $reflection->newInstanceWithoutConstructor();
     }
     
