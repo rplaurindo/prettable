@@ -143,9 +143,14 @@ class Model {
                     array_push($this->map['joins'],
                         "$relatedTableName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
                 } else {
-//                     testar se não se trata de uma tabela associativa, pois, neste caso, não há chave primária e o join deve ser feito apenas com $this->tableName
-                    array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.{$relatedModel::getPrimaryKey()}");
+                    if (is_subclass_of($modelName, __NAMESPACE__ . '\AbstractAssociativeModel')) {
+                        $fk = $relatedModel::getForeignKeyOf($this->modelName);
+                        array_push($this->map['joins'],
+                            "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.$fk");
+                    } else {
+                        array_push($this->map['joins'],
+                            "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.{$relatedModel::getPrimaryKey()}");
+                    }
                 }
             } else {
                 if (array_key_exists('associativeModel', $this->isContained[$modelName])) {
