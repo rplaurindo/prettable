@@ -95,7 +95,7 @@ class Model {
         
         if (array_key_exists($modelName, $this->contains) || 
             array_key_exists($modelName, $this->isContained)) {
-            
+//             checar se joins tem conteúdo, caso sim, pegar seus campos
             self::cleanList($this->select);
             self::attachesIn(self::mountFieldsStatement($modelName, true), $this->select);
             $this->map['select'] = implode(", ", $this->select->getArrayCopy());
