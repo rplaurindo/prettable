@@ -73,7 +73,7 @@ class Model {
     }
     
     function join(...$models) {
-        $this->checkIfModelsAre(__NAMESPACE__ . 'AbstractModel', ...$models);
+        $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', ...$models);
         
 //         adicionar somente se ainda não foi adicionado, e se não consta em contains e nem em isContained.
         
