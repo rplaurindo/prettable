@@ -77,15 +77,20 @@ class Model {
     
     function join(...$models) {
         $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', ...$models);
-//         pode ser que tenha de mudar a lógica para adequar-se ao caso de auto-referenciamento
+        
         array_walk($models, function($modelName) {
             if (
-                $modelName != $this->modelName
-                && !in_array($modelName, $this->joins->getArrayCopy()) 
-                && !array_key_exists($modelName, $this->contains) 
-                && !array_key_exists($modelName, $this->isContained)
+                ($modelName == $this->modelName 
+                    && (array_key_exists($modelName, $this->contains)
+                        || array_key_exists($modelName, $this->isContained))
+                )
+                || ($modelName != $this->modelName
+                    && !in_array($modelName, $this->joins->getArrayCopy()) 
+                    && !array_key_exists($modelName, $this->contains)
+                    && !array_key_exists($modelName, $this->isContained)
+                )
             ) {
-                    
+                
                 self::attachesIn($modelName, $this->joins);
                 
             }

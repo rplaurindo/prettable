@@ -42,6 +42,10 @@ class Model2 implements AbstractModel {
         
 //         $this->model->contains('Table1', 'table2_id');
         $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
+        
+//         self referencing
+//         $this->model->contains('Model2', 'table2_id');
+//         $this->model->isContained('Model2', 'table2_id');
 
 //         $this->model->isContained('Table1', 'table1_id');
 //         $this->model->isContained('Table1', 'table1_id', 'AssociativeTable');
@@ -125,7 +129,7 @@ class AssociativeModel implements AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-$model2->join('Model3');
+$model2->join('Model2', 'Model3');
 
 // print_r($table2->getAll());
 
