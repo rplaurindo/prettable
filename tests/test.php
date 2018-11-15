@@ -66,6 +66,14 @@ class Model2 implements AbstractModel {
         return $this->model->select($tableName);
     }
     
+    function join(...$models) {
+        return $this->model->join(...$models);
+    }
+    
+}
+
+class Model3 {
+    
 }
 
 class AssociativeModel implements AbstractAssociativeModel {
@@ -79,6 +87,13 @@ class AssociativeModel implements AbstractAssociativeModel {
         return 'associative_table';
     }
     
+    static function getFields() {
+        return [
+            'table1_id',
+            'table2_id'
+        ];
+    }
+    
     static function getForeignKeyOf($modelName) {
         return self::$association[$modelName]; 
     }
@@ -86,6 +101,8 @@ class AssociativeModel implements AbstractAssociativeModel {
 }
 
 $model2 = new Model2();
+
+// $model2->join('Model1', 'Model2');
 
 // print_r($table2->getAll());
 

@@ -23,9 +23,7 @@ class Model {
     private $map;
     
     function __construct($modelName) {
-        if (!is_subclass_of($modelName, __NAMESPACE__ . '\AbstractModel')) {
-            throw new Exception('The model must be an ' . __NAMESPACE__ . '\AbstractModel');
-        }
+        $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', $modelName);
         
         $this->modelName = $modelName;
         $this->model = self::getClassDeclaration($modelName);
@@ -48,8 +46,8 @@ class Model {
             $value = $field;
             $field = $this->model::getPrimaryKey();
         }
-        
-        self::attachesAt($this->select, self::mountFieldsStatement($this->modelName));
+        self::cleanList($this->select);
+        self::attachesIn(self::mountFieldsStatement($this->modelName), $this->select);
         
         $this->map['select'] = implode(", ", $this->select->getArrayCopy());
         $this->map['from']   = $this->tableName;
@@ -63,13 +61,21 @@ class Model {
             'select' => '',
             'from' => ''
         ];
-        
-        self::attachesAt($this->select, self::mountFieldsStatement($this->modelName));
+        self::cleanList($this->select);
+        self::attachesIn(self::mountFieldsStatement($this->modelName), $this->select);
         
         $this->map['select'] = implode(", ", $this->select->getArrayCopy());
         $this->map['from']   = $this->tableName;
         
         return $this->map;
+    }
+    
+    function join(...$models) {
+        $this->checkIfModelsAre(__NAMESPACE__ . 'AbstractModel', ...$models);
+        
+//         adicionar somente se ainda não foi adicionado, e se não consta em contains e nem em isContained.
+        
+        return $this;
     }
     
     function select($modelName) {
@@ -88,7 +94,8 @@ class Model {
         if (array_key_exists($modelName, $this->contains) || 
             array_key_exists($modelName, $this->isContained)) {
             
-            self::attachesAt($this->select, self::mountFieldsStatement($modelName, true));
+            self::cleanList($this->select);
+            self::attachesIn(self::mountFieldsStatement($modelName, true), $this->select);
             $this->map['select'] = implode(", ", $this->select->getArrayCopy());
             $this->map['from']   = $relatedTableName;
             
@@ -144,9 +151,7 @@ class Model {
     
     function contains($modelName, $foreignKey, $through = '') {
         
-        if (!is_subclass_of($modelName, __NAMESPACE__ . '\AbstractModel')) {
-            throw new Exception('The model must be an AbstractModel');
-        }
+        $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', $modelName);
 
         $this->contains[$modelName] = [
             'foreignKey' => $foreignKey
@@ -155,10 +160,7 @@ class Model {
         $relatedTableSpecifications = $this->contains[$modelName];
         
         if (!empty($through)) {
-            
-            if (!is_subclass_of($through, __NAMESPACE__ . '\AbstractAssociativeModel')) {
-                throw new Exception('The associative model must be an '. __NAMESPACE__ . '\AbstractAssociativeModel');
-            }
+            $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractAssociativeModel', $through);
             
             $this->contains[$modelName]['associativeModel'] = $through;
         }
@@ -167,9 +169,7 @@ class Model {
     
     function isContained($modelName, $foreignKey, $through = '') {
         
-        if (!is_subclass_of($modelName, __NAMESPACE__ . '\AbstractModel')) {
-            throw new Exception('The model must be an ' . __NAMESPACE__ . '\AbstractModel');
-        }
+        $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', $modelName);
         
         $this->isContained[$modelName] = [
             'foreignKey' => $foreignKey
@@ -178,13 +178,25 @@ class Model {
         $relatedTableSpecifications = $this->isContained[$modelName];
         
         if (!empty($through)) {
-            
-            if (!is_subclass_of($through, __NAMESPACE__ . '\AbstractAssociativeModel')) {
-                throw new Exception('The associative model must be an ' . __NAMESPACE__ . '\AbstractAssociativeModel');
-            }
+            $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractAssociativeModel', $models);
             
             $this->isContained[$modelName]['associativeModel'] = $through;
         }
+    }
+    
+    private function checkIfModelsAre($class, ...$models) {
+        
+        global $globalClass;
+        $globalClass = $class;
+        
+        array_walk($models, function($modelName) {
+            global $globalClass;
+            $class = $globalClass;
+            if (!is_subclass_of($modelName, $class)) {
+                throw new Exception("The model must be a $class");
+            }
+        });
+        
     }
     
     private static function resolveTableName($modelName) {
@@ -209,7 +221,11 @@ class Model {
         return Helpers\SQL::mountFieldsStatement($model::getFields());
     }
     
-    private static function attachesAt(ArrayObject $list, $statement) {
+    private static function cleanList(ArrayObject $list) {
+        $list->exchangeArray([]);
+    }
+    
+    private static function attachesIn($statement, ArrayObject $list) {
         if (!in_array($statement, $list->getArrayCopy())) {
             $list->append($statement);
         }
