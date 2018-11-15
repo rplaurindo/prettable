@@ -46,6 +46,7 @@ class Model {
             $value = $field;
             $field = $this->model::getPrimaryKey();
         }
+        
         self::cleanList($this->select);
         self::attachesIn(self::mountFieldsStatement($this->modelName), $this->select);
         
@@ -61,6 +62,7 @@ class Model {
             'select' => '',
             'from' => ''
         ];
+        
         self::cleanList($this->select);
         self::attachesIn(self::mountFieldsStatement($this->modelName), $this->select);
         
