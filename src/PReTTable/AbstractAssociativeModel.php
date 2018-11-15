@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-interface AbstractAssociativeModel extends AbstractCommonModel {
+interface AbstractAssociativeModel extends GeneralAbstractModel {
     
     static function getForeignKeyOf($modelName);
     

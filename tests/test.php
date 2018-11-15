@@ -9,6 +9,7 @@ require 'autoload.php';
 use PReTTable\AbstractModel;
 use PReTTable\AbstractAssociativeModel;
 use PReTTable\Model;
+use PReTTable\GeneralAbstractModel;
 
 class Model1 implements AbstractModel {
     
@@ -104,6 +105,7 @@ class Model4 {
 }
 
 class AssociativeModel implements AbstractAssociativeModel {
+// class AssociativeModel implements GeneralAbstractModel {
     
     private static $association = [
         'Model1' => 'table1_id',
@@ -129,7 +131,7 @@ class AssociativeModel implements AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-$model2->join('Model2', 'Model3');
+// $model2->join('Model2', 'Model3');
 
 // print_r($table2->getAll());
 
@@ -137,3 +139,4 @@ $model2->join('Model2', 'Model3');
 // print_r($table2->getRow('field1', 1));
 
 // print_r($model2->select('Model1'));
+print_r($model2->select('AssociativeModel'));

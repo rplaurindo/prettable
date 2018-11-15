@@ -18,6 +18,8 @@ class Model {
     
     private $isContained;
     
+    private $associations;
+    
     private $select;
     
     private $joins;
@@ -25,7 +27,7 @@ class Model {
     private $map;
     
     function __construct($modelName) {
-        $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', $modelName);
+        $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
         $this->modelName = $modelName;
         $this->model = self::getClassDeclaration($modelName);
@@ -33,6 +35,7 @@ class Model {
         
         $this->contains = [];
         $this->isContained = [];
+        $this->associations = new ArrayObject();
         
         $this->select = new ArrayObject();
         $this->joins = new ArrayObject();
@@ -76,9 +79,11 @@ class Model {
     }
     
     function join(...$models) {
-        $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', ...$models);
         
         array_walk($models, function($modelName) {
+            
+            $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
+            
             if (
                 ($modelName == $this->modelName 
                     && (array_key_exists($modelName, $this->contains)
@@ -138,6 +143,7 @@ class Model {
                     array_push($this->map['joins'],
                         "$relatedTableName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
                 } else {
+//                     testar se não se trata de uma tabela associativa, pois, neste caso, não há chave primária e o join deve ser feito apenas com $this->tableName
                     array_push($this->map['joins'],
                         "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.{$relatedModel::getPrimaryKey()}");
                 }
@@ -170,53 +176,62 @@ class Model {
         
     }
     
-    function contains($modelName, $foreignKey, $through = '') {
+    function contains($modelName, $foreignKey = '', $through = '') {
         
-        $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', $modelName);
+        $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
 
-        $this->contains[$modelName] = [
-            'foreignKey' => $foreignKey
-        ];
+        $this->contains[$modelName] = [];
         
-        $relatedTableSpecifications = $this->contains[$modelName];
-        
-        if (!empty($through)) {
-            $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractAssociativeModel', $through);
-            
+        if (empty($through)) {
+            $this->contains[$modelName]['foreignKey'] = $foreignKey;
+        } else {
+            $this->checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
             $this->contains[$modelName]['associativeModel'] = $through;
+            
+            $this->contains($through);
         }
         
     }
     
     function isContained($modelName, $foreignKey, $through = '') {
         
-        $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractModel', $modelName);
+        $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
-        $this->isContained[$modelName] = [
-            'foreignKey' => $foreignKey
-        ];
+        $this->isContained[$modelName] = [];
         
-        $relatedTableSpecifications = $this->isContained[$modelName];
-        
-        if (!empty($through)) {
-            $this->checkIfModelsAre(__NAMESPACE__ . '\AbstractAssociativeModel', $models);
-            
+        if (empty($through)) {
+            $this->isContained[$modelName]['foreignKey'] = $foreignKey;
+        } else {
+            $this->checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
             $this->isContained[$modelName]['associativeModel'] = $through;
         }
     }
     
-    private function checkIfModelsAre($class, ...$models) {
+    private function checkIfModelIs($modelName, ...$classes) {
         
-        global $globalClass;
-        $globalClass = $class;
+        global $globalModelName;
+        global $globalCount;
         
-        array_walk($models, function($modelName) {
-            global $globalClass;
-            $class = $globalClass;
-            if (!is_subclass_of($modelName, $class)) {
-                throw new Exception("The model must be a $class");
+        $globalModelName = $modelName;
+        $count = 0;
+        $globalCount = $count;
+        
+        array_walk($classes, function($class) {
+            global $globalModelName;
+            global $globalCount;
+            
+            $modelName = $globalModelName;
+            
+            if (is_subclass_of($modelName, $class)) {
+                $globalCount++;
             }
+            
         });
+        
+        if (!$globalCount) {
+            $classesAsText = implode(" or ", $classes);
+            throw new Exception("The model must be a $classesAsText}");
+        }
         
     }
     

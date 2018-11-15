@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-interface AbstractCommonModel {
+interface GeneralAbstractModel {
     
     static function getTableName();
     
