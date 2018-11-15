@@ -72,7 +72,30 @@ class Model2 implements AbstractModel {
     
 }
 
-class Model3 {
+class Model3 implements AbstractModel {
+    
+    function __construct() {
+        parent::__construct();
+    }
+    
+    static function getTableName() {
+        return 'table3';
+    }
+    
+    static function getPrimaryKey() {
+        return 'id';
+    }
+    
+    static function getFields() {
+        return [
+            'id',
+            'field1'
+        ];
+    }
+    
+}
+
+class Model4 {
     
 }
 
@@ -102,11 +125,11 @@ class AssociativeModel implements AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-// $model2->join('Model1', 'Model2');
+$model2->join('Model3');
 
 // print_r($table2->getAll());
 
 // print_r($table2->getRow(1));
 // print_r($table2->getRow('field1', 1));
 
-print_r($model2->select('Model1'));
+// print_r($model2->select('Model1'));
