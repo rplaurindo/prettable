@@ -42,15 +42,16 @@ class Model2 implements AbstractModel {
         $this->model = new Model(self::class);
         
 //         $this->model->contains('Model1', 'table2_id');
-        $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
-        $this->model->contains('Model3', 'table3_field');
+//         $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
+//         $this->model->contains('Model3', 'table3_field');
         
 //         self referencing
 //         $this->model->contains('Model2', 'table2_id');
 //         $this->model->isContained('Model2', 'table2_id');
 
 //         $this->model->isContained('Model1', 'table1_id');
-//         $this->model->isContained('Model1', 'associative_table_id', 'AssociativeModel');
+//         $this->model->isContained('Model3', 'table2_field');
+        $this->model->isContained('Model1', 'associative_table_id', 'AssociativeModel');
     }
     
     static function getTableName() {
@@ -131,12 +132,12 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-$model2->join('Model3', 'table2_field');
+// $model2->join('Model3', 'table3_field');
 
 // print_r($table2->getAll());
 
 // print_r($table2->getRow(1));
 // print_r($table2->getRow('field1', 1));
 
-print_r($model2->select('Model1'));
-// print_r($model2->select('AssociativeModel'));
+// print_r($model2->select('Model1'));
+print_r($model2->select('AssociativeModel'));

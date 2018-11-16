@@ -221,7 +221,7 @@ class Model {
         } else {
             $this->checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
             $this->isContained[$modelName]['associativeModel'] = $through;
-//             ver se é necessário informar a chave
+            
             $this->isContained($through, $relatedField);
         }
     }
