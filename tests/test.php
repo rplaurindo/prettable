@@ -79,10 +79,6 @@ class Model2 implements AbstractModel {
 
 class Model3 implements AbstractModel {
     
-    function __construct() {
-        parent::__construct();
-    }
-    
     static function getTableName() {
         return 'table3';
     }
@@ -105,14 +101,6 @@ class Model4 {
 }
 
 class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
-    
-//     private $model;
-    
-//     function __construct() {
-//         $this->model = new Model(self::class);
-        
-        
-//     }
     
     private static $association = [
         'Model1' => 'table1_id',

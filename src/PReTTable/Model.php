@@ -54,7 +54,7 @@ class Model {
         }
         
         self::cleanList($this->select);
-        self::attachesIn(self::mountFieldsStatement($this->modelName), $this->select);
+        $this->attachesSelectStatement(self::mountFieldsStatement($this->modelName));
         
         $this->map['select'] = implode(", ", $this->select->getArrayCopy());
         $this->map['from']   = $this->tableName;
@@ -70,7 +70,7 @@ class Model {
         ];
         
         self::cleanList($this->select);
-        self::attachesIn(self::mountFieldsStatement($this->modelName), $this->select);
+        $this->attachesSelectStatement(self::mountFieldsStatement($this->modelName));
         
         $this->map['select'] = implode(", ", $this->select->getArrayCopy());
         $this->map['from']   = $this->tableName;
@@ -133,9 +133,9 @@ class Model {
         
         if (array_key_exists($modelName, $this->contains) || 
             array_key_exists($modelName, $this->isContained)) {
-//             checar se joins tem conteúdo, caso sim, anexar seus campos, e fazer push na chave joins 
+             
             self::cleanList($this->select);
-            self::attachesIn(self::mountFieldsStatement($modelName, true), $this->select);
+            $this->attachesSelectStatement(self::mountFieldsStatement($modelName, true));
             $this->map['select'] = implode(", ", $this->select->getArrayCopy());
             $this->map['from']   = $relatedTableName;
             
@@ -196,6 +196,17 @@ class Model {
                 }
             }
             
+        }
+        
+        if ($this->joins->count()) {
+            foreach ($this->joins as $modelName => $specifications) {
+                $model = self::getClassDeclaration($modelName);
+                $tableName = self::resolveTableName($modelName);
+                $joinedModelField = $specifications['joinedModelField'];
+                $modelField = $specifications['joinedModelField'];
+                array_push($this->map['joins'],
+                    "$tableName ON $tableName.$joinedModelField = $this->tableName.$modelField");
+            }
         }
         
         return $this->map;
@@ -289,9 +300,9 @@ class Model {
         $list->exchangeArray([]);
     }
     
-    private static function attachesIn($statement, ArrayObject $list) {
-        if (!in_array($statement, $list->getArrayCopy())) {
-            $list->append($statement);
+    private function attachesSelectStatement($statement) {
+        if (!in_array($statement, $this->select->getArrayCopy())) {
+            $this->select->append($statement);
         }
     }
     
