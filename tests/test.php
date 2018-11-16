@@ -142,11 +142,11 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-// $model2->join('id', 
-//     [
-//         'Model3' => 'id'
-//     ]
-// );
+$model2->join('id', 
+    [
+        'Model3' => 'id'
+    ]
+);
 
 // print_r($table2->getAll());
 
