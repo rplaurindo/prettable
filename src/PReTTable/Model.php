@@ -78,9 +78,18 @@ class Model {
         return $this->map;
     }
     
-    function join(...$models) {
+    function join($throughField, ...$models) {
         
-        array_walk($models, function($modelName) {
+        global $globalThroughField;
+        
+        $globalThroughField = $throughField;
+        
+        array_walk($models, function($modelSpecifications) {
+            
+            $modelName = array_keys($modelSpecifications)[0];
+            $field = array_values($modelSpecifications)[0];
+            
+            global $globalThroughField;
             
             $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
             
@@ -96,7 +105,12 @@ class Model {
                 )
             ) {
                 
-                self::attachesIn($modelName, $this->joins);
+                $this->joins->offsetSet($modelName, 
+                    [
+                        'modelField' => $globalThroughField,
+                        'joinedModelField' => $field
+                    ]
+                );
                 
             }
         });
@@ -119,7 +133,7 @@ class Model {
         
         if (array_key_exists($modelName, $this->contains) || 
             array_key_exists($modelName, $this->isContained)) {
-//             checar se joins tem conteúdo, caso sim, pegar seus campos se não houver uma associação em from
+//             checar se joins tem conteúdo, caso sim, anexar seus campos, e fazer push na chave joins 
             self::cleanList($this->select);
             self::attachesIn(self::mountFieldsStatement($modelName, true), $this->select);
             $this->map['select'] = implode(", ", $this->select->getArrayCopy());
@@ -127,11 +141,11 @@ class Model {
             
             if (array_key_exists($modelName, $this->contains)) {
                 if (array_key_exists('associativeModel', $this->contains[$modelName])) {
-                    $associativeModel = $this->contains[$modelName]['associativeModel'];
-                    $associativeTableName = self::resolveTableName($associativeModel);
+                    $associativeModelName = $this->contains[$modelName]['associativeModel'];
+                    $associativeTableName = self::resolveTableName($associativeModelName);
                     $this->map['from'] = $associativeTableName;
                     
-                    $associativeModel = self::getClassDeclaration($associativeModel);
+                    $associativeModel = self::getClassDeclaration($associativeModelName);
                     
                     $fk = $associativeModel::getForeignKeyOf($this->modelName);
                     
@@ -154,16 +168,16 @@ class Model {
                 }
             } else {
                 if (array_key_exists('associativeModel', $this->isContained[$modelName])) {
-                    $associativeModel = $this->contains[$modelName]['associativeModel'];
-                    $associativeTableName = self::resolveTableName($associativeModel);
+                    $associativeModelName = $this->isContained[$modelName]['associativeModel'];
+                    $associativeTableName = self::resolveTableName($associativeModelName);
                     $this->map['from'] = $associativeTableName;
                     
-                    $associativeModel = self::getClassDeclaration($associativeModel);
+                    $associativeModel = self::getClassDeclaration($associativeModelName);
                     
-                    $fk = $associativeModel::getForeignKeyOf($this->modelName);
+                    $fk = $this->isContained[$associativeModelName]['foreignKey'];
                     
                     array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $associativeTableName.$fk");
+                        "$this->tableName ON $this->tableName.$fk = $associativeTableName.{$associativeModel::getPrimaryKey()}");
                     
                     $fk = $associativeModel::getForeignKeyOf($modelName);
                     
@@ -218,7 +232,6 @@ class Model {
             $this->isContained[$modelName]['associativeModel'] = $through;
             
             $this->isContained($through, $foreignKey);
-//             $this->isContained($through);
         }
     }
     

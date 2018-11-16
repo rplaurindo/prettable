@@ -14,7 +14,7 @@ use PReTTable\GeneralAbstractModel;
 class Model1 implements AbstractModel {
     
     function __construct() {
-        parent::__construct();
+        
     }
     
     static function getTableName() {
@@ -41,15 +41,15 @@ class Model2 implements AbstractModel {
     function __construct() {
         $this->model = new Model(self::class);
         
-//         $this->model->contains('Table1', 'table2_id');
+//         $this->model->contains('Model1', 'table2_id');
         $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
         
 //         self referencing
 //         $this->model->contains('Model2', 'table2_id');
 //         $this->model->isContained('Model2', 'table2_id');
 
-//         $this->model->isContained('Table1', 'table1_id');
-//         $this->model->isContained('Table1', 'table1_id', 'AssociativeTable');
+//         $this->model->isContained('Model1', 'table1_id');
+//         $this->model->isContained('Model1', 'associative_table_id', 'AssociativeModel');
     }
     
     static function getTableName() {
@@ -104,8 +104,15 @@ class Model4 {
     
 }
 
-class AssociativeModel implements AbstractAssociativeModel {
-// class AssociativeModel implements GeneralAbstractModel {
+class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
+    
+//     private $model;
+    
+//     function __construct() {
+//         $this->model = new Model(self::class);
+        
+        
+//     }
     
     private static $association = [
         'Model1' => 'table1_id',
@@ -114,6 +121,10 @@ class AssociativeModel implements AbstractAssociativeModel {
     
     static function getTableName() {
         return 'associative_table';
+    }
+    
+    static function getPrimaryKey() {
+        return 'id';
     }
     
     static function getFields() {
@@ -131,12 +142,16 @@ class AssociativeModel implements AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-// $model2->join('Model2', 'Model3');
+// $model2->join('id', 
+//     [
+//         'Model3' => 'id'
+//     ]
+// );
 
 // print_r($table2->getAll());
 
 // print_r($table2->getRow(1));
 // print_r($table2->getRow('field1', 1));
 
-// print_r($model2->select('Model1'));
-print_r($model2->select('AssociativeModel'));
+print_r($model2->select('Model1'));
+// print_r($model2->select('AssociativeModel'));
