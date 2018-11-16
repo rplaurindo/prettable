@@ -163,15 +163,22 @@ class Model {
                     $fk = $associativeModel::getForeignKeyOf($this->modelName);
                     
                     array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $associativeTableName.{$fk}");
+                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $associativeTableName.$fk");
                     
                     $fk = $associativeModel::getForeignKeyOf($modelName);
                     
                     array_push($this->map['joins'],
-                        "$relatedTableName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.{$fk}");
+                        "$relatedTableName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.$fk");
                 } else {
-                    array_push($this->map['joins'],
-                        "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.{$relatedModel::getPrimaryKey()}");
+                    if (is_subclass_of($modelName, __NAMESPACE__ . '\AbstractAssociativeModel')) {
+                        $fk = $this->isContained[$modelName]['foreignKey'];
+                        array_push($this->map['joins'],
+                            "$this->tableName ON $this->tableName.$fk = $relatedTableName.{$relatedModel::getPrimaryKey()}");
+                    } else {
+                        $fk = $this->isContained[$modelName]['foreignKey'];
+                        array_push($this->map['joins'],
+                            "$this->tableName ON $this->tableName.$fk = $relatedTableName.{$relatedModel::getPrimaryKey()}");
+                    }
                 }
             }
             
@@ -198,7 +205,7 @@ class Model {
         
     }
     
-    function isContained($modelName, $foreignKey, $through = '') {
+    function isContained($modelName, $foreignKey='', $through = '') {
         
         $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
@@ -209,6 +216,9 @@ class Model {
         } else {
             $this->checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
             $this->isContained[$modelName]['associativeModel'] = $through;
+            
+            $this->isContained($through, $foreignKey);
+//             $this->isContained($through);
         }
     }
     
