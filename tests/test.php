@@ -9,7 +9,8 @@ require 'autoload.php';
 use PReTTable\AbstractModel;
 use PReTTable\AbstractAssociativeModel;
 use PReTTable\Model;
-use PReTTable\GeneralAbstractModel;
+
+use PReTTable\Helpers;
 
 class Model1 implements AbstractModel {
     
@@ -25,10 +26,10 @@ class Model1 implements AbstractModel {
         return 'id';
     }
     
-    static function getFields() {
+    static function getColumns() {
         return [
             'id',
-            'field1' => 'field1Alias'
+            'column1' => 'column1Alias'
         ];
     }
     
@@ -43,14 +44,14 @@ class Model2 implements AbstractModel {
         
 //         $this->model->contains('Model1', 'table2_id');
 //         $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
-//         $this->model->contains('Model3', 'table3_field');
+//         $this->model->contains('Model3', 'table3_column');
         
 //         self referencing
 //         $this->model->contains('Model2', 'table2_id');
 //         $this->model->isContained('Model2', 'table2_id');
 
 //         $this->model->isContained('Model1', 'table1_id');
-//         $this->model->isContained('Model3', 'table2_field');
+//         $this->model->isContained('Model3', 'table2_column');
         $this->model->isContained('Model1', 'associative_table_id', 'AssociativeModel');
     }
     
@@ -62,10 +63,10 @@ class Model2 implements AbstractModel {
         return 'id';
     }
     
-    static function getFields() {
+    static function getColumns() {
         return [
             'id' => 'idAlias',
-            'field1' => 'field1Alias'
+            'column1' => 'column1Alias'
         ];
     }
     
@@ -89,10 +90,10 @@ class Model3 implements AbstractModel {
         return 'id';
     }
     
-    static function getFields() {
+    static function getColumns() {
         return [
             'id',
-            'field1'
+            'column1'
         ];
     }
     
@@ -117,7 +118,7 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
         return 'id';
     }
     
-    static function getFields() {
+    static function getColumns() {
         return [
             'table1_id',
             'table2_id'
@@ -132,12 +133,41 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-// $model2->join('Model3', 'table3_field');
+// $model2->join('Model3', 'table3_column');
 
 // print_r($table2->getAll());
 
 // print_r($table2->getRow(1));
-// print_r($table2->getRow('field1', 1));
+// print_r($table2->getRow('column1', 1));
 
 // print_r($model2->select('Model1'));
-print_r($model2->select('AssociativeModel'));
+// print_r($model2->select('AssociativeModel'));
+
+
+$whereClause = new Helpers\WhereClause('Model1', 'Model2');
+print_r($whereClause->mountStatementFor(
+    [
+        'Model1' => [
+            'col1OfModel1' => [
+                'val1',
+                'val2'
+            ],
+            'col2OfModel1' => 'val3'
+        ],
+        'Model2' => [
+            'col1OfModel2' => 'val1',
+            'col2OfModel2' => 'val2'
+        ]
+    ]
+    ));
+
+// $whereClause = new Helpers\WhereClause();
+// print_r($whereClause->mountStatementFor(
+//     [
+//         'col1' => [
+//             'val1',
+//             'val2'
+//         ],
+//         'col2' => 'val3'
+//     ]
+//     ));

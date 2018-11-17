@@ -41,7 +41,7 @@ class Model {
         $this->joins = new ArrayObject();
     }
     
-    function getRow($field, $value = '') {
+    function getRow($column, $value = '') {
         $this->map = [
             'select' => '',
             'from' => '',
@@ -49,16 +49,16 @@ class Model {
         ];
         
         if (count(func_get_args()) == 1) {
-            $value = $field;
-            $field = $this->model::getPrimaryKey();
+            $value = $column;
+            $column = $this->model::getPrimaryKey();
         }
         
         self::cleanList($this->select);
-        $this->attachesSelectStatement(self::mountFieldsStatement($this->modelName));
+        $this->attachesSelectStatement(self::mountColumnsStatement($this->modelName));
         
         $this->map['select'] = implode(", ", $this->select->getArrayCopy());
         $this->map['from']   = $this->tableName;
-        $this->map['where']  = "$this->tableName.{$field} = '$value'";
+        $this->map['where']  = "$this->tableName.{$column} = '$value'";
         
         return $this->map;
     }
@@ -70,7 +70,7 @@ class Model {
         ];
         
         self::cleanList($this->select);
-        $this->attachesSelectStatement(self::mountFieldsStatement($this->modelName));
+        $this->attachesSelectStatement(self::mountColumnsStatement($this->modelName));
         
         $this->map['select'] = implode(", ", $this->select->getArrayCopy());
         $this->map['from']   = $this->tableName;
@@ -78,7 +78,7 @@ class Model {
         return $this->map;
     }
     
-    function join($modelName, $relatedField) {
+    function join($modelName, $relatedColumn) {
         
         $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
@@ -87,7 +87,7 @@ class Model {
             && (array_key_exists($modelName, $this->contains)
                 || array_key_exists($modelName, $this->isContained))
             ) {
-            $this->joins->offsetSet($modelName, $relatedField);
+                $this->joins->offsetSet($modelName, $relatedColumn);
         }
         
         return $this;
@@ -95,7 +95,7 @@ class Model {
     
     function select($modelName) {
         
-        $fields = [];
+        $columns = [];
         
         $this->map = [
             'select' => '',
@@ -110,7 +110,7 @@ class Model {
             array_key_exists($modelName, $this->isContained)) {
              
             self::cleanList($this->select);
-            $this->attachesSelectStatement(self::mountFieldsStatement($modelName, true));
+            $this->attachesSelectStatement(self::mountColumnsStatement($modelName, true));
             $this->map['select'] = implode(", ", $this->select->getArrayCopy());
             $this->map['from']   = $relatedTableName;
             
@@ -149,7 +149,7 @@ class Model {
                     
                     $associativeModel = self::getClassDeclaration($associativeModelName);
                     
-                    $fk = $this->isContained[$associativeModelName]['relatedField'];
+                    $fk = $this->isContained[$associativeModelName]['relatedColumn'];
                     
                     array_push($this->map['joins'],
                         "$this->tableName ON $this->tableName.$fk = $associativeTableName.{$associativeModel::getPrimaryKey()}");
@@ -160,11 +160,11 @@ class Model {
                         "$relatedTableName ON $relatedTableName.{$relatedModel::getPrimaryKey()} = $associativeTableName.$fk");
                 } else {
                     if (is_subclass_of($modelName, __NAMESPACE__ . '\AbstractAssociativeModel')) {
-                        $fk = $this->isContained[$modelName]['relatedField'];
+                        $fk = $this->isContained[$modelName]['relatedColumn'];
                         array_push($this->map['joins'],
                             "$this->tableName ON $this->tableName.$fk = $relatedTableName.{$relatedModel::getPrimaryKey()}");
                     } else {
-                        $fk = $this->isContained[$modelName]['relatedField'];
+                        $fk = $this->isContained[$modelName]['relatedColumn'];
                         array_push($this->map['joins'],
                             "$this->tableName ON $this->tableName.$fk = $relatedTableName.{$relatedModel::getPrimaryKey()}");
                     }
@@ -174,18 +174,18 @@ class Model {
         }
         
         if ($this->joins->count()) {
-            foreach ($this->joins as $modelName => $relatedField) {
+            foreach ($this->joins as $modelName => $relatedColumn) {
                 $model = self::getClassDeclaration($modelName);
                 $tableName = self::resolveTableName($modelName);
 
                 if (array_key_exists($modelName, $this->contains)) {
-                    $joinedModelField = $this->contains[$modelName]['relatedField'];
+                    $joinedModelColumn = $this->contains[$modelName]['relatedColumn'];
                 } else {
-                    $joinedModelField = $this->isContained[$modelName]['relatedField'];
+                    $joinedModelColumn = $this->isContained[$modelName]['relatedColumn'];
                 }
 
                 array_push($this->map['joins'],
-                    "$tableName ON $tableName.$joinedModelField = $this->tableName.$relatedField");
+                    "$tableName ON $tableName.$joinedModelColumn = $this->tableName.$relatedColumn");
             }
         }
         
@@ -193,14 +193,14 @@ class Model {
         
     }
     
-    function contains($modelName, $relatedField = '', $through = '') {
+    function contains($modelName, $relatedColumn = '', $through = '') {
         
         $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
 
         $this->contains[$modelName] = [];
         
         if (empty($through)) {
-            $this->contains[$modelName]['relatedField'] = $relatedField;
+            $this->contains[$modelName]['relatedColumn'] = $relatedColumn;
         } else {
             $this->checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
             $this->contains[$modelName]['associativeModel'] = $through;
@@ -210,19 +210,19 @@ class Model {
         
     }
     
-    function isContained($modelName, $relatedField='', $through = '') {
+    function isContained($modelName, $relatedColumn='', $through = '') {
         
         $this->checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
         $this->isContained[$modelName] = [];
         
         if (empty($through)) {
-            $this->isContained[$modelName]['relatedField'] = $relatedField;
+            $this->isContained[$modelName]['relatedColumn'] = $relatedColumn;
         } else {
             $this->checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
             $this->isContained[$modelName]['associativeModel'] = $through;
             
-            $this->isContained($through, $relatedField);
+            $this->isContained($through, $relatedColumn);
         }
     }
     
@@ -271,15 +271,15 @@ class Model {
         return $tableName;
     }
     
-    private static function mountFieldsStatement($modelName, $attachTable = false) {
-        $fields = [];
+    private static function mountColumnsStatement($modelName, $attachTable = false) {
+        $columns = [];
         $model = self::getClassDeclaration($modelName);
         if ($attachTable) {
             $tableName = self::resolveTableName($modelName);
-            return Helpers\SQL::mountFieldsStatement($model::getFields(), $tableName);
+            return Helpers\SQL::mountColumnsStatement($model::getColumns(), $tableName);
         }
         
-        return Helpers\SQL::mountFieldsStatement($model::getFields());
+        return Helpers\SQL::mountColumnsStatement($model::getColumns());
     }
     
     private static function cleanList(ArrayObject $list) {

@@ -6,6 +6,6 @@ interface GeneralAbstractModel {
     
     static function getTableName();
     
-    static function getFields();
+    static function getColumns();
     
 }

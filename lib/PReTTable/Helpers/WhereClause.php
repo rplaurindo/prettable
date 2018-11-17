@@ -2,110 +2,108 @@
 
 namespace PReTTable\Helpers;
 
+use ArrayObject;
+
 class WhereClause {
     
-    private $operator;
-
-    function __construct($operator = 'AND') {
-        $this->operator = $operator;
+    private $tables;
+    
+    private $comparisonOperator;
+    
+    private $logicalOperator;
+    
+    function __construct(...$tables) {
+        
+        $this->tables = new ArrayObject($tables);
+        $this->comparisonOperator = '=';
+        $this->logicalOperator = 'AND';
+        
     }
     
-    function composeStatementFor(array $params, array $options = []) {
-        $defaultOptions = ['containsPartialValues' => false];
-        
-        $options = array_merge($defaultOptions, $options);
-        
-        if (array_key_exists('containsPartialValues', $options) && gettype($options['containsPartialValues']) == 'boolean') {
-            $containsPartialValues = $options['containsPartialValues'];
-        }
-        
-        if ($containsPartialValues) {
-            return implode("", $this->composeContainingPartialValues($params));
-        }
-        
-        return implode("", $this->composeContainingWholeValues($params));
+    function setComparisonOperator($operator) {
+        $this->comparisonOperator = $operator;
     }
     
-    private function composeContainingPartialValues(array $params = []) {
-        $composedFields = [];
+    function setLogicalOperator($operator) {
+        $this->logicalOperator = $operator;
+    }
+    
+    function mountStatementFor(array $params) {
         
-        foreach($params as $column => $value) {
-            if (!empty($value)) {
+        if ($this->tables->count()) {
+            return $this->mountWithAttachedTable($params);
+        }
+            
+        return $this->mountWithoutAttachedTable($params);
+        
+    }
+    
+    private function mountWithoutAttachedTable(array $params) {
+        
+        $mountedColumns = [];
+        
+        foreach($params as $columnName => $value) {
+            if (gettype($value) == 'array') {
+                
+                $firstValue = $value[0];
+                $value = array_slice($value, 1);
+                
+                $statement = "$columnName $this->comparisonOperator '$firstValue'";
+                foreach ($value as $v) {
+                    $statement .= " OR $columnName $this->comparisonOperator '$v'";
+                }
+                
+                if (count($mountedColumns)) {
+                    array_push($mountedColumns, " $this->logicalOperator ($statement)");
+                } else {
+                    array_push($mountedColumns, "($statement)");
+                }
+            } else {
+                if (count($mountedColumns)) {
+                    array_push($mountedColumns, " $this->logicalOperator $columnName $this->comparisonOperator '$value'");
+                } else {
+                    array_push($mountedColumns, "$columnName $this->comparisonOperator '$value'");
+                }
+            }
+        }
+        
+        return implode("", $mountedColumns);
+    }
+    
+    private function mountWithAttachedTable(array $params) {
+        
+        $mountedColumns = [];
+        
+        $tables = array_keys($params);
+        
+        foreach ($tables as $tableName) {
+            foreach($params[$tableName] as $columnName => $value) {
                 if (gettype($value) == 'array') {
                     
                     $firstValue = $value[0];
                     $value = array_slice($value, 1);
                     
-                    $statement = "$column LIKE '$firstValue'";
+                    $statement = "$tableName.$columnName $this->comparisonOperator '$firstValue'";
                     foreach ($value as $v) {
-                        $statement .= " OR $column LIKE '$v'";
+                        $statement .= " OR $tableName.$columnName $this->comparisonOperator '$v'";
                     }
                     
-                    if (count($composedFields)) {
-                        array_push($composedFields, " {$this->operator} ($statement)");
+                    if (count($mountedColumns)) {
+                        array_push($mountedColumns, " $this->logicalOperator ($statement)");
                     } else {
-                        array_push($composedFields, "($statement)");
+                        array_push($mountedColumns, "($statement)");
                     }
                 } else {
-                    if (count($composedFields)) {
-                        array_push($composedFields, " {$this->operator} $column LIKE '$value'");
+                    if (count($mountedColumns)) {
+                        array_push($mountedColumns, " $this->logicalOperator $tableName.$columnName $this->comparisonOperator '$value'");
                     } else {
-                        array_push($composedFields, "$column LIKE '$value'");
+                        array_push($mountedColumns, "$tableName.$columnName $this->comparisonOperator '$value'");
                     }
                 }
             }
         }
         
-        return $composedFields;
-    }
-    
-    private function composeContainingWholeValues(array $params = []) {
-        $composedFields = [];
-        
-        foreach($params as $column => $value) {
-            if (!empty($value)) {
-                if (gettype($value) == 'array') {
-                    
-                    $firstValue = $value[0];
-                    $value = array_slice($value, 1);
-                    
-                    if (gettype($firstValue) == 'string') {
-                        $statement = "$column = '$firstValue'";
-                        foreach ($value as $v) {
-                            $statement .= " OR $column = '$v'";
-                        }
-                    } else {
-                        $statement = "$column = $firstValue";
-                        foreach ($value as $v) {
-                            $statement .= " OR $column = $v";
-                        }
-                    }
-                    
-                    if (count($composedFields)) {
-                        array_push($composedFields, " {$this->operator} ($statement)");
-                    } else {
-                        array_push($composedFields, "($statement)");
-                    }
-                } else {
-                    if (gettype($value) == 'string') {
-                        if (count($composedFields)) {
-                            array_push($composedFields, " {$this->operator} $column = '$value'");
-                        } else {
-                            array_push($composedFields, "$column = '$value'");
-                        }
-                    } else {
-                        if (count($composedFields)) {
-                            array_push($composedFields, " {$this->operator} $column = $value");
-                        } else {
-                            array_push($composedFields, "$column = $value");
-                        }
-                    }
-                    
-                }
-            }
-        }
-        
-        return $composedFields;
+        return implode("", $mountedColumns);
     }
     
 }
