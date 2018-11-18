@@ -23,12 +23,12 @@ class Model1 implements AbstractModel {
     }
     
     static function getPrimaryKey() {
-        return 'id';
+        return 'model1ID';
     }
     
     static function getColumns() {
         return [
-            'id',
+            'model1ID',
             'column1' => 'column1Alias'
         ];
     }
@@ -42,10 +42,12 @@ class Model2 implements AbstractModel {
     function __construct() {
         $this->model = new Model(self::class);
         
-//         $this->model->contains('Model1', 'table2_id');
+        $this->model->contains('Model1', 'table2_id');
+        
 //         $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
-        $this->model->contains('Model3', 'table3_column');
-        $this->model->contains('Model4', 'table4_column');
+
+//         $this->model->contains('Model3', 'table3_column');
+//         $this->model->contains('Model4', 'table4_column');
         
 //         self referencing
 //         $this->model->contains('Model2', 'table2_id');
@@ -53,7 +55,7 @@ class Model2 implements AbstractModel {
 
 //         $this->model->isContained('Model1', 'table1_id');
 //         $this->model->isContained('Model3', 'table2_column');
-        $this->model->isContained('Model1', 'associative_table_id', 'AssociativeModel');
+//         $this->model->isContained('Model1', 'associative_table_id', 'AssociativeModel');
     }
     
     static function getTableName() {
@@ -61,12 +63,12 @@ class Model2 implements AbstractModel {
     }
     
     static function getPrimaryKey() {
-        return 'id';
+        return 'ID_table2';
     }
     
     static function getColumns() {
         return [
-            'id' => 'idAlias',
+            'ID_table2' => 'idAlias',
             'column1' => 'column1Alias'
         ];
     }
@@ -157,18 +159,18 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-// print_r($model2->select('Model1'));
+print_r($model2->select('Model1')->getMap());
 // print_r($model2->select('AssociativeModel'));
 
-print_r($model2
-    ->join('Model3', 'table2_column')
-    ->join('Model4', 'table2_column')
-    ->select('Model1')
-);
+// print_r($model2
+//     ->join('Model3', 'table2_column')
+//     ->join('Model4', 'table2_column')
+//     ->select('Model1')
+// );
 
-echo "\n\n";
+// echo "\n\n";
 
-print_r($model2->select('Model1'));
+// print_r($model2->select('Model1'));
 
 // print_r($table2->getAll());
 
