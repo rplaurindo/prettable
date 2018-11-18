@@ -19,6 +19,8 @@ class Query {
     private $joins;
 
     function __construct($modelName) {
+        Model::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
+        
         $this->modelName = $modelName;
         $this->model = Reflection::getDeclarationOf($modelName);
         $this->tableName = Model::resolveTableName($modelName);
@@ -88,9 +90,7 @@ class Query {
             $column = $this->model::getPrimaryKey();
         }
         
-        $selectStatement = self::mountColumnsStatement($this->modelName);
-        
-        $map['select'] = implode(", ", $selectStatement->getArrayCopy());
+        $map['select'] = Model::mountColumnsStatement($this->modelName);
         $map['from']   = $this->tableName;
         $map['where']  = "$this->tableName.{$column} = '$value'";
         
@@ -103,15 +103,12 @@ class Query {
             'from' => ''
         ];
         
-        $selectStatement = self::mountColumnsStatement($this->modelName);
-        
-        $map['select'] = implode(", ", $selectStatement->getArrayCopy());
+        $map['select'] = Model::mountColumnsStatement($this->modelName);
         $map['from']   = $this->tableName;
         
         return $map;
     }
     
-//     mudar aqui para suportar receber uma lista
     function join($modelName, $relatedColumn) {
         Model::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
@@ -143,8 +140,7 @@ class Query {
         if (array_key_exists($modelName, $this->containsSet) ||
             array_key_exists($modelName, $this->isContainedSet)) {
                 
-            $selectStatement = Model::mountColumnsStatement($modelName, true);
-            $map['select'] = implode(", ", $selectStatement->getArrayCopy());
+            $map['select'] = Model::mountColumnsStatement($modelName, true);
             $map['from']   = $relatedTableName;
             
             if (array_key_exists($modelName, $this->containsSet)) {
@@ -221,6 +217,8 @@ class Query {
                     "$tableName ON $tableName.$joinedModelColumn = $this->tableName.$relatedColumn");
             }
         }
+        
+        $this->joins->exchangeArray([]);
         
         return $map;
     }

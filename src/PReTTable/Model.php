@@ -10,20 +10,24 @@ class Model {
     
     private $query;
     
+    private $queryJoins;
+    
     function __construct($modelName) {
-        self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
-        
         $this->modelName = $modelName;
         
         $this->query = new Query($modelName);
+        
+        $this->queryJoins = new Query($modelName);
     }
     
     function contains($modelName, $relatedColumn = '', $through = '') {
         $this->query->contains($modelName, $relatedColumn, $through);
+        $this->queryJoins->contains($modelName, $relatedColumn, $through);
     }
     
     function isContained($modelName, $relatedColumn = '', $through = '') {
         $this->query->isContained($modelName, $relatedColumn, $through);
+        $this->queryJoins->isContained($modelName, $relatedColumn, $through);
     }
     
     function getRow($column, $value = '') {
@@ -35,11 +39,7 @@ class Model {
     }
     
     function join($modelName, $relatedColumn) {
-        $query = new Query($modelName);
-        $query->setContainsSet($this->query->getContainsSet());
-        $query->setIsContainedSet($this->query->getIsContainedSet());
-        
-        return $query->join($modelName, $relatedColumn);
+           return $this->queryJoins->join($modelName, $relatedColumn);
     }
     
     function select($modelName) {

@@ -4,7 +4,7 @@ namespace PReTTable\Helpers;
 
 class SQL {
     
-    static function mountFieldsStatement($fields, $tableName = '') {
+    static function mountColumnsStatement($fields, $tableName = '') {
         $mountedFields = [];
         
         if (empty($tableName)) {
