@@ -2,19 +2,17 @@
 
 namespace PReTTable\Helpers;
 
-use ArrayObject;
-
 class SelectStatement {
     
     private $tables;
     
     function __construct(...$tables) {
         
-        $this->tables = new ArrayObject($tables);
+        $this->tables = $tables;
         
     }
     
-    function setTables(...$tables) {
+    function attachTables(...$tables) {
         $this->tables = $tables;
     }
     
@@ -24,43 +22,41 @@ class SelectStatement {
     
     function mount(array $columns) {
         
-        if ($this->tables->count()) {
+        if (count($this->tables)) {
             return $this->mountWithAttachedTable($columns);
         }
         
         return $this->mountWithoutAttachedTable($columns);
     }
     
-    private function mountWithAttachTable($columns) {
+    private function mountWithAttachedTable($columns) {
         $mountedColumns = [];
         
         foreach($this->tables as $tableName) {
-        
             foreach($columns[$tableName] as $columnName => $alias) {
                 if (is_string($columnName)) {
                     array_push($mountedColumns, "$tableName.$columnName as $tableName.$alias");
                 } else {
-                    array_push($mountedColumns, "$tableName.$columnName");
+                    array_push($mountedColumns, "$tableName.$alias");
                 }
             }
-            
         }
         
-        return $mountedColumns;
+        return implode(", ", $mountedColumns);
     }
     
-    private function mountWithoutAttachTable($columns) {
+    private function mountWithoutAttachedTable($columns) {
         $mountedColumns = [];
             
         foreach($columns[$tableName] as $columnName => $alias) {
             if (is_string($columnName)) {
                 array_push($mountedColumns, "$columnName as $alias");
             } else {
-                array_push($mountedColumns, "$columnName");
+                array_push($mountedColumns, "$alias");
             }
         }
         
-        return $mountedColumns;
+        return implode(", ", $mountedColumns);
     }
     
 }

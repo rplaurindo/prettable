@@ -2,8 +2,6 @@
 
 namespace PReTTable\Helpers;
 
-use ArrayObject;
-
 class WhereClause {
     
     private $tables;
@@ -14,10 +12,18 @@ class WhereClause {
     
     function __construct(...$tables) {
         
-        $this->tables = new ArrayObject($tables);
+        $this->tables = $tables;
         $this->comparisonOperator = '=';
         $this->logicalOperator = 'AND';
         
+    }
+    
+    function attachTables(...$tables) {
+        $this->tables = $tables;
+    }
+    
+    function cleanTables() {
+        $this->tables = [];
     }
     
     function setComparisonOperator($operator) {
