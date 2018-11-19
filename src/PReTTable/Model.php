@@ -43,34 +43,30 @@ class Model extends AbstractModelPrototype {
         $this->model = Reflection::getDeclarationOf($modelName);
         $this->tableName = self::resolveTableName($modelName);
         
-        $this->containsSet = [];
-        $this->isContainedSet = [];
+        $this->containsSet = new ArrayObject();
+        $this->isContainedSet = new ArrayObject();
         
         $this->joins = new ArrayObject();
+//         $this->joins = [];
     }
     
     function contains($modelName, $relatedColumn) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
-        $this->containsSet[$modelName] = [];
-        
-        $this->containsSet[$modelName]['relatedColumn'] = $relatedColumn;
+        $this->containsSet->offsetSet($modelName, ['relatedColumn' => $relatedColumn]);
     }
     
     function containsThrough($modelName, $through) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         self::checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
         
-        $this->containsSet[$modelName] = [];
-        
-        $this->containsSet[$modelName]['associativeModel'] = $through;
+        $this->containsSet->offsetSet($modelName, ['associativeModel' => $through]);
     }
     
     function isContained($modelName, $relatedColumn) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
-        $this->isContainedSet[$modelName] = [];
-        $this->isContainedSet[$modelName]['relatedColumn'] = $relatedColumn;
+        $this->isContainedSet->offsetSet($modelName, ['relatedColumn' => $relatedColumn]);
     }
     
     function select($modelName) {
@@ -82,15 +78,17 @@ class Model extends AbstractModelPrototype {
         $clone->relatedModel = Reflection::getDeclarationOf($modelName);
         $clone->relatedTableName = self::resolveTableName($modelName);
         
-        if (array_key_exists($modelName, $clone->containsSet) ||
-            array_key_exists($modelName, $clone->isContainedSet)) {
+        if ($clone->containsSet->offsetExists($modelName) 
+            || $clone->isContainedSet->offsetExists($modelName)) {
                 
             $clone->select = self::mountColumnsStatement($modelName, true);
             $clone->from = $clone->relatedTableName;
             
-            if (array_key_exists($modelName, $clone->containsSet)) {
-                if (array_key_exists('associativeModel', $clone->containsSet[$modelName])) {
-                    $clone->associativeModelName = $clone->containsSet[$modelName]['associativeModel'];
+            if ($clone->containsSet->offsetExists($modelName)) {
+                if (array_key_exists('associativeModel', 
+                    $clone->containsSet->offsetGet($modelName))
+                    ) {
+                    $clone->associativeModelName = $clone->containsSet->offsetGet($modelName)['associativeModel'];
                     $clone->associativeModel = Reflection::getDeclarationOf($clone->associativeModelName);
                     
                     $clone->associativeTableName = self::resolveTableName($clone->associativeModelName);
@@ -102,7 +100,7 @@ class Model extends AbstractModelPrototype {
                     $clone->join($clone->modelName, $clone->model::getPrimaryKey());
                 }
             } else {
-                $clone->join($clone->modelName, $clone->isContainedSet[$modelName]['relatedColumn']);
+                $clone->join($clone->modelName, $clone->isContainedSet->offsetGet($modelName)['relatedColumn']);
             }
             
         }
@@ -116,14 +114,14 @@ class Model extends AbstractModelPrototype {
         $clone = $this->getClone();
 
         if (!$clone->joins->offsetExists($modelName)
-            && (array_key_exists($modelName, $clone->containsSet) 
-                || array_key_exists($modelName, $clone->isContainedSet))
+            && ($clone->containsSet->offsetExists($modelName) 
+                || $clone->isContainedSet->offsetExists($modelName))
             || $modelName == $clone->modelName
             ) {
             $clone->joins->offsetSet($modelName, $relatedColumn);
         }
         
-        return $clone;
+        return clone $clone;
     }
     
     function getRow($columnName, $value = '') {
@@ -167,8 +165,8 @@ class Model extends AbstractModelPrototype {
             foreach ($this->joins as $joinedModelName => $joinedColumnName) {
                 $joinedTableName = self::resolveTableName($joinedModelName);
             
-                if (array_key_exists($joinedModelName, $this->containsSet)) {
-                    if (array_key_exists('associativeModel', $this->containsSet[$joinedModelName])) {
+                if ($this->containsSet->offsetExists($joinedModelName)) {
+                    if (array_key_exists('associativeModel', $this->containsSet->offsetGet($joinedModelName))) {
                         $tableName = $this->associativeTableName;
                         $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);
                     } else {
@@ -176,9 +174,9 @@ class Model extends AbstractModelPrototype {
                         $columnName = $this->model::getPrimaryKey();
                     }
                 } else {
-                    if (array_key_exists($joinedModelName, $this->isContainedSet)) {
+                    if ($this->isContainedSet->offsetExists($joinedModelName)) {
                         $tableName = $this->tableName;
-                        $columnName = $this->isContainedSet[$joinedModelName]['relatedColumn'];
+                        $columnName = $this->isContainedSet->offsetGet($joinedModelName)['relatedColumn'];
                     } else if (array_key_exists($this->relatedModelName, $this->isContainedSet)) {
                         $tableName = $this->relatedTableName;
                         $columnName = $this->relatedModel::getPrimaryKey();
@@ -187,7 +185,7 @@ class Model extends AbstractModelPrototype {
                         $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);
                     } else {
                         $tableName = $this->relatedTableName;
-                        $columnName = $this->containsSet[$this->relatedModelName]['relatedColumn'];
+                        $columnName = $this->containsSet->offsetGet($this->relatedModelName)['relatedColumn'];
                     }
                 }
                 
@@ -215,17 +213,21 @@ class Model extends AbstractModelPrototype {
     }
     
     static function mountColumnsStatement($modelName, $attachTable = false) {
+        $selectStatement = new Helpers\SelectStatement();
+        
         $model = Reflection::getDeclarationOf($modelName);
+        
         if ($attachTable) {
             $tableName = self::resolveTableName($modelName);
-            return Helpers\SQL::mountColumnsStatement($model::getColumns(), $tableName);
+            $selectStatement->attachTables($tableName);
+            
+            return $selectStatement->mount([$tableName => $model::getColumns()]);
         }
         
-        return Helpers\SQL::mountColumnsStatement($model::getColumns());
+        return $selectStatement->mount($model::getColumns());
     }
     
     static function checkIfModelIs($modelName, ...$classes) {
-        
         $count = 0;
         
         foreach ($classes as $class) {
