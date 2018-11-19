@@ -23,13 +23,13 @@ class Model1 implements AbstractModel {
     }
     
     static function getPrimaryKey() {
-        return 'model1ID';
+        return 'ID_table1';
     }
     
     static function getColumns() {
         return [
-            'model1ID',
-            'column1' => 'column1Alias'
+            'ID_table1',
+            'column2' => 'column2Alias'
         ];
     }
     
@@ -42,9 +42,9 @@ class Model2 implements AbstractModel {
     function __construct() {
         $this->model = new Model(self::class);
         
-        $this->model->contains('Model1', 'table2_id');
+//         $this->model->contains('Model1', 'table2_id');
         
-//         $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
+        $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
 
 //         $this->model->contains('Model3', 'table3_column');
 //         $this->model->contains('Model4', 'table4_column');
@@ -159,8 +159,10 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
+$model2->select('Model1')->getMap();
+
 print_r($model2->select('Model1')->getMap());
-// print_r($model2->select('AssociativeModel'));
+// print_r($model2->select('AssociativeModel')->getMap());
 
 // print_r($model2
 //     ->join('Model3', 'table2_column')

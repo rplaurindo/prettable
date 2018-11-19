@@ -8,9 +8,15 @@ class Model extends AbstractModelPrototype {
     
     private $modelName;
     
+    private $tableName;
+    
     private $model;
     
-    private $tableName;
+    private $associativeModelName;
+    
+    private $associativeTableName;
+    
+    private $associativeModel;
     
     private $containsSet;
     
@@ -19,8 +25,6 @@ class Model extends AbstractModelPrototype {
     private $select;
     
     private $from;
-    
-//     private $joinsMap;
     
     private $joins;
     
@@ -37,7 +41,6 @@ class Model extends AbstractModelPrototype {
         $this->isContainedSet = [];
         
         $this->joins = new ArrayObject();
-//         $this->joinsMap = new ArrayObject();
     }
     
     function contains($modelName, $relatedColumn = '', $through = '') {
@@ -51,7 +54,7 @@ class Model extends AbstractModelPrototype {
             self::checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
             $this->containsSet[$modelName]['associativeModel'] = $through;
             
-            $this->contains($through);
+            $this->contains($through, $relatedColumn);
         }
     }
     
@@ -73,62 +76,45 @@ class Model extends AbstractModelPrototype {
     function select($modelName) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
-        $cloned = $this->getClone();
+        $clone = $this->getClone();
         
         $relatedModel = Reflection::getDeclarationOf($modelName);
         $relatedTableName = self::resolveTableName($modelName);
         
-        if (array_key_exists($modelName, $cloned->containsSet) ||
-            array_key_exists($modelName, $cloned->isContainedSet)) {
+        if (array_key_exists($modelName, $clone->containsSet) ||
+            array_key_exists($modelName, $clone->isContainedSet)) {
                 
-            $cloned->select = self::mountColumnsStatement($modelName, true);
-            $cloned->from = $relatedTableName;
+            $clone->select = self::mountColumnsStatement($modelName, true);
+            $clone->from = $relatedTableName;
             
-            if (array_key_exists($modelName, $cloned->containsSet)) {
-                if (array_key_exists('associativeModel', $cloned->containsSet[$modelName])) {
-                    $associativeModelName = $cloned->containsSet[$modelName]['associativeModel'];
-                    $associativeTableName = self::resolveTableName($associativeModelName);
+            if (array_key_exists($modelName, $clone->containsSet)) {
+                if (array_key_exists('associativeModel', $clone->containsSet[$modelName])) {
+                    $clone->associativeModelName = $clone->containsSet[$modelName]['associativeModel'];
+                    $clone->associativeModel = Reflection::getDeclarationOf($clone->associativeModelName);
                     
-                    $cloned->from = $associativeTableName;
+                    $clone->associativeTableName = self::resolveTableName($clone->associativeModelName);
+                    $clone->from = $clone->associativeTableName;
                     
-                    $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+                    $clone->join($clone->modelName, $clone->model::getPrimaryKey());
                     
-//                     $fk = $associativeself::getForeignKeyOf($cloned->modelName);
-                    
-//                     $cloned->join($cloned->tableName, $cloned->model::getPrimaryKey());
-
-//                     print_r($cloned);
-
-//                     var_dump($cloned);
-                    
-                    echo "\n\n";
-                    
-//                     array_push($map['joins'],
-//                         "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $associativeTableName.{$fk}");
-                    
-//                     $fk = $associativeself::getForeignKeyOf($modelName);
-                    
-//                     array_push($map['joins'],
-//                         "$relatedTableName ON $relatedTableName.{$relatedself::getPrimaryKey()} = $associativeTableName.{$fk}");
-
-//                     $cloned->join($relatedTableName, $relatedModel::getPrimaryKey());
+                    $clone->join($modelName, $relatedModel::getPrimaryKey());
                 } else {
                     if (is_subclass_of($modelName, __NAMESPACE__ . '\AbstractAssociativeModel')) {
 //                         $fk = $relatedself::getForeignKeyOf($this->modelName);
 //                         array_push($map['joins'],
 //                             "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.$fk");
                     } else {
-                        $cloned->join($modelName, $cloned->model::getPrimaryKey());
+                        $clone->join($modelName, $clone->model::getPrimaryKey());
+//                         $clone->join($modelName, $relatedModel::getPrimaryKey());
                     }
                 }
             } else {
-                if (array_key_exists('associativeModel', $cloned->isContainedSet[$modelName])) {
-                    $associativeModelName = $cloned->isContainedSet[$modelName]['associativeModel'];
+                if (array_key_exists('associativeModel', $clone->isContainedSet[$modelName])) {
+                    $associativeModelName = $clone->isContainedSet[$modelName]['associativeModel'];
+                    $this->associativeModel = Reflection::getDeclarationOf($associativeModelName);
                     $associativeTableName = self::resolveTableName($associativeModelName);
                     
-                    $cloned->from = $associativeTableName;
-                    
-                    $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+                    $clone->from = $associativeTableName;
                     
 //                     $fk = $this->isContainedSet[$associativeModelName]['relatedColumn'];
                     
@@ -154,46 +140,51 @@ class Model extends AbstractModelPrototype {
             
         }
         
-        return $cloned;
+        return $clone;
     }
     
     function join($modelName, $relatedColumn) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
-        $cloned = $this->getClone();
+        $clone = $this->getClone();
         
-        if (!in_array($modelName, $cloned->joins->getArrayCopy())
-            && (array_key_exists($modelName, $cloned->containsSet)
-                || array_key_exists($modelName, $cloned->isContainedSet))
-            ) {
-            $cloned->joins->offsetSet($modelName, $relatedColumn);
+//         if (!in_array($modelName, $clone->joins->getArrayCopy())
+//             && (array_key_exists($modelName, $clone->containsSet)
+//                 || array_key_exists($modelName, $clone->isContainedSet))
+//             ) {
+
+//         echo "model name: $modelName\n\n";
+//         echo "related column: $relatedColumn\n\n";
+
+        if (!$clone->joins->offsetExists($modelName)) {
+            $clone->joins->offsetSet($modelName, $relatedColumn);
         }
         
-        return $cloned;
+        return $clone;
     }
     
     function getRow($columnName, $value = '') {
-        $cloned = $this->getClone();
+        $clone = $this->getClone();
         
         if (count(func_get_args()) == 1) {
             $value = $column;
-            $column = $cloned->model::getPrimaryKey();
+            $column = $clone->model::getPrimaryKey();
         }
         
-        $cloned->select = self::mountColumnsStatement($cloned->modelName);
-        $cloned->from   = $cloned->tableName;
-        $cloned->where  = "$cloned->tableName.$columnName = '$value'";
+        $clone->select = self::mountColumnsStatement($clone->modelName);
+        $clone->from   = $clone->tableName;
+        $clone->where  = "$clone->tableName.$columnName = '$value'";
         
-        return $cloned;
+        return $clone;
     }
     
     function getAll() {
-        $cloned = $this->getClone();
+        $clone = $this->getClone();
         
-        $cloned->select = self::mountColumnsStatement($cloned->modelName);
-        $cloned->from   = $this->tableName;
+        $clone->select = self::mountColumnsStatement($clone->modelName);
+        $clone->from   = $this->tableName;
         
-        return $cloned;
+        return $clone;
     }
     
     function getMap() {
@@ -207,20 +198,31 @@ class Model extends AbstractModelPrototype {
             $map['from'] = $this->from;
         }
         
+//         print_r($this->joins);
+        
+//         print_r($this->isContainedSet);
+        
         if ($this->joins->count()) {
             $map['joins'] = [];
-            foreach ($this->joins as $modelName => $relatedColumn) {
-                $model = Reflection::getDeclarationOf($modelName);
-                $tableName = Model::resolveTableName($modelName);
+            foreach ($this->joins as $joinedModelName => $joinedColumnName) {
+                $joinedTableName = self::resolveTableName($joinedModelName);
                 
-                if (array_key_exists($modelName, $this->containsSet)) {
-                    $joinedModelColumn = $this->containsSet[$modelName]['relatedColumn'];
+                if (array_key_exists($joinedModelName, $this->containsSet)) {
+                    if (array_key_exists('associativeModel', $this->containsSet[$joinedModelName])) {
+                        $tableName = $this->associativeTableName;
+                        $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);
+                    } else {
+                        $joinedTableName = $this->tableName;
+                        $tableName = self::resolveTableName($joinedModelName);
+                        $columnName = $this->containsSet[$joinedModelName]['relatedColumn'];
+                    }
                 } else {
-                    $joinedModelColumn = $this->isContainedSet[$modelName]['relatedColumn'];
+                    $tableName = $this->associativeTableName;
+                    $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);;
                 }
                 
                 array_push($map['joins'],
-                    "$tableName ON $tableName.$joinedModelColumn = $this->tableName.$relatedColumn");
+                    "$joinedTableName ON $joinedTableName.$joinedColumnName = $tableName.$columnName");
             }
         }
         
@@ -264,7 +266,7 @@ class Model extends AbstractModelPrototype {
         
         if (!$count) {
             $classesAsText = implode(" or ", $classes);
-            throw new Exception("The model must be a $classesAsText}");
+            throw new Exception("The model must be a $classesAsText");
         }
         
     }
