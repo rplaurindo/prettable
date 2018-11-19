@@ -42,12 +42,14 @@ class Model2 implements AbstractModel {
     function __construct() {
         $this->model = new Model(self::class);
         
-        $this->model->contains('Model1', 'table2_id');
-//         $this->model->contains('Model1', 'table2_id', 'AssociativeModel');
-//         $this->model->contains('AssociativeModel', 'table2_id');
+//         $this->model->contains('Model1', 'table1_column');
+        
+//         $this->model->containsThrough('Model1', 'AssociativeModel');
+        
+        $this->model->contains('AssociativeModel', 'associative_table_column');
 
-        $this->model->contains('Model3', 'table2_column');
-        $this->model->contains('Model4', 'table2_column');
+//         $this->model->contains('Model3', 'table2_column');
+//         $this->model->contains('Model4', 'table2_column');
         
 //         self referencing
 //         $this->model->contains('Model2', 'table2_id');
@@ -151,8 +153,8 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-print_r($model2->select('Model1')->getMap());
-// print_r($model2->select('AssociativeModel')->getMap());
+// print_r($model2->select('Model1')->getMap());
+print_r($model2->select('AssociativeModel')->getMap());
 
 // print_r($model2
 //     ->select('Model1')

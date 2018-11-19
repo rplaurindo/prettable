@@ -49,19 +49,21 @@ class Model extends AbstractModelPrototype {
         $this->joins = new ArrayObject();
     }
     
-    function contains($modelName, $relatedColumn, $through = '') {
+    function contains($modelName, $relatedColumn) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
         $this->containsSet[$modelName] = [];
         
-        if (empty($through)) {
-            $this->containsSet[$modelName]['relatedColumn'] = $relatedColumn;
-        } else {
-            self::checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
-            $this->containsSet[$modelName]['associativeModel'] = $through;
-            
-            $this->contains($through, $relatedColumn);
-        }
+        $this->containsSet[$modelName]['relatedColumn'] = $relatedColumn;
+    }
+    
+    function containsThrough($modelName, $through) {
+        self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
+        self::checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
+        
+        $this->containsSet[$modelName] = [];
+        
+        $this->containsSet[$modelName]['associativeModel'] = $through;
     }
     
     function isContained($modelName, $relatedColumn) {
@@ -96,6 +98,8 @@ class Model extends AbstractModelPrototype {
                     
                     $clone->join($clone->modelName, $clone->model::getPrimaryKey());
                     $clone->join($clone->relatedModelName, $clone->relatedModel::getPrimaryKey());
+                    
+//                     $clone->join($clone->relatedModelName, $clone->containsSet[$clone->modelName]['relatedColumn']);
                 } else {
                     $clone->join($clone->modelName, $clone->model::getPrimaryKey());
                 }
