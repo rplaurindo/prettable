@@ -145,10 +145,7 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
     }
     
     static function getColumns() {
-        return [
-            'table1_id',
-            'table2_id'
-        ];
+        return array_values(self::$association);
     }
     
     static function getForeignKeyOf($modelName) {
@@ -159,10 +156,8 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-$model2->select('Model1')->getMap();
-
-print_r($model2->select('Model1')->getMap());
-// print_r($model2->select('AssociativeModel')->getMap());
+// print_r($model2->select('Model1')->getMap());
+print_r($model2->select('AssociativeModel')->getMap());
 
 // print_r($model2
 //     ->join('Model3', 'table2_column')

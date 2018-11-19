@@ -100,12 +100,9 @@ class Model extends AbstractModelPrototype {
                     $clone->join($modelName, $relatedModel::getPrimaryKey());
                 } else {
                     if (is_subclass_of($modelName, __NAMESPACE__ . '\AbstractAssociativeModel')) {
-//                         $fk = $relatedself::getForeignKeyOf($this->modelName);
-//                         array_push($map['joins'],
-//                             "$this->tableName ON $this->tableName.{$this->model::getPrimaryKey()} = $relatedTableName.$fk");
+                        $clone->join($modelName, $clone->model::getPrimaryKey());
                     } else {
                         $clone->join($modelName, $clone->model::getPrimaryKey());
-//                         $clone->join($modelName, $relatedModel::getPrimaryKey());
                     }
                 }
             } else {
