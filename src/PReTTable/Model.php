@@ -164,9 +164,6 @@ class Model extends AbstractModelPrototype {
         if ($this->joins->count()) {
             $map['joins'] = [];
             
-//             print_r($this->containsSet);
-            print_r($this->joins);
-            
             foreach ($this->joins as $joinedModelName => $joinedColumnName) {
                 $joinedTableName = self::resolveTableName($joinedModelName);
             
@@ -179,7 +176,10 @@ class Model extends AbstractModelPrototype {
                         $columnName = $this->model::getPrimaryKey();
                     }
                 } else {
-                    if (array_key_exists($this->relatedModelName, $this->isContainedSet)) {
+                    if (array_key_exists($joinedModelName, $this->isContainedSet)) {
+                        $tableName = $this->tableName;
+                        $columnName = $this->isContainedSet[$joinedModelName]['relatedColumn'];
+                    } else if (array_key_exists($this->relatedModelName, $this->isContainedSet)) {
                         $tableName = $this->relatedTableName;
                         $columnName = $this->relatedModel::getPrimaryKey();
                     } else if (isset($this->associativeModelName)) {

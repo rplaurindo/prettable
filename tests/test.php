@@ -44,8 +44,7 @@ class Model2 implements AbstractModel {
         
 //         $this->model->containsThrough('Model1', 'AssociativeModel');
 //         $this->model->contains('Model1', 'table1_column');
-//         $this->model->contains('Model1', 'table1_column');
-        $this->model->isContained('Model1', 'table1_column');
+        $this->model->isContained('Model1', 'table1_id');
         
 //         $this->model->contains('AssociativeModel', 'associative_table_column');
 //         $this->model->isContained('AssociativeModel', 'associative_table_column');
@@ -57,8 +56,8 @@ class Model2 implements AbstractModel {
 //         $this->model->contains('Model3', 'table3_column');
 //         $this->model->contains('Model4', 'table4_column');
 
-        $this->model->isContained('Model3', 'table3_column');
-        $this->model->isContained('Model4', 'table4_column');
+        $this->model->isContained('Model3', 'table3_id');
+        $this->model->isContained('Model4', 'table4_id');
         
 //         self referencing
 //         $this->model->contains('Model2', 'table2_id');
@@ -163,8 +162,13 @@ $model2 = new Model2();
 
 print_r($model2
     ->select('Model1')
-    ->join('Model3', 'table2_id')
-    ->join('Model4', 'table2_id')
+    
+//     ->join('Model3', 'table2_id')
+//     ->join('Model4', 'table2_id')
+    
+    ->join('Model3', Model3::getPrimaryKey())
+    ->join('Model4', Model4::getPrimaryKey())
+    
     ->getMap()
 );
 
