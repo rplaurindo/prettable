@@ -36,7 +36,7 @@ class WhereClause {
     
     function mount(array $params) {
         
-        if ($this->tables->count()) {
+        if (count($this->tables)) {
             return $this->mountWithAttachedTable($params);
         }
             
@@ -47,7 +47,7 @@ class WhereClause {
     private function mountWithAttachedTable(array $params) {
         $mountedColumns = [];
         
-        foreach ($his->tables as $tableName) {
+        foreach ($this->tables as $tableName) {
             foreach($params[$tableName] as $columnName => $value) {
                 if (gettype($value) == 'array') {
                     

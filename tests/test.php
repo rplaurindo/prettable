@@ -169,17 +169,17 @@ $model2 = new Model2();
 
 // print_r($model2->select('AssociativeModel')->getMap());
 
-print_r($model2
-    ->select('AssociativeModel')
+// print_r($model2
+//     ->select('AssociativeModel')
     
-//     ->join('Model3', 'table2_id')
-//     ->join('Model4', 'table2_id')
+// //     ->join('Model3', 'table2_id')
+// //     ->join('Model4', 'table2_id')
     
-    ->join('Model3', Model3::getPrimaryKey())
-    ->join('Model4', Model4::getPrimaryKey())
+//     ->join('Model3', Model3::getPrimaryKey())
+//     ->join('Model4', Model4::getPrimaryKey())
     
-    ->getMap()
-);
+//     ->getMap()
+// );
 
 // echo "\n\n";
 
@@ -190,26 +190,27 @@ print_r($model2
 // print_r($table2->getRow(1));
 // print_r($table2->getRow('column1', 1));
 
+use PReTTable\Helpers;
 
-// $whereClause = new Helpers\WhereClause('Model1', 'Model2');
-// print_r($whereClause->mountStatementFor(
-//     [
-//         'Model1' => [
-//             'col1OfModel1' => [
-//                 'val1',
-//                 'val2'
-//             ],
-//             'col2OfModel1' => 'val3'
-//         ],
-//         'Model2' => [
-//             'col1OfModel2' => 'val1',
-//             'col2OfModel2' => 'val2'
-//         ]
-//     ]
-//     ));
+$whereClause = new Helpers\WhereClause('table1', 'table2');
+print_r($whereClause->mount(
+    [
+        'table1' => [
+            'col1OfModel1' => [
+                'val1',
+                'val2'
+            ],
+            'col2OfModel1' => 'val3'
+        ],
+        'table2' => [
+            'col1OfModel2' => 'val1',
+            'col2OfModel2' => 'val2'
+        ]
+    ]
+));
 
 // $whereClause = new Helpers\WhereClause();
-// print_r($whereClause->mountStatementFor(
+// print_r($whereClause->mount(
 //     [
 //         'col1' => [
 //             'val1',
@@ -217,4 +218,4 @@ print_r($model2
 //         ],
 //         'col2' => 'val3'
 //     ]
-//     ));
+// ));
