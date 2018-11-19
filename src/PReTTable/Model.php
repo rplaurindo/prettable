@@ -95,10 +95,9 @@ class Model extends AbstractModelPrototype {
                     $clone->from = $clone->associativeTableName;
                     
                     $clone->join($clone->modelName, $clone->model::getPrimaryKey());
-                    
-                    $clone->join($modelName, $clone->relatedModel::getPrimaryKey());
+                    $clone->join($clone->relatedModelName, $clone->relatedModel::getPrimaryKey());
                 } else {
-                    $clone->join($modelName, $clone->model::getPrimaryKey());
+                    $clone->join($clone->modelName, $clone->model::getPrimaryKey());
                 }
             } else {
                 $clone->join($clone->modelName, $clone->isContainedSet[$modelName]['relatedColumn']);
@@ -156,19 +155,22 @@ class Model extends AbstractModelPrototype {
             $map['from'] = $this->from;
         }
         
+//         print_r($this->joins);
+        
         if ($this->joins->count()) {
             $map['joins'] = [];
             foreach ($this->joins as $joinedModelName => $joinedColumnName) {
                 $joinedTableName = self::resolveTableName($joinedModelName);
+                
+//                 print_r("$joinedModelName\n");
                 
                 if (array_key_exists($joinedModelName, $this->containsSet)) {
                     if (array_key_exists('associativeModel', $this->containsSet[$joinedModelName])) {
                         $tableName = $this->associativeTableName;
                         $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);
                     } else {
-//                         print_r('entrou aqui');
-                        $joinedTableName = $this->tableName;
-                        $tableName = self::resolveTableName($joinedModelName);
+//                         checked
+                        $tableName = $this->tableName;
                         $columnName = $this->containsSet[$joinedModelName]['relatedColumn'];
                     }
                 } else {
@@ -178,6 +180,11 @@ class Model extends AbstractModelPrototype {
                     } else if (isset($this->associativeModelName)) {
                         $tableName = $this->associativeTableName;
                         $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);
+                    } else {
+//                         checked
+                        $joinedTableName = self::resolveTableName($joinedModelName);
+                        $tableName = $this->relatedTableName;
+                        $columnName = $this->containsSet[$this->relatedModelName]['relatedColumn'];
                     }
                 }
                 
