@@ -69,7 +69,7 @@ class Model extends AbstractModelPrototype {
         $this->isContainedSet->offsetSet($modelName, ['relatedColumn' => $relatedColumn]);
     }
     
-    function select($modelName) {
+    function select($modelName, $id = null) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
         $clone = $this->getClone();
@@ -81,7 +81,9 @@ class Model extends AbstractModelPrototype {
         if ($clone->containsSet->offsetExists($modelName) 
             || $clone->isContainedSet->offsetExists($modelName)) {
                 
-            $clone->select = self::mountColumnsStatement($modelName, true);
+            $selectStatement = new SelectStatement($modelName);
+            $clone->select = $selectStatement->mount(true);
+            
             $clone->from = $clone->relatedTableName;
             
             if ($clone->containsSet->offsetExists($modelName)) {
@@ -132,7 +134,9 @@ class Model extends AbstractModelPrototype {
             $column = $clone->model::getPrimaryKey();
         }
         
-        $clone->select = self::mountColumnsStatement($clone->modelName);
+        $selectStatement = new SelectStatement($clone->modelName);
+        $clone->select = $selectStatement->mount();
+        
         $clone->from   = $clone->tableName;
         $clone->where  = "$clone->tableName.$columnName = '$value'";
         
@@ -142,7 +146,8 @@ class Model extends AbstractModelPrototype {
     function getAll() {
         $clone = $this->getClone();
         
-        $clone->select = self::mountColumnsStatement($clone->modelName);
+        $selectStatement = new SelectStatement($clone->modelName);
+        $clone->select = $selectStatement->mount();
         $clone->from   = $this->tableName;
         
         return $clone;
@@ -210,21 +215,6 @@ class Model extends AbstractModelPrototype {
         }
         
         return $tableName;
-    }
-    
-    static function mountColumnsStatement($modelName, $attachTable = false) {
-        $selectStatement = new Helpers\SelectStatement();
-        
-        $model = Reflection::getDeclarationOf($modelName);
-        
-        if ($attachTable) {
-            $tableName = self::resolveTableName($modelName);
-            $selectStatement->attachTables($tableName);
-            
-            return $selectStatement->mount([$tableName => $model::getColumns()]);
-        }
-        
-        return $selectStatement->mount($model::getColumns());
     }
     
     static function checkIfModelIs($modelName, ...$classes) {

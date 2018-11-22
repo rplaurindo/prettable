@@ -40,19 +40,19 @@ class Model2 implements AbstractModel {
     function __construct() {
         $this->model = new Model(self::class);
         
-//         $this->model->containsThrough('Model1', 'AssociativeModel');
+        $this->model->containsThrough('Model1', 'AssociativeModel');
 //         $this->model->contains('Model1', 'table1_column');
 //         $this->model->isContained('Model1', 'table1_id');
         
 //         $this->model->contains('AssociativeModel', 'associative_table_column');
-        $this->model->isContained('AssociativeModel', 'associative_table_column');
+//         $this->model->isContained('AssociativeModel', 'associative_table_column');
 
 //         to make join
 //         $this->model->contains('Model3', 'table2_column');
 //         $this->model->contains('Model4', 'table2_column');
 
-        $this->model->isContained('Model3', 'table3_id');
-        $this->model->isContained('Model4', 'table4_id');
+//         $this->model->isContained('Model3', 'table3_id');
+//         $this->model->isContained('Model4', 'table4_id');
         
 //         self referencing
 //         $this->model->contains('Model2', 'table2_id');
@@ -73,13 +73,21 @@ class Model2 implements AbstractModel {
             'column1' => 'column1Alias'
         ];
     }
-    
+//     dar a oportunidade de passar um id para cá para montar a clausula where
     function select($tableName) {
         return $this->model->select($tableName);
     }
 
     function join($modelName, $relatedColumn) {
         return $this->model->join($modelName, $relatedColumn);
+    }
+    
+    function getAll() {
+        return $this->model->getAll();
+    }
+    
+    function getRow($columnName, $value = '') {
+        return $this->model->getRow($columnName, $value);
     }
     
 }
@@ -153,7 +161,7 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-// print_r($model2->select('Model1')->getMap());
+print_r($model2->select('Model1')->getMap());
 
 // print_r($model2
 //     ->select('Model1')
@@ -185,29 +193,29 @@ $model2 = new Model2();
 
 // print_r($model2->select('Model1'));
 
-// print_r($table2->getAll());
+// print_r($model2->getAll()->getMap());
 
-// print_r($table2->getRow(1));
-// print_r($table2->getRow('column1', 1));
+// print_r($model2->getRow(1)->getMap());
+// print_r($model2->getRow('column1', 1)->getMap());
 
 use PReTTable\Helpers;
 
 $whereClause = new Helpers\WhereClause('table1', 'table2');
-print_r($whereClause->mount(
-    [
-        'table1' => [
-            'col1OfModel1' => [
-                'val1',
-                'val2'
-            ],
-            'col2OfModel1' => 'val3'
-        ],
-        'table2' => [
-            'col1OfModel2' => 'val1',
-            'col2OfModel2' => 'val2'
-        ]
-    ]
-));
+// print_r($whereClause->mount(
+//     [
+//         'table1' => [
+//             'col1OfModel1' => [
+//                 'val1',
+//                 'val2'
+//             ],
+//             'col2OfModel1' => 'val3'
+//         ],
+//         'table2' => [
+//             'col1OfModel2' => 'val1',
+//             'col2OfModel2' => 'val2'
+//         ]
+//     ]
+// ));
 
 // $whereClause = new Helpers\WhereClause();
 // print_r($whereClause->mount(
