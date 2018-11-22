@@ -161,7 +161,7 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-print_r($model2->select('Model1')->getMap());
+// print_r($model2->select('Model1')->getMap());
 
 // print_r($model2
 //     ->select('Model1')
@@ -227,3 +227,8 @@ $whereClause = new Helpers\WhereClause('table1', 'table2');
 //         'col2' => 'val3'
 //     ]
 // ));
+
+use PReTTable\SelectStatement;
+
+$selectStatement = new SelectStatement(Model5::class);
+$selectStatement->mount();
