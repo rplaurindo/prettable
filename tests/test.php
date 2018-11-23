@@ -74,8 +74,8 @@ class Model2 implements AbstractModel {
         ];
     }
 //     dar a oportunidade de passar um id para cá para montar a clausula where
-    function select($tableName) {
-        return $this->model->select($tableName);
+    function read($tableName, $id='') {
+        return $this->model->read($tableName, $id);
     }
 
     function join($modelName, $relatedColumn) {
@@ -161,7 +161,7 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-// print_r($model2->select('Model1')->getMap());
+print_r($model2->read('Model1')->getMap());
 
 // print_r($model2
 //     ->select('Model1')
@@ -231,4 +231,4 @@ $whereClause = new Helpers\WhereClause('table1', 'table2');
 use PReTTable\SelectStatement;
 
 $selectStatement = new SelectStatement(Model5::class);
-$selectStatement->mount();
+// $selectStatement->mount();

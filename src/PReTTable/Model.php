@@ -58,7 +58,6 @@ class Model extends AbstractModelPrototype {
     
     function containsThrough($modelName, $through) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
-        self::checkIfModelIs($through, __NAMESPACE__ . '\AbstractAssociativeModel');
         
         $this->containsSet->offsetSet($modelName, ['associativeModel' => $through]);
     }
@@ -69,7 +68,7 @@ class Model extends AbstractModelPrototype {
         $this->isContainedSet->offsetSet($modelName, ['relatedColumn' => $relatedColumn]);
     }
     
-    function select($modelName, $id = null) {
+    function read($modelName, $id = null) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
         $clone = $this->getClone();
