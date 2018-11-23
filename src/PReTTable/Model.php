@@ -198,6 +198,10 @@ class Model extends AbstractModelPrototype {
             }
         }
         
+        if (isset($this->where)) {
+            $map['where'] = $this->where;
+        }
+        
         return $map;
     }
     
