@@ -175,7 +175,7 @@ $model2 = new Model2();
 // print_r($model2->read('Model1')->getMap());
 
 // print_r($model2
-//     ->select('Model1')
+//     ->read('Model1')
     
 //     ->join('Model3', 'table2_id')
 //     ->join('Model4', 'table2_id')
@@ -186,10 +186,10 @@ $model2 = new Model2();
 //     ->getMap()
 // );
 
-// print_r($model2->select('AssociativeModel')->getMap());
+// print_r($model2->read('AssociativeModel')->getMap());
 
 // print_r($model2
-//     ->select('AssociativeModel')
+//     ->read('AssociativeModel')
     
 // //     ->join('Model3', 'table2_id')
 // //     ->join('Model4', 'table2_id')

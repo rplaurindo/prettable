@@ -136,7 +136,6 @@ class Model extends AbstractModelPrototype {
     function getRow($columnName, $value = '') {
         $clone = $this->getClone();
         
-//         func_get_args()
         if (empty($value)) {
             $value = $columnName;
             $columnName = $clone->model::getPrimaryKey();
@@ -154,6 +153,7 @@ class Model extends AbstractModelPrototype {
     function getAll() {
         $clone = $this->getClone();
         
+//         func_get_args()
         $selectStatement = new SelectStatement($clone->modelName);
         $clone->select = $selectStatement->mount();
         $clone->from   = $this->tableName;
