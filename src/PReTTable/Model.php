@@ -102,6 +102,12 @@ class Model extends AbstractModelPrototype {
                     $clone->join($clone->modelName, $clone->model::getPrimaryKey());
                     $clone->join($modelName, $clone->relatedModel::getPrimaryKey());
                 } else {
+                    $relatedColumn = $clone->containsSet->offsetGet($modelName)['relatedColumn'];
+                    
+                    if (isset($id)) {
+                        $clone->where = "$clone->relatedTableName.$relatedColumn = $id";
+                    }
+                    
                     $clone->join($clone->modelName, $clone->model::getPrimaryKey());
                 }
             } else {

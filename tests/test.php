@@ -41,8 +41,8 @@ class Model2 implements AbstractModel {
         $this->model = new Model(self::class);
         
 //         $this->model->containsThrough('Model1', 'AssociativeModel');
-//         $this->model->contains('Model1', 'table1_column');
-        $this->model->isContained('Model1', 'table1_id');
+        $this->model->contains('Model1', 'table2_id');
+//         $this->model->isContained('Model1', 'table1_id');
         
 //         $this->model->contains('AssociativeModel', 'associative_table_column');
 //         $this->model->isContained('AssociativeModel', 'associative_table_column');
