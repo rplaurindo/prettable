@@ -91,7 +91,7 @@ class Model extends AbstractModelPrototype {
             
             if ($clone->containsSet->offsetExists($modelName)) {
                 if (array_key_exists('associativeModel', 
-                    $clone->containsSet->offsetGet($modelName))
+                        $clone->containsSet->offsetGet($modelName))
                     ) {
                     $clone->associativeModelName = $clone->containsSet->offsetGet($modelName)['associativeModel'];
                     $clone->associativeModel = Reflection::getDeclarationOf($clone->associativeModelName);
@@ -105,13 +105,14 @@ class Model extends AbstractModelPrototype {
                     $clone->join($clone->modelName, $clone->model::getPrimaryKey());
                 }
             } else {
-                $clone->join($clone->modelName, $clone->isContainedSet->offsetGet($modelName)['relatedColumn']);
+                $relatedColumn = $clone->isContainedSet->offsetGet($modelName)['relatedColumn'];
+                
+                if (isset($id)) {
+                    $clone->where = "$clone->tableName.$relatedColumn = $id";
+                }
+                
+                $clone->join($clone->modelName, $relatedColumn);
             }
-            
-        }
-        
-        if (isset($id)) {
-            
         }
         
         return $clone;
@@ -133,7 +134,7 @@ class Model extends AbstractModelPrototype {
         return clone $clone;
     }
     
-    function getRow($columnName, $value = '') {
+    function getRow($columnName, $value = null) {
         $clone = $this->getClone();
         
         if (empty($value)) {

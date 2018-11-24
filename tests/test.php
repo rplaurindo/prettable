@@ -40,9 +40,9 @@ class Model2 implements AbstractModel {
     function __construct() {
         $this->model = new Model(self::class);
         
-        $this->model->containsThrough('Model1', 'AssociativeModel');
+//         $this->model->containsThrough('Model1', 'AssociativeModel');
 //         $this->model->contains('Model1', 'table1_column');
-//         $this->model->isContained('Model1', 'table1_id');
+        $this->model->isContained('Model1', 'table1_id');
         
 //         $this->model->contains('AssociativeModel', 'associative_table_column');
 //         $this->model->isContained('AssociativeModel', 'associative_table_column');
@@ -173,6 +173,7 @@ $model2 = new Model2();
 // )->getMap());
 
 // print_r($model2->read('Model1')->getMap());
+print_r($model2->read('Model1', 1)->getMap());
 
 // print_r($model2
 //     ->read('Model1')
@@ -205,7 +206,7 @@ $model2 = new Model2();
 // print_r($model2->getAll()->getMap());
 
 // print_r($model2->getRow(1)->getMap());
-print_r($model2->getRow('column', 1)->getMap());
+// print_r($model2->getRow('column', 1)->getMap());
 
 use PReTTable\Helpers;
 
