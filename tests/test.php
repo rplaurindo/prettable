@@ -90,6 +90,10 @@ class Model2 implements AbstractModel {
         return $this->model->getRow($columnName, $value);
     }
     
+    function create($attributes) {
+        return $this->model->create($attributes);
+    }
+    
 }
 
 class Model3 implements AbstractModel {
@@ -161,7 +165,14 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-print_r($model2->read('Model1')->getMap());
+print_r($model2->create(
+    [
+        'column1' => 'value1',
+        'column2' => 'value2'
+    ]
+)->getMap());
+
+// print_r($model2->read('Model1')->getMap());
 
 // print_r($model2
 //     ->select('Model1')

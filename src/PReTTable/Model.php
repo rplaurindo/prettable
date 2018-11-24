@@ -36,6 +36,10 @@ class Model extends AbstractModelPrototype {
     
     private $where;
     
+    private $insertInto;
+    
+    private $values;
+    
     function __construct($modelName) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
@@ -106,6 +110,10 @@ class Model extends AbstractModelPrototype {
             
         }
         
+        if (isset($id)) {
+            
+        }
+        
         return $clone;
     }
     
@@ -150,6 +158,24 @@ class Model extends AbstractModelPrototype {
         $clone->from   = $this->tableName;
         
         return $clone;
+    }
+    
+    function create(array $attributes) {
+        $clone = $this->getClone();
+        
+        $insertIntoStatement = new InsertIntoStatement($clone->modelName, $attributes);
+        $clone->insertInto = $insertIntoStatement->getInsertIntoStatement();
+        $clone->values = $insertIntoStatement->getValues();
+        
+        return $clone;
+    }
+    
+    function update(array $attrs) {
+        
+    }
+    
+    function updateAssociation($associativeModelName, array $attributes) {
+        
     }
     
     function getMap() {
@@ -200,6 +226,14 @@ class Model extends AbstractModelPrototype {
         
         if (isset($this->where)) {
             $map['where'] = $this->where;
+        }
+        
+        if (isset($this->insertInto)) {
+            $map['insertInto'] = $this->insertInto;
+        }
+        
+        if (isset($this->values)) {
+            $map['values'] = $this->values;
         }
         
         return $map;
