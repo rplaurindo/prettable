@@ -165,12 +165,12 @@ class AssociativeModel implements AbstractModel, AbstractAssociativeModel {
 
 $model2 = new Model2();
 
-print_r($model2->create(
-    [
-        'column1' => 'value1',
-        'column2' => 'value2'
-    ]
-)->getMap());
+// print_r($model2->create(
+//     [
+//         'column1' => 'value1',
+//         'column2' => 'value2'
+//     ]
+// )->getMap());
 
 // print_r($model2->read('Model1')->getMap());
 
@@ -202,12 +202,10 @@ print_r($model2->create(
 
 // echo "\n\n";
 
-// print_r($model2->select('Model1'));
-
 // print_r($model2->getAll()->getMap());
 
 // print_r($model2->getRow(1)->getMap());
-// print_r($model2->getRow('column1', 1)->getMap());
+print_r($model2->getRow('column', 1)->getMap());
 
 use PReTTable\Helpers;
 

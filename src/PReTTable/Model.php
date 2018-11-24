@@ -136,9 +136,10 @@ class Model extends AbstractModelPrototype {
     function getRow($columnName, $value = '') {
         $clone = $this->getClone();
         
-        if (count(func_get_args()) == 1) {
-            $value = $column;
-            $column = $clone->model::getPrimaryKey();
+//         func_get_args()
+        if (empty($value)) {
+            $value = $columnName;
+            $columnName = $clone->model::getPrimaryKey();
         }
         
         $selectStatement = new SelectStatement($clone->modelName);
@@ -170,11 +171,11 @@ class Model extends AbstractModelPrototype {
         return $clone;
     }
     
-    function update(array $attrs) {
+    function update($id, array $attrs) {
         
     }
     
-    function updateAssociation($associativeModelName, array $attributes) {
+    function updateAssociation($id, $associativeModelName, array $attributes) {
         
     }
     
