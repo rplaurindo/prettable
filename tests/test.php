@@ -8,7 +8,7 @@ require 'autoload.php';
 
 use PReTTable\AbstractModel;
 use PReTTable\AbstractAssociativeModel;
-use PReTTable\Model;
+use PReTTable\Query;
 
 class Model1 implements AbstractModel {
     
@@ -35,28 +35,28 @@ class Model1 implements AbstractModel {
 
 class Model2 implements AbstractModel {
     
-    private $model;
+    private $query;
     
     function __construct() {
-        $this->model = new Model(self::class);
+        $this->query = new Query(self::class);
         
-//         $this->model->containsThrough('Model1', 'AssociativeModel');
-        $this->model->contains('Model1', 'table2_id');
-//         $this->model->isContained('Model1', 'table1_id');
+//         $this->query->containsThrough('Model1', 'AssociativeModel');
+        $this->query->contains('Model1', 'table2_id');
+//         $this->query->isContained('Model1', 'table1_id');
         
-//         $this->model->contains('AssociativeModel', 'associative_table_column');
-//         $this->model->isContained('AssociativeModel', 'associative_table_column');
+//         $this->query->contains('AssociativeModel', 'associative_table_column');
+//         $this->query->isContained('AssociativeModel', 'associative_table_column');
 
 //         to make join
-//         $this->model->contains('Model3', 'table2_column');
-//         $this->model->contains('Model4', 'table2_column');
+//         $this->query->contains('Model3', 'table2_column');
+//         $this->query->contains('Model4', 'table2_column');
 
-//         $this->model->isContained('Model3', 'table3_id');
-//         $this->model->isContained('Model4', 'table4_id');
+//         $this->query->isContained('Model3', 'table3_id');
+//         $this->query->isContained('Model4', 'table4_id');
         
 //         self referencing
-//         $this->model->contains('Model2', 'table2_id');
-//         $this->model->isContained('Model2', 'table2_id');
+//         $this->query->contains('Model2', 'table2_id');
+//         $this->query->isContained('Model2', 'table2_id');
     }
     
     static function getTableName() {
@@ -75,28 +75,32 @@ class Model2 implements AbstractModel {
     }
     
     function create(array $attributes) {
-        return $this->model->create($attributes);
+        return $this->query->insert($attributes);
     }
     
 //     dar a oportunidade de passar um id para cá para montar a clausula where
     function read($tableName, $id='') {
-        return $this->model->read($tableName, $id);
+        return $this->query->select($tableName, $id);
     }
     
     function update($id, array $attributes) {
-        return $this->model->update($id, $attributes);
+        return $this->query->update($id, $attributes);
+    }
+    
+    function delete($columnName, ...$values) {
+        return $this->query->delete($columnName, ...$values);
     }
 
     function join($modelName, $relatedColumn) {
-        return $this->model->join($modelName, $relatedColumn);
+        return $this->query->join($modelName, $relatedColumn);
     }
     
     function getAll() {
-        return $this->model->getAll();
+        return $this->query->getAll();
     }
     
     function getRow($columnName, $value = '') {
-        return $this->model->getRow($columnName, $value);
+        return $this->query->getRow($columnName, $value);
     }
     
 }
@@ -177,12 +181,14 @@ $model2 = new Model2();
 //     ]
 // )->getMap());
 
-print_r($model2->update(1,
-    [
-        'column1' => 'value1',
-        'column2' => 'value2'
-    ]
-)->getMap());
+// print_r($model2->update(1,
+//     [
+//         'column1' => 'value1',
+//         'column2' => 'value2'
+//     ]
+// )->getMap());
+
+print_r($model2->delete('column', 1, 2)->getMap());
 
 // print_r($model2->read('Model1')->getMap());
 // print_r($model2->read('Model1', 1)->getMap());

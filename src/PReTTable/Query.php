@@ -4,7 +4,7 @@ namespace PReTTable;
 
 use Exception, ArrayObject;
 
-class Model extends AbstractModelPrototype {
+class Query extends AbstractQueryPrototype {
     
     private $modelName;
     
@@ -46,6 +46,8 @@ class Model extends AbstractModelPrototype {
     
     private $set;
     
+    private $deleteFrom;
+    
     function __construct($modelName) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
@@ -79,7 +81,7 @@ class Model extends AbstractModelPrototype {
         $this->isContainedSet->offsetSet($modelName, ['relatedColumn' => $relatedColumn]);
     }
     
-    function read($modelName, $primaryKeyValue = null) {
+    function select($modelName, $primaryKeyValue = null) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
         $clone = $this->getClone();
@@ -175,7 +177,7 @@ class Model extends AbstractModelPrototype {
         return $clone;
     }
     
-    function create(array $attributes) {
+    function insert(array $attributes) {
         $clone = $this->getClone();
         
         $insertIntoStatement = new InsertIntoStatement($clone->modelName, $attributes);
@@ -198,6 +200,14 @@ class Model extends AbstractModelPrototype {
     
     function updateAssociation($primaryKeyValue, $associativeModelName, array $attributes) {
         
+    }
+    
+    function delete($columnName, ...$values) {
+        $clone = $this->getClone();
+        
+        $updateStatement = new DeleteStatement($modelName, $columnName, ...$values);
+        
+        return $clone;
     }
     
     function getMap() {
@@ -260,6 +270,10 @@ class Model extends AbstractModelPrototype {
         
         if (isset($this->set)) {
             $map['set'] = $this->set;
+        }
+        
+        if (isset($this->deleteFrom)) {
+            $map['deleteFrom'] = $this->deleteFrom;
         }
         
         if (isset($this->where)) {

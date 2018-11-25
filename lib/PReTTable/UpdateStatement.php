@@ -11,9 +11,9 @@ class UpdateStatement {
     private $whereStatement;
     
     function __construct($modelName, $primaryKeyValue, array $attributes) {
-        Model::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
+        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
-        $tableName = Model::resolveTableName($modelName);
+        $tableName = Query::resolveTableName($modelName);
         $model = Reflection::getDeclarationOf($modelName);
         
         $this->updateStatement = $tableName;
@@ -40,6 +40,7 @@ class UpdateStatement {
         $mounted = [];
         
         foreach($attributes as $columnName => $value) {
+//             if it's the case, test if it's string to put single quotation marks
             array_push($mounted, "$columnName = $value");
         }
         

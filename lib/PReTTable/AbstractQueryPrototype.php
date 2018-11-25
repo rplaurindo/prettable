@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-abstract class AbstractModelPrototype {
+abstract class AbstractQueryPrototype {
     
     protected abstract function getClone();
     
