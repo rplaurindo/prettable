@@ -6,7 +6,7 @@ class DeleteStatement {
     
     private $deleteFromStatement;
     
-    private $whereStatement;
+    private $whereClauseStatement;
     
     function __construct($modelName, $columnName, ...$values) {
         Query::checkIfModelIs($modelName, __NAMESPACE__ . '\GeneralAbstractModel');
@@ -14,15 +14,16 @@ class DeleteStatement {
         $tableName = Query::resolveTableName($modelName);
         $this->deleteFromStatement = $tableName;
         
-        $this->mountSet($attributes);
+        $whereClause = new Helpers\WhereClause();
+        $this->whereClauseStatement = $whereClause->mount([$columnName => $values]);
     }
     
     function getDeleteFromStatement() {
         return $this->deleteFromStatement;
     }
     
-    function getWhereStatement() {
-        return $this->whereStatement;
+    function getWhereClauseStatement() {
+        return $this->whereClauseStatement;
     }
     
 }

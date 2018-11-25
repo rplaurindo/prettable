@@ -36,7 +36,7 @@ class Query extends AbstractQueryPrototype {
     
     private $joins;
     
-    private $where;
+    private $whereClause;
     
     private $insertInto;
     
@@ -114,7 +114,7 @@ class Query extends AbstractQueryPrototype {
                     $relatedColumn = $clone->containsSet->offsetGet($modelName)['relatedColumn'];
                     
                     if (isset($primaryKeyValue)) {
-                        $clone->where = "$clone->relatedTableName.$relatedColumn = $primaryKeyValue";
+                        $clone->whereClause = "$clone->relatedTableName.$relatedColumn = $primaryKeyValue";
                     }
                     
                     $clone->join($clone->modelName, $clone->primaryKey);
@@ -123,7 +123,7 @@ class Query extends AbstractQueryPrototype {
                 $relatedColumn = $clone->isContainedSet->offsetGet($modelName)['relatedColumn'];
                 
                 if (isset($primaryKeyValue)) {
-                    $clone->where = "$clone->tableName.$relatedColumn = $primaryKeyValue";
+                    $clone->whereClause = "$clone->tableName.$relatedColumn = $primaryKeyValue";
                 }
                 
                 $clone->join($clone->modelName, $relatedColumn);
@@ -161,7 +161,7 @@ class Query extends AbstractQueryPrototype {
         $clone->select = $selectStatement->mount();
         
         $clone->from   = $clone->tableName;
-        $clone->where  = "$clone->tableName.$columnName = '$value'";
+        $clone->whereClause  = "$clone->tableName.$columnName = '$value'";
         
         return $clone;
     }
@@ -193,7 +193,7 @@ class Query extends AbstractQueryPrototype {
         $updateStatement = new UpdateStatement($clone->modelName, $primaryKeyValue, $attributes);
         $clone->update = $updateStatement->getUpdateStatement();
         $clone->set = $updateStatement->getSetStatement();
-        $clone->where = $updateStatement->getWhereStatement();
+        $clone->whereClause = $updateStatement->getWhereStatement();
         
         return $clone;
     }
@@ -205,7 +205,9 @@ class Query extends AbstractQueryPrototype {
     function delete($columnName, ...$values) {
         $clone = $this->getClone();
         
-        $updateStatement = new DeleteStatement($modelName, $columnName, ...$values);
+        $deleteStatement = new DeleteStatement($clone->modelName, $columnName, ...$values);
+        $clone->deleteFrom = $deleteStatement->getDeleteFromStatement();
+        $clone->whereClause = $deleteStatement->getWhereClauseStatement();
         
         return $clone;
     }
@@ -276,8 +278,8 @@ class Query extends AbstractQueryPrototype {
             $map['deleteFrom'] = $this->deleteFrom;
         }
         
-        if (isset($this->where)) {
-            $map['where'] = $this->where;
+        if (isset($this->whereClause)) {
+            $map['where'] = $this->whereClause;
         }
         
         return $map;
