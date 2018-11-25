@@ -73,9 +73,18 @@ class Model2 implements AbstractModel {
             'column1' => 'column1Alias'
         ];
     }
+    
+    function create(array $attributes) {
+        return $this->model->create($attributes);
+    }
+    
 //     dar a oportunidade de passar um id para cá para montar a clausula where
     function read($tableName, $id='') {
         return $this->model->read($tableName, $id);
+    }
+    
+    function update($id, array $attributes) {
+        return $this->model->update($id, $attributes);
     }
 
     function join($modelName, $relatedColumn) {
@@ -88,10 +97,6 @@ class Model2 implements AbstractModel {
     
     function getRow($columnName, $value = '') {
         return $this->model->getRow($columnName, $value);
-    }
-    
-    function create($attributes) {
-        return $this->model->create($attributes);
     }
     
 }
@@ -172,8 +177,15 @@ $model2 = new Model2();
 //     ]
 // )->getMap());
 
+print_r($model2->update(1,
+    [
+        'column1' => 'value1',
+        'column2' => 'value2'
+    ]
+)->getMap());
+
 // print_r($model2->read('Model1')->getMap());
-print_r($model2->read('Model1', 1)->getMap());
+// print_r($model2->read('Model1', 1)->getMap());
 
 // print_r($model2
 //     ->read('Model1')

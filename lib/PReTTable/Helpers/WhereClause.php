@@ -45,7 +45,7 @@ class WhereClause {
     }
     
     private function mountWithAttachedTable(array $params) {
-        $mountedColumns = [];
+        $mounted = [];
         
         foreach ($this->tables as $tableName) {
             foreach($params[$tableName] as $columnName => $value) {
@@ -59,27 +59,27 @@ class WhereClause {
                         $statement .= " OR $tableName.$columnName $this->comparisonOperator '$v'";
                     }
                     
-                    if (count($mountedColumns)) {
-                        array_push($mountedColumns, " $this->logicalOperator ($statement)");
+                    if (count($mounted)) {
+                        array_push($mounted, " $this->logicalOperator ($statement)");
                     } else {
-                        array_push($mountedColumns, "($statement)");
+                        array_push($mounted, "($statement)");
                     }
                 } else {
-                    if (count($mountedColumns)) {
-                        array_push($mountedColumns, " $this->logicalOperator $tableName.$columnName $this->comparisonOperator '$value'");
+                    if (count($mounted)) {
+                        array_push($mounted, " $this->logicalOperator $tableName.$columnName $this->comparisonOperator '$value'");
                     } else {
-                        array_push($mountedColumns, "$tableName.$columnName $this->comparisonOperator '$value'");
+                        array_push($mounted, "$tableName.$columnName $this->comparisonOperator '$value'");
                     }
                 }
             }
         }
         
-        return implode("", $mountedColumns);
+        return implode("", $mounted);
     }
     
     private function mountWithoutAttachedTable(array $params) {
         
-        $mountedColumns = [];
+        $mounted = [];
         
         foreach($params as $columnName => $value) {
             if (gettype($value) == 'array') {
@@ -92,21 +92,21 @@ class WhereClause {
                     $statement .= " OR $columnName $this->comparisonOperator '$v'";
                 }
                 
-                if (count($mountedColumns)) {
-                    array_push($mountedColumns, " $this->logicalOperator ($statement)");
+                if (count($mounted)) {
+                    array_push($mounted, " $this->logicalOperator ($statement)");
                 } else {
-                    array_push($mountedColumns, "($statement)");
+                    array_push($mounted, "($statement)");
                 }
             } else {
-                if (count($mountedColumns)) {
-                    array_push($mountedColumns, " $this->logicalOperator $columnName $this->comparisonOperator '$value'");
+                if (count($mounted)) {
+                    array_push($mounted, " $this->logicalOperator $columnName $this->comparisonOperator '$value'");
                 } else {
-                    array_push($mountedColumns, "$columnName $this->comparisonOperator '$value'");
+                    array_push($mounted, "$columnName $this->comparisonOperator '$value'");
                 }
             }
         }
         
-        return implode("", $mountedColumns);
+        return implode("", $mounted);
     }
     
 }

@@ -12,6 +12,8 @@ class Model extends AbstractModelPrototype {
     
     private $tableName;
     
+    private $primaryKey;
+    
     private $relatedModelName;
     
     private $relatedModel;
@@ -40,12 +42,17 @@ class Model extends AbstractModelPrototype {
     
     private $values;
     
+    private $update;
+    
+    private $set;
+    
     function __construct($modelName) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
         
         $this->modelName = $modelName;
         $this->model = Reflection::getDeclarationOf($modelName);
         $this->tableName = self::resolveTableName($modelName);
+        $this->primaryKey = $this->model::getPrimaryKey();
         
         $this->containsSet = new ArrayObject();
         $this->isContainedSet = new ArrayObject();
@@ -72,7 +79,7 @@ class Model extends AbstractModelPrototype {
         $this->isContainedSet->offsetSet($modelName, ['relatedColumn' => $relatedColumn]);
     }
     
-    function read($modelName, $id = null) {
+    function read($modelName, $primaryKeyValue = null) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
         
         $clone = $this->getClone();
@@ -99,22 +106,22 @@ class Model extends AbstractModelPrototype {
                     $clone->associativeTableName = self::resolveTableName($clone->associativeModelName);
                     $clone->from = $clone->associativeTableName;
                     
-                    $clone->join($clone->modelName, $clone->model::getPrimaryKey());
+                    $clone->join($clone->modelName, $clone->primaryKey);
                     $clone->join($modelName, $clone->relatedModel::getPrimaryKey());
                 } else {
                     $relatedColumn = $clone->containsSet->offsetGet($modelName)['relatedColumn'];
                     
-                    if (isset($id)) {
-                        $clone->where = "$clone->relatedTableName.$relatedColumn = $id";
+                    if (isset($primaryKeyValue)) {
+                        $clone->where = "$clone->relatedTableName.$relatedColumn = $primaryKeyValue";
                     }
                     
-                    $clone->join($clone->modelName, $clone->model::getPrimaryKey());
+                    $clone->join($clone->modelName, $clone->primaryKey);
                 }
             } else {
                 $relatedColumn = $clone->isContainedSet->offsetGet($modelName)['relatedColumn'];
                 
-                if (isset($id)) {
-                    $clone->where = "$clone->tableName.$relatedColumn = $id";
+                if (isset($primaryKeyValue)) {
+                    $clone->where = "$clone->tableName.$relatedColumn = $primaryKeyValue";
                 }
                 
                 $clone->join($clone->modelName, $relatedColumn);
@@ -145,7 +152,7 @@ class Model extends AbstractModelPrototype {
         
         if (empty($value)) {
             $value = $columnName;
-            $columnName = $clone->model::getPrimaryKey();
+            $columnName = $clone->primaryKey;
         }
         
         $selectStatement = new SelectStatement($clone->modelName);
@@ -178,11 +185,18 @@ class Model extends AbstractModelPrototype {
         return $clone;
     }
     
-    function update($id, array $attrs) {
+    function update($primaryKeyValue, array $attributes) {
+        $clone = $this->getClone();
         
+        $updateStatement = new UpdateStatement($clone->modelName, $primaryKeyValue, $attributes);
+        $clone->update = $updateStatement->getUpdateStatement();
+        $clone->set = $updateStatement->getSetStatement();
+        $clone->where = $updateStatement->getWhereStatement();
+        
+        return $clone;
     }
     
-    function updateAssociation($id, $associativeModelName, array $attributes) {
+    function updateAssociation($primaryKeyValue, $associativeModelName, array $attributes) {
         
     }
     
@@ -209,7 +223,7 @@ class Model extends AbstractModelPrototype {
                         $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);
                     } else {
                         $tableName = $this->tableName;
-                        $columnName = $this->model::getPrimaryKey();
+                        $columnName = $this->primaryKey;
                     }
                 } else {
                     if ($this->isContainedSet->offsetExists($joinedModelName)) {
@@ -232,16 +246,24 @@ class Model extends AbstractModelPrototype {
             }
         }
         
-        if (isset($this->where)) {
-            $map['where'] = $this->where;
-        }
-        
         if (isset($this->insertInto)) {
             $map['insertInto'] = $this->insertInto;
         }
         
         if (isset($this->values)) {
             $map['values'] = $this->values;
+        }
+        
+        if (isset($this->update)) {
+            $map['update'] = $this->update;
+        }
+        
+        if (isset($this->set)) {
+            $map['set'] = $this->set;
+        }
+        
+        if (isset($this->where)) {
+            $map['where'] = $this->where;
         }
         
         return $map;

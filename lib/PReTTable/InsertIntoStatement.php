@@ -6,7 +6,7 @@ class InsertIntoStatement {
     
     private $insertIntoStatement;
     
-    private $values;
+    private $valuesStatement;
     
     function __construct($modelName, array $attributes) {
         Model::checkIfModelIs($modelName, __NAMESPACE__ . '\GeneralAbstractModel');
@@ -14,7 +14,7 @@ class InsertIntoStatement {
         $tableName = Model::resolveTableName($modelName);
         
         $this->insertIntoStatement = "$tableName (" . implode(", ", array_keys($attributes)) . ")";
-        $this->values = "(" . implode(", ", array_values($attributes)) . ")";
+        $this->valuesStatement = "(" . implode(", ", array_values($attributes)) . ")";
         
     }
     
@@ -22,8 +22,8 @@ class InsertIntoStatement {
         return $this->insertIntoStatement;
     }
     
-    function getValues() {
-        return $this->values;
+    function getValuesStatement() {
+        return $this->valuesStatement;
     }
     
 }
