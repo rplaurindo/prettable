@@ -110,23 +110,26 @@ class Query extends AbstractQueryPrototype {
                     
                     $clone->join($clone->modelName, $clone->primaryKey);
                     $clone->join($modelName, $clone->associatedModel::getPrimaryKey());
-                } else {
-                    $associatedColumn = $clone->containsSet->offsetGet($modelName)['associatedColumn'];
                     
+                    $associativeColumn = $clone->associativeModel::getForeignKeyOf($clone->modelName);
+                    if (isset($primaryKeyValue)) {
+                        $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
+                    }
+                } else {
+                    $clone->join($clone->modelName, $clone->primaryKey);
+                    
+                    $associatedColumn = $clone->containsSet->offsetGet($modelName)['associatedColumn'];
                     if (isset($primaryKeyValue)) {
                         $clone->whereClause = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
                     }
-                    
-                    $clone->join($clone->modelName, $clone->primaryKey);
                 }
             } else {
-                $associatedColumn = $clone->isContainedSet->offsetGet($modelName)['associatedColumn'];
+                $clone->join($clone->modelName, $associatedColumn);
                 
+                $associatedColumn = $clone->isContainedSet->offsetGet($modelName)['associatedColumn'];
                 if (isset($primaryKeyValue)) {
                     $clone->whereClause = "$clone->tableName.$associatedColumn = $primaryKeyValue";
                 }
-                
-                $clone->join($clone->modelName, $associatedColumn);
             }
         }
         

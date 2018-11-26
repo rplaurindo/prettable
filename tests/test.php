@@ -40,8 +40,8 @@ class Model2 implements AbstractModel {
     function __construct() {
         $this->query = new Query(self::class);
         
-//         $this->query->containsThrough('Model1', 'AssociativeModel');
-        $this->query->contains('Model1', 'table2_id');
+        $this->query->containsThrough('Model1', 'AssociativeModel');
+//         $this->query->contains('Model1', 'table2_id');
 //         $this->query->isContained('Model1', 'table1_id');
         
 //         $this->query->contains('AssociativeModel', 'associative_table_column');
@@ -188,10 +188,10 @@ $model2 = new Model2();
 //     ]
 // )->getMap());
 
-print_r($model2->delete('model2Column', 1, 2)->getMap());
+// print_r($model2->delete('model2Column', 1, 2)->getMap());
 
 // print_r($model2->read('Model1')->getMap());
-// print_r($model2->read('Model1', 1)->getMap());
+print_r($model2->read('Model1', 1)->getMap());
 
 // print_r($model2
 //     ->read('Model1')
