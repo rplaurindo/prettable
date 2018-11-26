@@ -188,7 +188,7 @@ $model2 = new Model2();
 //     ]
 // )->getMap());
 
-print_r($model2->delete('model2Column', 1, 2)->getMap());
+// print_r($model2->delete('model2Column', 1, 2)->getMap());
 
 // print_r($model2->read('Model1')->getMap());
 // print_r($model2->read('Model1', 1)->getMap());
