@@ -50,19 +50,20 @@ class WhereClause {
         foreach ($this->tables as $tableName) {
             foreach($params[$tableName] as $columnName => $value) {
                 if (gettype($value) == 'array') {
-                    
-                    $firstValue = $value[0];
-                    $value = array_slice($value, 1);
-                    
-                    $statement = "$tableName.$columnName $this->comparisonOperator '$firstValue'";
-                    foreach ($value as $v) {
-                        $statement .= " OR $tableName.$columnName $this->comparisonOperator '$v'";
-                    }
-                    
-                    if (count($mounted)) {
-                        array_push($mounted, " $this->logicalOperator ($statement)");
-                    } else {
-                        array_push($mounted, "($statement)");
+                    if (count($value)) {
+                        $firstValue = $value[0];
+                        $value = array_slice($value, 1);
+                        
+                        $statement = "$tableName.$columnName $this->comparisonOperator '$firstValue'";
+                        foreach ($value as $v) {
+                            $statement .= " OR $tableName.$columnName $this->comparisonOperator '$v'";
+                        }
+                        
+                        if (count($mounted)) {
+                            array_push($mounted, " $this->logicalOperator ($statement)");
+                        } else {
+                            array_push($mounted, "($statement)");
+                        }
                     }
                 } else {
                     if (count($mounted)) {
@@ -83,19 +84,20 @@ class WhereClause {
         
         foreach($params as $columnName => $value) {
             if (gettype($value) == 'array') {
-                
-                $firstValue = $value[0];
-                $value = array_slice($value, 1);
-                
-                $statement = "$columnName $this->comparisonOperator '$firstValue'";
-                foreach ($value as $v) {
-                    $statement .= " OR $columnName $this->comparisonOperator '$v'";
-                }
-                
-                if (count($mounted)) {
-                    array_push($mounted, " $this->logicalOperator ($statement)");
-                } else {
-                    array_push($mounted, "($statement)");
+                if (count($value)) {
+                    $firstValue = $value[0];
+                    $value = array_slice($value, 1);
+                    
+                    $statement = "$columnName $this->comparisonOperator '$firstValue'";
+                    foreach ($value as $v) {
+                        $statement .= " OR $columnName $this->comparisonOperator '$v'";
+                    }
+                    
+                    if (count($mounted)) {
+                        array_push($mounted, " $this->logicalOperator ($statement)");
+                    } else {
+                        array_push($mounted, "($statement)");
+                    }
                 }
             } else {
                 if (count($mounted)) {
