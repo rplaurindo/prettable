@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-interface AbstractModel extends GeneralAbstractModel {
+interface IdentifiableModelInterface extends ModelInterface {
     
     static function getPrimaryKey();
     

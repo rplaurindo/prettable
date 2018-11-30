@@ -9,7 +9,7 @@ class DeleteStatement {
     private $whereClauseStatement;
     
     function __construct($modelName, $columnName, ...$values) {
-        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\GeneralAbstractModel');
+        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
         
         $tableName = Query::resolveTableName($modelName);
         $this->deleteFromStatement = $tableName;

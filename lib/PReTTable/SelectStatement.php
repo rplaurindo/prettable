@@ -33,7 +33,7 @@ class SelectStatement {
     }
     
     private function mountMember($modelName, $attachTableName) {
-        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\GeneralAbstractModel');
+        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
         
         $model = Reflection::getDeclarationOf($modelName);
         $columns = $model::getColumns();

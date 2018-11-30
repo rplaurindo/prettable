@@ -9,7 +9,7 @@ class InsertIntoStatement {
     private $valuesStatement;
     
     function __construct($modelName, array $attributes) {
-        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\GeneralAbstractModel');
+        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
         
         $tableName = Query::resolveTableName($modelName);
         

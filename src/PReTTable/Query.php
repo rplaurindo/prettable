@@ -49,7 +49,7 @@ class Query extends AbstractQueryPrototype {
     private $deleteFrom;
     
     function __construct($modelName) {
-        self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
+        self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
         
         $this->modelName = $modelName;
         $this->model = Reflection::getDeclarationOf($modelName);
@@ -64,25 +64,25 @@ class Query extends AbstractQueryPrototype {
     }
     
     function contains($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
+        self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         
         $this->containsSet->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
     
     function containsThrough($modelName, $through) {
-        self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
+        self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         
         $this->containsSet->offsetSet($modelName, ['associativeModel' => $through]);
     }
     
     function isContained($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel');
+        self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
         
         $this->isContainedSet->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
     
     function select($modelName, $primaryKeyValue = null) {
-        self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
+        self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         
         $clone = $this->getClone();
         
@@ -112,22 +112,23 @@ class Query extends AbstractQueryPrototype {
                     $clone->join($modelName, $clone->associatedModel::getPrimaryKey());
                     
                     $associativeColumn = $clone->associativeModel::getForeignKeyOf($clone->modelName);
-                    if (isset($primaryKeyValue)) {
+                    if (isset($primaryKeyValue) && !empty($primaryKeyValue)) {
                         $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
                     }
                 } else {
                     $clone->join($clone->modelName, $clone->primaryKey);
                     
                     $associatedColumn = $clone->containsSet->offsetGet($modelName)['associatedColumn'];
-                    if (isset($primaryKeyValue)) {
+                    if (isset($primaryKeyValue) && !empty($primaryKeyValue)) {
                         $clone->whereClause = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
                     }
                 }
             } else {
+                $associatedColumn = $clone->isContainedSet->offsetGet($modelName)['associatedColumn'];
+                
                 $clone->join($clone->modelName, $associatedColumn);
                 
-                $associatedColumn = $clone->isContainedSet->offsetGet($modelName)['associatedColumn'];
-                if (isset($primaryKeyValue)) {
+                if (isset($primaryKeyValue) && !empty($primaryKeyValue)) {
                     $clone->whereClause = "$clone->tableName.$associatedColumn = $primaryKeyValue";
                 }
             }
@@ -137,7 +138,7 @@ class Query extends AbstractQueryPrototype {
     }
     
     function join($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName, __NAMESPACE__ . '\AbstractModel', __NAMESPACE__ . '\AbstractAssociativeModel');
+        self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         
         $clone = $this->getClone();
 
@@ -185,7 +186,7 @@ class Query extends AbstractQueryPrototype {
         
         $insertIntoStatement = new InsertIntoStatement($clone->modelName, $attributes);
         $clone->insertInto = $insertIntoStatement->getInsertIntoStatement();
-        $clone->values = $insertIntoStatement->getValues();
+        $clone->values = $insertIntoStatement->getValuesStatement();
         
         return $clone;
     }
