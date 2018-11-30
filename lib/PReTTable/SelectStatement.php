@@ -33,13 +33,13 @@ class SelectStatement {
     }
     
     private function mountMember($modelName, $attachTableName) {
-        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
+        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
         
         $model = Reflection::getDeclarationOf($modelName);
         $columns = $model::getColumns();
         
         if ($attachTableName) {
-            $tableName = Query::resolveTableName($modelName);
+            $tableName = QueryMap::resolveTableName($modelName);
         }
         
         $mountedColumns = [];

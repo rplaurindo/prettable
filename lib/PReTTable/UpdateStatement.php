@@ -11,9 +11,9 @@ class UpdateStatement {
     private $whereStatement;
     
     function __construct($modelName, $primaryKeyValue, array $attributes) {
-        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
+        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
         
-        $tableName = Query::resolveTableName($modelName);
+        $tableName = QueryMap::resolveTableName($modelName);
         $model = Reflection::getDeclarationOf($modelName);
         
         $this->updateStatement = $tableName;

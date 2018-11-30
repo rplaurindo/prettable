@@ -9,9 +9,9 @@ class InsertIntoStatement {
     private $valuesStatement;
     
     function __construct($modelName, array $attributes) {
-        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
+        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
         
-        $tableName = Query::resolveTableName($modelName);
+        $tableName = QueryMap::resolveTableName($modelName);
         
         $this->insertIntoStatement = "$tableName (" . implode(", ", array_keys($attributes)) . ")";
         $this->valuesStatement = "(" . implode(", ", array_values($attributes)) . ")";

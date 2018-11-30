@@ -9,9 +9,9 @@ class DeleteStatement {
     private $whereClauseStatement;
     
     function __construct($modelName, $columnName, ...$values) {
-        Query::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
+        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
         
-        $tableName = Query::resolveTableName($modelName);
+        $tableName = QueryMap::resolveTableName($modelName);
         $this->deleteFromStatement = $tableName;
         
         $whereClause = new Helpers\WhereClause();
