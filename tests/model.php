@@ -1,5 +1,7 @@
 <?php
 
+require 'autoload.php';
+
 use PReTTable\IdentifiableModelInterface;
 use PReTTable\AssociativeModelInterface;
 use PReTTable\QueryMap;

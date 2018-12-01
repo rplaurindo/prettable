@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-require 'autoload.php';
+use PDOException;
 
 abstract class AbstractModel {
     
@@ -20,17 +20,33 @@ abstract class AbstractModel {
         $this->queryMap = new QueryMap($this::class);
     }
     
+//     function reestablishConnection($database, $host = null) {
+//         if (isset($host)) {
+//             $this->host = $host;
+//         }
+        
+//     }
+    
+//     static function establishConnection($host, array $data) {
     function establishConnection($database, $host = null) {
         if (isset($host)) {
             $this->host = $host;
         }
         
         $connection = new Connection();
+        
+//         return $connection->establishConnection($this->host, $database);
         $this->connection = $connection->establishConnection($this->host, $database);
     }
     
+//     static function create(array $attributes) {
     function create(array $attributes) {
-//         use try e catch na porra toda
+        try {
+//             use $this->queryMap here
+//             return lastInsertId
+        } catch (PDOException $e) {
+            echo $e;
+        }
     }
     
 //     put proxy methods (from QueryMap) here to relate models
