@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-use PDO;
+use PDO, PDOException;
 
 class Connection {
     
@@ -21,7 +21,9 @@ class Connection {
     }
     
     function establishConnection($host, $database) {
-        $data = self::$data[$host][$database][$this->environment];
+        $clone = $this->getClone();
+        
+        $data = self::$data[$host][$database][$clone->environment];
         
         $adapter = $data['adapter'];
         $host = $data['host'];
@@ -37,13 +39,22 @@ class Connection {
         }
         
         $dsn = "$adapter:=$host;dbname=$database";
-        $this->connection = new PDO($dsn, $username, $password);
         
-        return $this->connection;
+        try {            
+            $clone->connection = new PDO($dsn, $username, $password);
+            $clone->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $clone->connection;
+        } catch (PDOException $e) {
+            echo $e;
+        }
     }
     
     static function setData(array $data) {
         self::$data = $data;
+    }
+    
+    private function getClone() {
+        return clone $this;
     }
     
 }
