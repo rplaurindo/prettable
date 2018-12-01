@@ -20,8 +20,8 @@ class Connection {
         }
     }
     
-    function establishConnection($database) {
-        $data = self::$data[$database][$this->environment];
+    function establishConnection($host, $database) {
+        $data = self::$data[$host][$database][$this->environment];
         
         $adapter = $data['adapter'];
         $host = $data['host'];
@@ -38,14 +38,12 @@ class Connection {
         
         $dsn = "$adapter:=$host;dbname=$database";
         $this->connection = new PDO($dsn, $username, $password);
+        
+        return $this->connection;
     }
     
     static function setData(array $data) {
         self::$data = $data;
-    }
-    
-    function getConnection() {
-        return $this->connection;
     }
     
 }

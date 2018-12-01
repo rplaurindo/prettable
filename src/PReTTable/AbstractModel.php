@@ -4,20 +4,26 @@ namespace PReTTable;
 
 abstract class AbstractModel {
     
+    private $host;
+    
     private $connection;
 
-//     quem herdar dessa classe vai ter de passar esses parâmetros, no entanto, a classe que herdar de quem herdar dessa classe não precisaria passar os dados
-    function __construct($database, array $data) {
+    function __construct($host, array $data) {
+        $this->host = $host;
+        
         Connection::setData($data);
+    }
+    
+    function establishConnection($database, $host = null) {
+        if (isset($host)) {
+            $this->host = $host;
+        }
         
-        $connectionProxy = new Connection();
-        
-        $this->connection = $connectionProxy->getConnection();
+        $connection = new Connection();
+        $this->connection = $connection->establishConnection($this->host, $database);
     }
     
 //     put proxy methods (from QueryMap) here
-
-    
     
     function createAssociation($primaryKeyValue, $associationModelName, 
                                $attributes, $associationAttributes) {
