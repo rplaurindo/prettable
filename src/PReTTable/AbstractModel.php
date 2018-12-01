@@ -30,7 +30,7 @@ abstract class AbstractModel {
     }
     
     function create(array $attributes) {
-//         use try e catch
+//         use try e catch na porra toda
     }
     
 //     put proxy methods (from QueryMap) here to relate models
