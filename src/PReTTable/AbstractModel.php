@@ -22,7 +22,6 @@ abstract class AbstractModel {
         } catch (Exception $e) {
             echo $e;
         }
-        
     }
     
     function establishConnection($database, $host = null) {
