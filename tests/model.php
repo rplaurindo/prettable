@@ -47,6 +47,9 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
 }
 
 $model = new Model1();
-// $model->create(['column1' => 'a value']);
-// $model->update(11, ['column1' => 'a updated value']);
-$model->delete('id', 4, 5, 6, 7, 8, 9);
+// print_r($model->getRow(20));
+print_r($model->getRow('column1', 'value2'));
+
+// echo $model->create(['column1' => 'a value']);
+// echo $model->update(11, ['column1' => 'a updated value']);
+// echo $model->delete('id', 4, 5, 6, 7, 8, 9);

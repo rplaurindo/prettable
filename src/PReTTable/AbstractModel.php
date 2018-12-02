@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-use Exception, PDOException;
+use Exception, PDO, PDOException;
 
 abstract class AbstractModel {
     
@@ -107,10 +107,40 @@ abstract class AbstractModel {
         return true;
     }
     
+    function getRow($columnName, $value = null) {
+        $map = $this->queryMap->getRow($columnName, $value)->getMap();
+        
+        $select = $map['select'];
+        $from = $map['from'];
+        $where = $map['where'];
+        
+        $query = "
+            SELECT $select 
+            FROM $from
+            WHERE $where
+        ";
+        
+        try {
+            $PDOStatement = $this->connection->query($query);
+            $PDOStatement->setFetchMode(PDO::FETCH_ASSOC);
+            $result = $PDOStatement->fetchAll();
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        if (count($result)) {
+            return $result[0]; 
+        }
+            
+        return null;
+    }
+    
 //     put proxy methods (from QueryMap) here to relate models
     
-    function createAssociation($primaryKeyValue, $associationModelName, 
-                               $attributes, $associationAttributes) {
+//     function createAssociation($primaryKeyValue, $associationModelName,
+//         $attributes, $associationAttributes) {
+    function createAssociation($associativeModelName, $attributes) {
         
     }
     

@@ -170,7 +170,7 @@ class QueryMap {
         $clone->select = $selectStatement->mount();
         
         $clone->from   = $clone->tableName;
-        $clone->whereClause  = "$clone->tableName.$columnName = '$value'";
+        $clone->whereClause  = "$columnName = '$value'";
         
         return $clone;
     }
