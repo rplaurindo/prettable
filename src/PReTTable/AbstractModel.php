@@ -53,7 +53,12 @@ abstract class AbstractModel {
             throw new PDOException($e);
         }
         
-        return $this->connection->lastInsertId();
+        if ($this->queryMap->getModel()->isPrimaryKeyAutoIncrement()) {
+            return $this->connection->lastInsertId();
+        }
+        
+        return true;
+        
     }
     
     function update($primaryKeyValue, array $attributes) {

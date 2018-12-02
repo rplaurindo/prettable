@@ -64,6 +64,10 @@ class QueryMap {
 //         $this->joins = [];
     }
     
+    function getModel() {
+        return $this->model;
+    }
+    
     function contains($modelName, $associatedColumn) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         

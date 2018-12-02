@@ -33,6 +33,10 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
         return 'id';
     }
     
+    static function isPrimaryKeyAutoIncrement() {
+        return true;
+    }
+    
     static function getColumns() {
         return [
             'id',
