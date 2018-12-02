@@ -14,6 +14,7 @@ abstract class AbstractModel {
 
     function __construct($host, array $data) {
         $this->host = $host;
+        $this->lastInsertedPrimaryKeyValue = null;
         
         Connection::setData($data);
         
@@ -53,8 +54,7 @@ abstract class AbstractModel {
         }
         
         if ($this->queryMap->getModel()->isPrimaryKeySelfIncremental()) {
-//             pode retornar um objeto que suporte criar uma associação
-            return $this->connection->lastInsertId();
+            return $this;
         }
         
         return true;
@@ -63,7 +63,7 @@ abstract class AbstractModel {
     //     function createAssociation($primaryKeyValue, $associationModelName,
     //         $attributes, $associationAttributes) {
     function createAssociation($associativeModelName, $attributes) {
-        
+//         get $this->connection->lastInsertId
     }
     
     function update($primaryKeyValue, array $attributes) {
