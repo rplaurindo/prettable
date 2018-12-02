@@ -8,17 +8,18 @@ class WritingStatement {
         
     }
     
-    protected function resolveValues(array $values) {
-        $resolvedValues = [];
+    protected function resolveStringValues(array $attributes) {
+        $resolved = [];
         
-        foreach ($values as $value) {
+        foreach ($attributes as $column => $value) {
             if (gettype($value) == 'string') {
                 $value = "'$value'";
             }
-            array_push($resolvedValues, $value);
+            
+            $resolved[$column] = $value;
         }
         
-        return $resolvedValues;
+        return $resolved;
     }
     
 }

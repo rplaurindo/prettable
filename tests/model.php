@@ -43,4 +43,5 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
 }
 
 $model = new Model1();
-$model->create(['column1' => 'avalue']);
+// $model->create(['column1' => 'a value']);
+$model->update(11, ['column1' => 'a updated value']);

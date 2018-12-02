@@ -14,7 +14,7 @@ class InsertIntoStatement extends WritingStatement {
         $tableName = QueryMap::resolveTableName($modelName);
         
         $this->insertIntoStatement = "$tableName (" . implode(", ", array_keys($attributes)) . ")";
-        $this->valuesStatement = "(" . implode(", ", parent::resolveValues(array_values($attributes))) . ")";
+        $this->valuesStatement = "(" . implode(", ", parent::resolveStringValues($attributes)) . ")";
     }
     
     function getInsertIntoStatement() {

@@ -56,6 +56,30 @@ abstract class AbstractModel {
         return $this->connection->lastInsertId();
     }
     
+    function update($primaryKeyValue, array $attributes) {
+        $map = $this->queryMap->update($primaryKeyValue, $attributes)->getMap();
+        
+        $update = $map['update'];
+        $set = $map['set'];
+        $where = $map['where'];
+        
+        $query = "
+            UPDATE $update
+            SET $set
+            WHERE $where
+        ";
+        
+        try {
+            $prepare = $this->connection->prepare($query);
+            $prepare->execute();
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        return true;
+    }
+    
 //     put proxy methods (from QueryMap) here to relate models
     
     function createAssociation($primaryKeyValue, $associationModelName, 

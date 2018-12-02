@@ -18,6 +18,7 @@ class UpdateStatement extends WritingStatement {
         
         $this->updateStatement = $tableName;
         
+        $attributes = parent::resolveStringValues($attributes);
         $this->mountSet($attributes);
         
         $primaryKey = $model::getPrimaryKey();
@@ -40,7 +41,6 @@ class UpdateStatement extends WritingStatement {
         $mounted = [];
         
         foreach($attributes as $columnName => $value) {
-//             if it's the case, test if it's string to put single quotation marks
             array_push($mounted, "$columnName = $value");
         }
         
