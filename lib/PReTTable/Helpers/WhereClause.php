@@ -79,7 +79,6 @@ class WhereClause {
     }
     
     private function mountWithoutAttachedTable(array $params) {
-        
         $mounted = [];
         
         foreach($params as $columnName => $value) {
@@ -87,6 +86,10 @@ class WhereClause {
                 if (count($value)) {
                     $firstValue = $value[0];
                     $value = array_slice($value, 1);
+                    
+                    echo "\n\n";
+                    
+                    echo "\n\n";
                     
                     $statement = "$columnName $this->comparisonOperator '$firstValue'";
                     foreach ($value as $v) {

@@ -80,6 +80,28 @@ abstract class AbstractModel {
         return true;
     }
     
+    function delete($columnName, ...$values) {
+        $map = $this->queryMap->delete($columnName, ...$values)->getMap();
+        
+        $deleteFrom = $map['deleteFrom'];
+        $where = $map['where'];
+        
+        $query = "
+            DELETE FROM $deleteFrom
+            WHERE $where
+        ";
+        
+        try {
+            $prepare = $this->connection->prepare($query);
+            $prepare->execute();
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        return true;
+    }
+    
 //     put proxy methods (from QueryMap) here to relate models
     
     function createAssociation($primaryKeyValue, $associationModelName, 
