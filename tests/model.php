@@ -33,7 +33,7 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
         return 'id';
     }
     
-    static function isPrimaryKeyAutoIncrement() {
+    static function isPrimaryKeySelfIncremental() {
         return true;
     }
     

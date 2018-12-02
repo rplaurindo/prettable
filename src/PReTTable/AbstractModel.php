@@ -53,7 +53,7 @@ abstract class AbstractModel {
             throw new PDOException($e);
         }
         
-        if ($this->queryMap->getModel()->isPrimaryKeyAutoIncrement()) {
+        if ($this->queryMap->getModel()->isPrimaryKeySelfIncremental()) {
             return $this->connection->lastInsertId();
         }
         
