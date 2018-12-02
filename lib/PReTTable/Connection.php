@@ -15,7 +15,7 @@ class Connection {
     function __construct() {
         $this->environment = getenv('PReTTable_CONNECTION_ENV');
         
-        if (!isset($this->environment)) {
+        if (empty($this->environment)) {
             $this->environment = 'development';
         }
     }
@@ -26,7 +26,6 @@ class Connection {
         $data = self::$data[$host][$database][$clone->environment];
         
         $adapter = $data['adapter'];
-        $host = $data['host'];
         
         $username = null;
         if (array_key_exists('username', $data)) {
@@ -40,7 +39,7 @@ class Connection {
         
         $dsn = "$adapter:=$host;dbname=$database";
         
-        try {            
+        try {
             $clone->connection = new PDO($dsn, $username, $password);
             $clone->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $clone->connection;
