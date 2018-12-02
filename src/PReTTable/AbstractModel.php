@@ -37,21 +37,23 @@ abstract class AbstractModel {
     function create(array $attributes) {
         $map = $this->queryMap->insert($attributes)->getMap();
         
-        print_r($map);
-        
-//         $insertInto = $map['insertInto'];
+        $insertInto = $map['insertInto'];
+        $values = $map['values'];
         
         $query = "
-            
+            INSERT INTO $insertInto
+            VALUES $values
         ";
         
         try {
-            
-//             use $this->queryMap here
-//             return lastInsertId
+            $prepare = $this->connection->prepare($query);
+            $prepare->execute();
         } catch (PDOException $e) {
             echo $e;
+            throw new PDOException($e);
         }
+        
+        return $this->connection->lastInsertId();
     }
     
 //     put proxy methods (from QueryMap) here to relate models

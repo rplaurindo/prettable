@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-class UpdateStatement {
+class UpdateStatement extends WritingStatement {
     
     private $updateStatement;
     

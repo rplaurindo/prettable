@@ -42,10 +42,13 @@ class Connection {
         try {
             $clone->connection = new PDO($dsn, $username, $password);
             $clone->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $clone->connection;
         } catch (PDOException $e) {
             echo $e;
+            
+            throw new PDOException($e);
         }
+        
+        return $clone->connection;
     }
     
     static function setData(array $data) {

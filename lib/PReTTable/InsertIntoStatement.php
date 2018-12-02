@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-class InsertIntoStatement {
+class InsertIntoStatement extends WritingStatement {
     
     private $insertIntoStatement;
     
@@ -14,8 +14,7 @@ class InsertIntoStatement {
         $tableName = QueryMap::resolveTableName($modelName);
         
         $this->insertIntoStatement = "$tableName (" . implode(", ", array_keys($attributes)) . ")";
-        $this->valuesStatement = "(" . implode(", ", array_values($attributes)) . ")";
-        
+        $this->valuesStatement = "(" . implode(", ", parent::resolveValues(array_values($attributes))) . ")";
     }
     
     function getInsertIntoStatement() {
