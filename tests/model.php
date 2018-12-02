@@ -3,40 +3,44 @@
 require 'autoload.php';
 
 use PReTTable\IdentifiableModelInterface;
-use PReTTable\AssociativeModelInterface;
-use PReTTable\QueryMap;
+// use PReTTable\AssociativeModelInterface;
 use PReTTable\AbstractModel;
 
-class AbstractModelTest extends AbstractModel {
+class ModelBaseTest extends AbstractModel {
     
     function __construct($database, $host = null) {
-//         pegar os dados aqui com include
-        
+        $data = include 'database.php';
+        $host = 'localhost';
         parent::__construct($host, $data);
         $this->establishConnection($database);
     }
     
 }
 
-class Model1 extends AbstractModelTest implements IdentifiableModelInterface {
+class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
     
     function __construct() {
-        parent::__construct($database);
+        parent::__construct('test_schema');
+        
+//         definir relacionamentos aqui
     }
     
     static function getTableName() {
-        return 'table1';
+        return 'table_1';
     }
     
     static function getPrimaryKey() {
-        return 'ID_table1';
+        return 'id';
     }
     
     static function getColumns() {
         return [
-            'ID_table1',
-            'column2' => 'column2Alias'
+            'id',
+            'column1'
         ];
     }
     
 }
+
+$model = new Model1();
+$model->create(['column1' => 'avalue']);

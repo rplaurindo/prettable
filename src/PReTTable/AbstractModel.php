@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-use PDOException;
+use Exception, PDOException;
 
 abstract class AbstractModel {
     
@@ -17,31 +17,36 @@ abstract class AbstractModel {
         
         Connection::setData($data);
         
-        $this->queryMap = new QueryMap($this::class);
+        try {
+            $this->queryMap = new QueryMap(get_class($this));
+        } catch (Exception $e) {
+            echo $e;
+        }
+        
     }
     
-//     function reestablishConnection($database, $host = null) {
-//         if (isset($host)) {
-//             $this->host = $host;
-//         }
-        
-//     }
-    
-//     static function establishConnection($host, array $data) {
     function establishConnection($database, $host = null) {
         if (isset($host)) {
             $this->host = $host;
         }
         
         $connection = new Connection();
-        
-//         return $connection->establishConnection($this->host, $database);
         $this->connection = $connection->establishConnection($this->host, $database);
     }
     
-//     static function create(array $attributes) {
     function create(array $attributes) {
+        $map = $this->queryMap->insert($attributes)->getMap();
+        
+        print_r($map);
+        
+//         $insertInto = $map['insertInto'];
+        
+        $query = "
+            
+        ";
+        
         try {
+            
 //             use $this->queryMap here
 //             return lastInsertId
         } catch (PDOException $e) {
