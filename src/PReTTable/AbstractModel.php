@@ -53,10 +53,16 @@ abstract class AbstractModel {
         }
         
         if ($this->queryMap->getModel()->isPrimaryKeySelfIncremental()) {
+//             pode retornar um objeto que suporte criar uma associação
             return $this->connection->lastInsertId();
         }
         
         return true;
+    }
+    
+    //     function createAssociation($primaryKeyValue, $associationModelName,
+    //         $attributes, $associationAttributes) {
+    function createAssociation($associativeModelName, $attributes) {
         
     }
     
@@ -129,19 +135,13 @@ abstract class AbstractModel {
         }
         
         if (count($result)) {
-            return $result[0]; 
+            return $result[0];
         }
             
         return null;
     }
     
 //     put proxy methods (from QueryMap) here to relate models
-    
-//     function createAssociation($primaryKeyValue, $associationModelName,
-//         $attributes, $associationAttributes) {
-    function createAssociation($associativeModelName, $attributes) {
-        
-    }
     
     private function getClone() {
         return clone $this;
