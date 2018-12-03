@@ -51,11 +51,10 @@ $model = new Model1();
 // print_r($model->getRow(20));
 // print_r($model->getRow('column1', 'value2'));
 
-print_r($model->create(['column1' => 'a value']));
+// print_r($model->create(['column1' => 'a value']));
 
-// $model->create(['column1' => 'a value']);
-
-// $model->createAssociation(['column1' => 'a value'], ['column1' => 'a value 2']);
+$model->createAssociation(['column1' => 'a value 1'], ['column1' => 'a value 2']);
 
 // echo $model->update(11, ['column1' => 'a updated value']);
+
 // echo $model->delete('id', 4, 5, 6, 7, 8, 9);

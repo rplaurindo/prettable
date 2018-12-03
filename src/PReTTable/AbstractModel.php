@@ -91,7 +91,7 @@ abstract class AbstractModel {
         
         try {
             $prepare = $this->connection->prepare($query);
-//             $prepare->execute();
+            $prepare->execute();
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
@@ -151,12 +151,11 @@ abstract class AbstractModel {
         return null;
     }
     
+//     put proxy methods (from QueryMap) here to relate models (contains and isContained)
+    
     protected function rollBack() {
         $this->connection->exec('ROLLBACK');
     }
-    
-    
-//     put proxy methods (from QueryMap) here to relate models (contains and isContained)
     
     protected function getClone() {
         return clone $this;
