@@ -10,18 +10,20 @@ abstract class AbstractModel {
     
     private $model;
     
+    private $queryMap;
+    
     private $host;
     
     private $connection;
-    
-    private $queryMap;
     
     private $lastInsertedPrimaryKeyValue;
 
     function __construct($host, array $data) {
         $this->modelName = get_class($this);
         $this->model = Reflection::getDeclarationOf($this->modelName);
+        
         $this->host = $host;
+        
         $this->lastInsertedPrimaryKeyValue = null;
         
         Connection::setData($data);
@@ -62,9 +64,8 @@ abstract class AbstractModel {
         return $this;
     }
     
-//     o próprio QueryMap com seu método createAssociation avaliará, através de suas propriedade contains deste modelo, o nome da tabela associativa
     function createAssociation($modelName, ...$rows) {
-//         pegar o nome da chave associada através da reflexão
+        //         pegar o nome da chave associada através da reflexão para usar attachesAssociativeForeignKey e anexar lastInsertedPrimaryKeyValue
     }
     
     private function attachesAssociativeForeignKey($foreignKeyName, ...$rows) {
