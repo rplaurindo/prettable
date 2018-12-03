@@ -4,6 +4,6 @@ namespace PReTTable;
 
 interface AssociativeModelInterface extends ModelInterface {
     
-    static function getForeignKeyOf($modelName);
+    static function getForeignKeyNameOf($modelName);
     
 }

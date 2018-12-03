@@ -6,32 +6,31 @@ use Exception, PDO, PDOException;
 
 abstract class AbstractModel {
     
+    private $modelName;
+    
+    private $model;
+    
     private $host;
     
     private $connection;
     
     private $queryMap;
+    
+    private $lastInsertedPrimaryKeyValue;
 
     function __construct($host, array $data) {
+        $this->modelName = get_class($this);
+        $this->model = Reflection::getDeclarationOf($this->modelName);
         $this->host = $host;
         $this->lastInsertedPrimaryKeyValue = null;
         
         Connection::setData($data);
         
         try {
-            $this->queryMap = new QueryMap(get_class($this));
+            $this->queryMap = new QueryMap($this->modelName);
         } catch (Exception $e) {
             echo $e;
         }
-    }
-    
-    function establishConnection($database, $host = null) {
-        if (isset($host)) {
-            $this->host = $host;
-        }
-        
-        $connection = new Connection();
-        $this->connection = $connection->establishConnection($this->host, $database);
     }
     
     function create(array $attributes) {
@@ -50,20 +49,31 @@ abstract class AbstractModel {
             $prepare->execute();
         } catch (PDOException $e) {
             echo $e;
+            $this->rollBack();
             throw new PDOException($e);
         }
         
-        if ($this->queryMap->getModel()->isPrimaryKeySelfIncremental()) {
-            return $this;
+        if ($this->model::isPrimaryKeySelfIncremental()) {
+            $this->lastInsertedPrimaryKeyValue = $this->connection->lastInsertId();
+        } else {
+            $this->lastInsertedPrimaryKeyValue = $attributes[$this->model::getPrimaryKeyName()];
         }
         
-        return true;
+        return $this;
     }
     
-    //     function createAssociation($primaryKeyValue, $associationModelName,
-    //         $attributes, $associationAttributes) {
-    function createAssociation($associativeModelName, $attributes) {
-//         get $this->connection->lastInsertId
+//     o próprio QueryMap com seu método createAssociation avaliará, através de suas propriedade contains deste modelo, o nome da tabela associativa
+    function createAssociation($modelName, ...$rows) {
+//         pegar o nome da chave associada através da reflexão
+    }
+    
+    private function attachesAssociativeForeignKey($foreignKeyName, ...$rows) {
+        foreach ($rows as $index => $attributes) {
+            $attributes[$foreignKeyName] = $this->lastInsertedPrimaryKey;
+            $rows[$index] = $attributes;
+        }
+        
+        return $rows;
     }
     
     function update($primaryKeyValue, array $attributes) {
@@ -81,7 +91,7 @@ abstract class AbstractModel {
         
         try {
             $prepare = $this->connection->prepare($query);
-            $prepare->execute();
+//             $prepare->execute();
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
@@ -141,12 +151,24 @@ abstract class AbstractModel {
         return null;
     }
     
-//     put proxy methods (from QueryMap) here to relate models
+    protected function rollBack() {
+        $this->connection->exec('ROLLBACK');
+    }
     
-    private function getClone() {
+    
+//     put proxy methods (from QueryMap) here to relate models (contains and isContained)
+    
+    protected function getClone() {
         return clone $this;
     }
     
+    protected function establishConnection($database, $host = null) {
+        if (isset($host)) {
+            $this->host = $host;
+        }
+        
+        $connection = new Connection();
+        $this->connection = $connection->establishConnection($this->host, $database);
+    }
+    
 }
-
-

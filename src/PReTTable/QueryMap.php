@@ -55,7 +55,7 @@ class QueryMap {
         $this->modelName = $modelName;
         $this->model = Reflection::getDeclarationOf($modelName);
         $this->tableName = self::resolveTableName($modelName);
-        $this->primaryKey = $this->model::getPrimaryKey();
+        $this->primaryKey = $this->model::getPrimaryKeyName();
         
         $this->containsSet = new ArrayObject();
         $this->isContainedSet = new ArrayObject();
@@ -64,26 +64,22 @@ class QueryMap {
 //         $this->joins = [];
     }
     
-    function getModel() {
-        return $this->model;
-    }
-    
     function contains($modelName, $associatedColumn) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         
         $this->containsSet->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
     
-    function containsThrough($modelName, $through) {
-        self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
-        
-        $this->containsSet->offsetSet($modelName, ['associativeModel' => $through]);
-    }
-    
     function isContained($modelName, $associatedColumn) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
         
         $this->isContainedSet->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
+    }
+    
+    function containsThrough($modelName, $through) {
+        self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
+        
+        $this->containsSet->offsetSet($modelName, ['associativeModelName' => $through]);
     }
     
     function select($modelName, $primaryKeyValue = null) {
@@ -104,19 +100,19 @@ class QueryMap {
             $clone->from = $clone->associatedTableName;
             
             if ($clone->containsSet->offsetExists($modelName)) {
-                if (array_key_exists('associativeModel', 
+                if (array_key_exists('associativeModelName', 
                         $clone->containsSet->offsetGet($modelName))
                     ) {
-                    $clone->associativeModelName = $clone->containsSet->offsetGet($modelName)['associativeModel'];
+                    $clone->associativeModelName = $clone->containsSet->offsetGet($modelName)['associativeModelName'];
                     $clone->associativeModel = Reflection::getDeclarationOf($clone->associativeModelName);
                     
                     $clone->associativeTableName = self::resolveTableName($clone->associativeModelName);
                     $clone->from = $clone->associativeTableName;
                     
                     $clone->join($clone->modelName, $clone->primaryKey);
-                    $clone->join($modelName, $clone->associatedModel::getPrimaryKey());
+                    $clone->join($modelName, $clone->associatedModel::getPrimaryKeyName());
                     
-                    $associativeColumn = $clone->associativeModel::getForeignKeyOf($clone->modelName);
+                    $associativeColumn = $clone->associativeModel::getForeignKeyNameOf($clone->modelName);
                     if (isset($primaryKeyValue) && !empty($primaryKeyValue)) {
                         $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
                     }
@@ -196,6 +192,18 @@ class QueryMap {
         return $clone;
     }
     
+    function insertIntoAssociation($modelName, ...$rows) {
+        $clone = $this->getClone();
+        
+        $associativeModelName = $clone->containsSet->offsetGet($modelName)['associativeModelName'];
+        
+        $insertIntoStatement = new InsertIntoStatement($associativeModelName, ...$rows);
+        $clone->insertInto = $insertIntoStatement->getInsertIntoStatement();
+        $clone->values = $insertIntoStatement->getValuesStatement();
+        
+        return $clone;
+    }
+    
 //     to update a associatedTable, first delete all associated data, then insert it again
     function update($primaryKeyValue, array $attributes) {
         $clone = $this->getClone();
@@ -236,9 +244,9 @@ class QueryMap {
                 $joinedTableName = self::resolveTableName($joinedModelName);
             
                 if ($this->containsSet->offsetExists($joinedModelName)) {
-                    if (array_key_exists('associativeModel', $this->containsSet->offsetGet($joinedModelName))) {
+                    if (array_key_exists('associativeModelName', $this->containsSet->offsetGet($joinedModelName))) {
                         $tableName = $this->associativeTableName;
-                        $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);
+                        $columnName = $this->associativeModel::getForeignKeyNameOf($joinedModelName);
                     } else {
                         $tableName = $this->tableName;
                         $columnName = $this->primaryKey;
@@ -249,10 +257,10 @@ class QueryMap {
                         $columnName = $this->isContainedSet->offsetGet($joinedModelName)['associatedColumn'];
                     } else if (array_key_exists($this->associatedModelName, $this->isContainedSet)) {
                         $tableName = $this->associatedTableName;
-                        $columnName = $this->associatedModel::getPrimaryKey();
+                        $columnName = $this->associatedModel::getPrimaryKeyName();
                     } else if (isset($this->associativeModelName)) {
                         $tableName = $this->associativeTableName;
-                        $columnName = $this->associativeModel::getForeignKeyOf($joinedModelName);
+                        $columnName = $this->associativeModel::getForeignKeyNameOf($joinedModelName);
                     } else {
                         $tableName = $this->associatedTableName;
                         $columnName = $this->containsSet->offsetGet($this->associatedModelName)['associatedColumn'];

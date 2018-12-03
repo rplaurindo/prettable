@@ -4,7 +4,7 @@ namespace PReTTable;
 
 interface IdentifiableModelInterface extends ModelInterface {
     
-    static function getPrimaryKey();
+    static function getPrimaryKeyName();
     
     static function isPrimaryKeySelfIncremental();
     
