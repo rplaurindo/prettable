@@ -19,9 +19,10 @@ class UpdateStatement extends WritingStatement {
         $this->updateStatement = $tableName;
         
         $attributes = parent::resolveStringValues($attributes);
+        
         $this->mountSet($attributes);
         
-        $primaryKey = $model::getPrimaryKey();
+        $primaryKey = $model::getPrimaryKeyName();
         $this->whereStatement = "$primaryKey = $primaryKeyValue";
     }
     
@@ -39,7 +40,6 @@ class UpdateStatement extends WritingStatement {
     
     private function mountSet(array $attributes) {
         $mounted = [];
-        
         foreach($attributes as $columnName => $value) {
             array_push($mounted, "$columnName = $value");
         }
