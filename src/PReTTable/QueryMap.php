@@ -204,7 +204,6 @@ class QueryMap {
         return $clone;
     }
     
-//     to update a associatedTable, first delete all associated data, then insert it again
     function update($primaryKeyValue, array $attributes) {
         $clone = $this->getClone();
         
