@@ -4,7 +4,6 @@ namespace PReTTable;
 
 use Exception, ArrayObject;
 
-// class QueryMap extends AbstractQueryPrototype {
 class QueryMap {
     
     private $modelName;
