@@ -55,6 +55,6 @@ $model = new Model1();
 
 // $model->createAssociation(['column1' => 'a value 1'], ['column1' => 'a value 2']);
 
-print_r($model->update(22, ['column1' => 'a updated value'])->commit());
+// print_r($model->update(22, ['column1' => 'a updated value'])->commit());
 
-// echo $model->delete('id', 3);
+echo $model->delete('id', 28);

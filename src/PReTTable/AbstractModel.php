@@ -56,6 +56,7 @@ abstract class AbstractModel {
             $clone->prepare->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
+            $clone->commit();
             echo $e;
             throw new PDOException($e);
         }
@@ -103,6 +104,7 @@ abstract class AbstractModel {
             $clone->prepare->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
+            $clone->commit();
             echo $e;
             throw new PDOException($e);
         }
@@ -128,9 +130,7 @@ abstract class AbstractModel {
         try {
             $prepare = $clone->connection->prepare($query);
             $prepare->execute();
-            $clone->rollBack();
         } catch (PDOException $e) {
-            $clone->rollBack();
             echo $e;
             throw new PDOException($e);
         }
