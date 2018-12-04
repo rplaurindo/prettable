@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-class DeleteStatement extends WritingStatement {
+class DeleteStatement {
     
     private $deleteFromStatement;
     

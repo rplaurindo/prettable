@@ -83,7 +83,9 @@ abstract class AbstractModel {
     }
     
     function update($primaryKeyValue, array $attributes) {
-        $map = $this->queryMap->update($primaryKeyValue, $attributes)->getMap();
+        $clone = $this->getClone();
+        
+        $map = $clone->queryMap->update($primaryKeyValue, $attributes)->getMap();
         
         $update = $map['update'];
         $set = $map['set'];
@@ -96,14 +98,18 @@ abstract class AbstractModel {
         ";
         
         try {
-            $prepare = $this->connection->prepare($query);
-            $prepare->execute();
+            $clone->connection->beginTransaction();
+            $clone->prepare = $clone->connection->prepare($query);
+            $clone->prepare->execute();
         } catch (PDOException $e) {
+            $clone->rollBack();
             echo $e;
             throw new PDOException($e);
         }
         
-        return true;
+        $clone->primaryKeyValue = $primaryKeyValue;
+        
+        return $clone;
     }
     
     function delete($columnName, ...$values) {

@@ -51,10 +51,10 @@ $model = new Model1();
 // print_r($model->getRow(20));
 // print_r($model->getRow('column1', 'value2'));
 
-echo $model->create(['column1' => 'a value'])->commit();
+// print_r($model->create(['column1' => 'a value'])->commit());
 
 // $model->createAssociation(['column1' => 'a value 1'], ['column1' => 'a value 2']);
 
-// echo $model->update(11, ['column1' => 'a updated value']);
+print_r($model->update(22, ['column1' => 'a updated value'])->commit());
 
 // echo $model->delete('id', 3);

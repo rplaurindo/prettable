@@ -18,9 +18,7 @@ class UpdateStatement extends WritingStatement {
         
         $this->updateStatement = $tableName;
         
-        $attributes = parent::resolveStringValues($attributes);
-        
-        $this->mountSet($attributes);
+        $this->mountSet(...parent::resolveStringValues($attributes));
         
         $primaryKey = $model::getPrimaryKeyName();
         $this->whereStatement = "$primaryKey = $primaryKeyValue";
