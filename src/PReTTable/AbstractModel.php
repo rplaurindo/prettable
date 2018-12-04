@@ -16,7 +16,9 @@ abstract class AbstractModel {
     
     private $connection;
     
-    private $lastInsertedPrimaryKeyValue;
+    private $prepare;
+    
+    private $primaryKeyValue;
 
     function __construct($host, array $data) {
         $this->modelName = get_class($this);
@@ -24,7 +26,7 @@ abstract class AbstractModel {
         
         $this->host = $host;
         
-        $this->lastInsertedPrimaryKeyValue = null;
+        $this->primaryKeyValue = null;
         
         Connection::setData($data);
         
@@ -36,7 +38,9 @@ abstract class AbstractModel {
     }
     
     function create(array $attributes) {
-        $map = $this->queryMap->insert($attributes)->getMap();
+        $clone = $this->getClone();
+        
+        $map = $clone->queryMap->insert($attributes)->getMap();
         
         $insertInto = $map['insertInto'];
         $values = $map['values'];
@@ -47,25 +51,26 @@ abstract class AbstractModel {
         ";
         
         try {
-            $prepare = $this->connection->prepare($query);
-            $prepare->execute();
+            $clone->connection->beginTransaction();
+            $clone->prepare = $clone->connection->prepare($query);
+            $clone->prepare->execute();
         } catch (PDOException $e) {
+            $clone->rollBack();
             echo $e;
-            $this->rollBack();
             throw new PDOException($e);
         }
         
-        if ($this->model::isPrimaryKeySelfIncremental()) {
-            $this->lastInsertedPrimaryKeyValue = $this->connection->lastInsertId();
+        if ($clone->model::isPrimaryKeySelfIncremental()) {
+            $clone->primaryKeyValue = $clone->connection->lastInsertId();
         } else {
-            $this->lastInsertedPrimaryKeyValue = $attributes[$this->model::getPrimaryKeyName()];
+            $clone->primaryKeyValue = $attributes[$clone->model::getPrimaryKeyName()];
         }
         
-        return $this;
+        return $clone;
     }
     
     function createAssociation($modelName, ...$rows) {
-        //         pegar o nome da chave associada através da reflexão para usar attachesAssociativeForeignKey e anexar lastInsertedPrimaryKeyValue
+        //         pegar o nome da chave associada através da reflexão para usar attachesAssociativeForeignKey e anexar primaryKeyValue
     }
     
     private function attachesAssociativeForeignKey($foreignKeyName, ...$rows) {
@@ -102,7 +107,9 @@ abstract class AbstractModel {
     }
     
     function delete($columnName, ...$values) {
-        $map = $this->queryMap->delete($columnName, ...$values)->getMap();
+        $clone = $this->getClone();
+        
+        $map = $clone->queryMap->delete($columnName, ...$values)->getMap();
         
         $deleteFrom = $map['deleteFrom'];
         $where = $map['where'];
@@ -113,9 +120,11 @@ abstract class AbstractModel {
         ";
         
         try {
-            $prepare = $this->connection->prepare($query);
+            $prepare = $clone->connection->prepare($query);
             $prepare->execute();
+            $clone->rollBack();
         } catch (PDOException $e) {
+            $clone->rollBack();
             echo $e;
             throw new PDOException($e);
         }
@@ -153,8 +162,12 @@ abstract class AbstractModel {
     }
     
 //     put proxy methods (from QueryMap) here to relate models (contains and isContained)
+
+    function commit() {
+        return $this->connection->commit();
+    }
     
-    protected function rollBack() {
+    function rollBack() {
         $this->connection->exec('ROLLBACK');
     }
     
