@@ -4,6 +4,7 @@ namespace PReTTable;
 
 use Exception, ArrayObject;
 
+// a layer to mount a map of queries
 class QueryMap {
     
     private $modelName;
@@ -63,6 +64,33 @@ class QueryMap {
 //         $this->joins = [];
     }
     
+    static function resolveTableName($modelName) {
+        $model = Reflection::getDeclarationOf($modelName);
+        
+        $tableName = $model::getTableName();
+        if (empty ($tableName)) {
+            return $modelName;
+        }
+        
+        return $tableName;
+    }
+    
+    static function checkIfModelIs($modelName, ...$classes) {
+        $count = 0;
+        
+        foreach ($classes as $class) {
+            if (is_subclass_of($modelName, $class)) {
+                $count++;
+            }
+        }
+        
+        if (!$count) {
+            $classesAsText = implode(" or ", $classes);
+            throw new Exception("The model must be a $classesAsText");
+        }
+        
+    }
+    
     function contains($modelName, $associatedColumn) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         
@@ -79,6 +107,18 @@ class QueryMap {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         
         $this->containsSet->offsetSet($modelName, ['associativeModelName' => $through]);
+    }
+    
+    function getAssociativeModelNameOf($modelName) {
+        if ($this->containsSet->offsetExists($modelName)) {
+            $relationshipData = $this->containsSet->offsetGet($modelName);
+            
+            if (array_key_exists('associativeModelName', $relationshipData)) {
+                return $relationshipData['associativeModelName'];
+            }
+        }
+        
+        return null;
     }
     
     function select($modelName, $primaryKeyValue = null) {
@@ -102,7 +142,7 @@ class QueryMap {
                 if (array_key_exists('associativeModelName', 
                         $clone->containsSet->offsetGet($modelName))
                     ) {
-                    $clone->associativeModelName = $clone->containsSet->offsetGet($modelName)['associativeModelName'];
+                    $clone->associativeModelName = $clone->getAssociativeModelNameOf($modelName);
                     $clone->associativeModel = Reflection::getDeclarationOf($clone->associativeModelName);
                     
                     $clone->associativeTableName = self::resolveTableName($clone->associativeModelName);
@@ -299,33 +339,6 @@ class QueryMap {
     
     protected function getClone(){
         return clone $this;
-    }
-    
-    static function resolveTableName($modelName) {
-        $model = Reflection::getDeclarationOf($modelName);
-        
-        $tableName = $model::getTableName();
-        if (empty ($tableName)) {
-            return $modelName;
-        }
-        
-        return $tableName;
-    }
-    
-    static function checkIfModelIs($modelName, ...$classes) {
-        $count = 0;
-        
-        foreach ($classes as $class) {
-            if (is_subclass_of($modelName, $class)) {
-                $count++;
-            }
-        }
-        
-        if (!$count) {
-            $classesAsText = implode(" or ", $classes);
-            throw new Exception("The model must be a $classesAsText");
-        }
-        
     }
     
 }

@@ -63,7 +63,10 @@ abstract class AbstractModel {
         ";
         
         try {
-            $clone->beginTransaction();
+            if (!$clone->connection->inTransaction()) {
+                $clone->beginTransaction();
+            }
+            
             $clone->prepare = $clone->connection->prepare($query);
             $clone->prepare->execute();
         } catch (PDOException $e) {
@@ -83,7 +86,52 @@ abstract class AbstractModel {
     }
     
     function createAssociation($modelName, ...$rows) {
-//         pegar o nome da chave associada através da reflexão para usar attachesAssociativeForeignKey e anexar primaryKeyValue
+        $clone = $this->getClone();
+        
+        $associativeModelName = $this->queryMap->getAssociativeModelNameOf($modelName);
+        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+        
+        $foreignKey = $associativeModel::getAssociativeKeys[$modelName];
+        
+        $rows = attachesAssociativeForeignKey($foreignKey, ...$rows);
+        
+        $map = $clone->queryMap->insertIntoAssociation($modelName, ...$rows)->getMap();
+        
+        $insertInto = $map['insertInto'];
+        $values = $map['values'];
+        
+        $query = "
+            INSERT INTO $insertInto
+            VALUES $values
+        ";
+        
+        echo $query;
+        
+        try {
+            if (!$clone->connection->inTransaction()) {
+                $clone->beginTransaction();
+            }
+            
+            $clone->prepare = $clone->connection->prepare($query);
+            $clone->prepare->execute();
+//             $clone->commit();
+        } catch (PDOException $e) {
+            $clone->rollBack();
+            $clone->commit();
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+//         fazer essa checagem somente na hora de fazer update em uma associação  
+//         if (is_subclass_of($associativeModelName, 'IdentifiableModelInterface')) {
+//             if ($associativeModel::isPrimaryKeySelfIncremental()) {
+//                 $clone->primaryKeyValue = $clone->connection->lastInsertId();
+//             } else {
+//                 $clone->primaryKeyValue = $attributes[$clone->model::getPrimaryKeyName()];
+//             }
+//         }
+        
+        return true;
     }
     
     private function attachesAssociativeForeignKey($foreignKeyName, ...$rows) {
@@ -111,7 +159,10 @@ abstract class AbstractModel {
         ";
         
         try {
-            $clone->beginTransaction();
+            if (!$clone->connection->inTransaction()) {
+                $clone->beginTransaction();
+            }
+            
             $clone->prepare = $clone->connection->prepare($query);
             $clone->prepare->execute();
         } catch (PDOException $e) {
