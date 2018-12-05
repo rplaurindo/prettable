@@ -5,6 +5,7 @@ require 'autoload.php';
 use PReTTable\IdentifiableModelInterface;
 // use PReTTable\AssociativeModelInterface;
 use PReTTable\AbstractModel;
+use PReTTable\AssociativeModelInterface;
 
 class ModelBaseTest extends AbstractModel {
     
@@ -22,7 +23,7 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
     function __construct() {
         parent::__construct('test_schema');
         
-//         definir relacionamentos aqui
+        $this->containsThrough('Model2', 'AssociativeModel');
     }
     
     static function getTableName() {
@@ -47,14 +48,68 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
     
 }
 
+class Model2 implements IdentifiableModelInterface {
+    
+    function __construct() {
+        
+    }
+    
+    static function getTableName() {
+        return 'table_2';
+    }
+    
+    static function getPrimaryKeyName() {
+        return 'id';
+    }
+    
+    static function isPrimaryKeySelfIncremental() {
+        return true;
+    }
+    
+    static function getColumns() {
+        return [
+            'id',
+            'column1'
+        ];
+    }
+    
+}
+
+class AssociativeModel implements AssociativeModelInterface {
+    
+    function __construct() {
+        
+    }
+    
+    static function getTableName() {
+        return 'associative_table';
+    }
+    
+    static function getColumns() {
+        return [
+            'table_1_id',
+            'table_2_id'
+        ];
+    }
+    
+    static function getAssociativeKeys() {
+        return [
+            'Model1' => 'table1_id',
+            'Model2' => 'table2_id'
+        ];
+    }
+    
+}
+
+
 $model = new Model1();
 // print_r($model->getRow(20));
 // print_r($model->getRow('column1', 'value2'));
 
 // print_r($model->create(['column1' => 'a value'])->commit());
 
-// $model->createAssociation(['column1' => 'a value 1'], ['column1' => 'a value 2']);
+$model->createAssociation(['column1' => 'a value 1'], ['column1' => 'a value 2']);
 
 // print_r($model->update(22, ['column1' => 'a updated value'])->commit());
 
-echo $model->delete('id', 28);
+// echo $model->delete('id', 28);

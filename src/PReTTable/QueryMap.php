@@ -111,7 +111,7 @@ class QueryMap {
                     $clone->join($clone->modelName, $clone->primaryKey);
                     $clone->join($modelName, $clone->associatedModel::getPrimaryKeyName());
                     
-                    $associativeColumn = $clone->associativeModel::getForeignKeyNameOf($clone->modelName);
+                    $associativeColumn = $clone->associativeModel::getAssociativeKeys()[$clone->modelName];
                     if (isset($primaryKeyValue) && !empty($primaryKeyValue)) {
                         $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
                     }
@@ -244,7 +244,7 @@ class QueryMap {
                 if ($this->containsSet->offsetExists($joinedModelName)) {
                     if (array_key_exists('associativeModelName', $this->containsSet->offsetGet($joinedModelName))) {
                         $tableName = $this->associativeTableName;
-                        $columnName = $this->associativeModel::getForeignKeyNameOf($joinedModelName);
+                        $columnName = $this->associativeModel::getAssociativeKeys()[$joinedModelName];
                     } else {
                         $tableName = $this->tableName;
                         $columnName = $this->primaryKey;
@@ -258,7 +258,7 @@ class QueryMap {
                         $columnName = $this->associatedModel::getPrimaryKeyName();
                     } else if (isset($this->associativeModelName)) {
                         $tableName = $this->associativeTableName;
-                        $columnName = $this->associativeModel::getForeignKeyNameOf($joinedModelName);
+                        $columnName = $this->associativeModel::getAssociativeKeys()[$joinedModelName];
                     } else {
                         $tableName = $this->associatedTableName;
                         $columnName = $this->containsSet->offsetGet($this->associatedModelName)['associatedColumn'];

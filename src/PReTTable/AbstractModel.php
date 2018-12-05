@@ -37,6 +37,18 @@ abstract class AbstractModel {
         }
     }
     
+    function contains($modelName, $associatedColumn) {
+        $this->queryMap->contains($modelName, $associatedColumn);
+    }
+    
+    function isContained($modelName, $associatedColumn) {
+        $this->queryMap->isContained($modelName, $associatedColumn);
+    }
+    
+    function containsThrough($modelName, $through) {
+        $this->queryMap->containsThrough($modelName, $through);
+    }
+    
     function create(array $attributes) {
         $clone = $this->getClone();
         
@@ -51,7 +63,7 @@ abstract class AbstractModel {
         ";
         
         try {
-            $clone->connection->beginTransaction();
+            $clone->beginTransaction();
             $clone->prepare = $clone->connection->prepare($query);
             $clone->prepare->execute();
         } catch (PDOException $e) {
@@ -71,7 +83,7 @@ abstract class AbstractModel {
     }
     
     function createAssociation($modelName, ...$rows) {
-        //         pegar o nome da chave associada através da reflexão para usar attachesAssociativeForeignKey e anexar primaryKeyValue
+//         pegar o nome da chave associada através da reflexão para usar attachesAssociativeForeignKey e anexar primaryKeyValue
     }
     
     private function attachesAssociativeForeignKey($foreignKeyName, ...$rows) {
@@ -99,7 +111,7 @@ abstract class AbstractModel {
         ";
         
         try {
-            $clone->connection->beginTransaction();
+            $clone->beginTransaction();
             $clone->prepare = $clone->connection->prepare($query);
             $clone->prepare->execute();
         } catch (PDOException $e) {
@@ -167,13 +179,15 @@ abstract class AbstractModel {
         return null;
     }
     
-//     put proxy methods (from QueryMap) here to relate models (contains and isContained)
-
     function commit() {
         return $this->connection->commit();
     }
     
-    function rollBack() {
+    protected function beginTransaction() {
+        $this->connection->beginTransaction();
+    }
+    
+    protected function rollBack() {
         $this->connection->exec('ROLLBACK');
     }
     
