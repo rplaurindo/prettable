@@ -4,16 +4,12 @@ namespace PReTTable;
 
 class PDOInsertIntoStatement extends WritingStatement {
     
-    private $connection;
-    
     private $insertIntoStatement;
     
     private $rows;
     
-    function __construct($modelName, $PDOConnection, ...$rows) {
+    function __construct($modelName, ...$rows) {
         ReadQueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
-        
-        $this->connection = $PDOConnection;
         
         $tableName = ReadQueryMap::resolveTableName($modelName);
         $this->insertIntoStatement = "$tableName (" . implode(", ", array_keys($rows[0])) . ")";
@@ -37,7 +33,7 @@ class PDOInsertIntoStatement extends WritingStatement {
                 VALUES ($valuesStatement)
             ";
             
-            array_push($statements, $this->connection->prepare($statement));
+            array_push($statements, $statement);
         }
         
         return $statements;

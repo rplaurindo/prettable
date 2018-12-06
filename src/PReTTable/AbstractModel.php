@@ -52,7 +52,7 @@ abstract class AbstractModel {
     function create(array $attributes) {
         $clone = $this->getClone();
         
-        $insertIntoStatement = new PDOInsertIntoStatement($clone->modelName, $clone->connection, $attributes);
+        $insertIntoStatement = new PDOInsertIntoStatement($clone->modelName, $attributes);
         
         try {
             if (!$clone->connection->inTransaction()) {
@@ -60,12 +60,13 @@ abstract class AbstractModel {
             }
             
             foreach ($insertIntoStatement->getStatements() as $statement) {
+                $PDOstatement = $this->connection->prepare($statement);
                 foreach ($attributes as $columnName => $value) {
 //                     another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type, 
 //                     for example. So this block can be moved to a external class.
-                    $statement->bindParam(":$columnName", $value);
+                    $PDOstatement->bindParam(":$columnName", $value);
                 }
-                $statement->execute();
+                $PDOstatement->execute();
             }
             
         } catch (PDOException $e) {

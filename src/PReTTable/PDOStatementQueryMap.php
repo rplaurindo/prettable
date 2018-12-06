@@ -6,8 +6,6 @@ class PDOStatementQueryMap extends ReadQueryMap {
     
     private $statement;
     
-    private $insertInto;
-    
     private $values;
     
     private $update;
@@ -101,16 +99,6 @@ class PDOStatementQueryMap extends ReadQueryMap {
         
         $clone->from   = $clone->tableName;
         $clone->whereClause  = "$columnName = '$value'";
-        
-        return $clone;
-    }
-    
-    function insert(array $attributes) {
-        $clone = $this->getClone();
-        
-        $insertIntoStatement = new InsertIntoStatement($clone->modelName, $attributes);
-        $clone->insertInto = $insertIntoStatement->getInsertIntoStatement();
-        $clone->values = $insertIntoStatement->getValuesStatement();
         
         return $clone;
     }
