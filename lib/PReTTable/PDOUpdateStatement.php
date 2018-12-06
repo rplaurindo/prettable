@@ -6,44 +6,45 @@ class PDOUpdateStatement extends WritingStatement {
     
     private $updateStatement;
     
-    private $setStatement;
+    private $attributes;
+    
+    private $primaryKeyName;
     
     private $whereStatement;
     
     function __construct($modelName, array $attributes) {
         ReadQueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
         
+        $this->attributes = $attributes;
+        
         $tableName = ReadQueryMap::resolveTableName($modelName);
         $model = Reflection::getDeclarationOf($modelName);
         
         $this->updateStatement = $tableName;
         
-//         $this->mountSet(...parent::resolveStringValues($attributes));
-        $this->mountSet($attributes);
-        
-        $primaryKeyName = $model::getPrimaryKeyName();
-        $this->whereStatement = "$primaryKeyName = :$primaryKeyName";
+        $this->primaryKeyName = $model::getPrimaryKeyName();
+        $this->whereStatement = "$this->primaryKeyName = :$this->primaryKeyName";
     }
     
-    function getUpdateStatement() {
-        return $this->updateStatement;
-    }
-    
-    function getSetStatement() {
-        return $this->setStatement;
-    }
-    
-    function getWhereStatement() {
-        return $this->whereStatement;
-    }
-    
-    private function mountSet(array $attributes) {
-        $mounted = [];
-        foreach($attributes as $columnName => $value) {
-            array_push($mounted, "$columnName = :$columnName");
+    function getStatement() {
+        $settings = [];
+        foreach ($this->attributes as $columnName => $value) {
+            array_push($settings, "$columnName = :$columnName");
         }
         
-        $this->setStatement = implode(", ", $mounted);
+        $settingsStatement = implode(', ', $settings);
+        
+        $statement = "
+            UPDATE $this->updateStatement
+            SET $settingsStatement
+            WHERE $this->whereStatement
+        ";
+        
+        return $statement;
+    }
+    
+    function getPrimaryKeyName() {
+        return $this->primaryKeyName;
     }
     
 }

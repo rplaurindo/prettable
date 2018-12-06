@@ -105,7 +105,7 @@ $model = new Model1();
 // print_r($model->getRow(20));
 // print_r($model->getRow('column1', 'value2'));
 
-print_r($model->create(['column1' => 'a value'])->commit());
+// print_r($model->create(['column1' => 'a value'])->commit());
 
 // echo $model
 //     ->create(['column1' => 'a value'])
@@ -131,6 +131,6 @@ print_r($model->create(['column1' => 'a value'])->commit());
 //     ]
 // );
 
-// print_r($model->update(22, ['column1' => 'a updated value'])->commit());
+print_r($model->update(44, ['column1' => 'a updated value'])->commit());
 
 // echo $model->delete('id', 28);

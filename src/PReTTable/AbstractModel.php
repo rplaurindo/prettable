@@ -138,26 +138,23 @@ abstract class AbstractModel {
     
     function update($primaryKeyValue, array $attributes) {
         $clone = $this->getClone();
-        
-        $map = $clone->queryMap->update($primaryKeyValue, $attributes)->getMap();
-        
-        $update = $map['update'];
-        $set = $map['set'];
-        $where = $map['where'];
-        
-        $query = "
-            UPDATE $update
-            SET $set
-            WHERE $where
-        ";
+
+        $updateStatement = new PDOUpdateStatement($clone->modelName, $attributes);
+        $primaryKeyName = $updateStatement->getPrimaryKeyName();
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-            $clone->prepare = $clone->connection->prepare($query);
-            $clone->prepare->execute();
+            $PDOstatement = $this->connection->prepare($updateStatement->getStatement());
+            foreach ($attributes as $columnName => $value) {
+                $PDOstatement->bindParam(":$columnName", $value);
+            }
+            $PDOstatement->bindParam(":$primaryKeyName", $primaryKeyValue);
+            
+            $PDOstatement->execute();
+            
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;
