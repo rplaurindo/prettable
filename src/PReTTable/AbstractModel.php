@@ -31,7 +31,7 @@ abstract class AbstractModel {
         Connection::setData($data);
         
         try {
-            $this->queryMap = new QueryMap($this->modelName);
+            $this->queryMap = new PDOStatementQueryMap($this->modelName);
         } catch (Exception $e) {
             echo $e;
         }
@@ -52,23 +52,22 @@ abstract class AbstractModel {
     function create(array $attributes) {
         $clone = $this->getClone();
         
-        $map = $clone->queryMap->insert($attributes)->getMap();
-        
-        $insertInto = $map['insertInto'];
-        $values = $map['values'];
-        
-        $query = "
-            INSERT INTO $insertInto
-            VALUES $values
-        ";
+        $insertIntoStatement = new PDOInsertIntoStatement($clone->modelName, $clone->connection, $attributes);
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-            $clone->prepare = $clone->connection->prepare($query);
-            $clone->prepare->execute();
+            foreach ($insertIntoStatement->getStatements() as $statement) {
+                foreach ($attributes as $columnName => $value) {
+//                     another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type, 
+//                     for example. So this block can be moved to a external class.
+                    $statement->bindParam(":$columnName", $value);
+                }
+                $statement->execute();
+            }
+            
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;

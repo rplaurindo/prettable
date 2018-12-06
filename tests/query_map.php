@@ -65,8 +65,12 @@ class Model2 implements IdentifiableModelInterface {
         return 'table2';
     }
     
-    static function getPrimaryKey() {
+    static function getPrimaryKeyName() {
         return 'ID_table2';
+    }
+    
+    static function isPrimaryKeySelfIncremental() {
+        return true;
     }
     
     static function getColumns() {
@@ -113,7 +117,7 @@ class Model3 implements IdentifiableModelInterface {
         return 'table3';
     }
     
-    static function getPrimaryKey() {
+    static function getPrimaryKeyName() {
         return 'id';
     }
     
@@ -132,7 +136,7 @@ class Model4 implements IdentifiableModelInterface {
         return 'table4';
     }
     
-    static function getPrimaryKey() {
+    static function getPrimaryKeyName() {
         return 'id';
     }
     
@@ -151,11 +155,6 @@ class Model5 {
 
 class AssociativeModel implements IdentifiableModelInterface, AssociativeModelInterface {
     
-    private static $association = [
-        'Model1' => 'table1_id',
-        'Model2' => 'table2_id'
-    ];
-    
     static function getTableName() {
         return 'associative_table';
     }
@@ -168,8 +167,11 @@ class AssociativeModel implements IdentifiableModelInterface, AssociativeModelIn
         return array_values(self::$association);
     }
     
-    static function getForeignKeyOf($modelName) {
-        return self::$association[$modelName]; 
+    static function getAssociativeKeys($modelName) {
+        return [
+            'Model1' => 'table1_id',
+            'Model2' => 'table2_id'
+        ]; 
     }
     
 }

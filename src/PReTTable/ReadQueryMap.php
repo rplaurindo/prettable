@@ -4,50 +4,38 @@ namespace PReTTable;
 
 use Exception, ArrayObject;
 
-// a layer to mount a map of queries
-class QueryMap {
+// a layer to mount a map of queries to read data
+class ReadQueryMap {
     
-    private $modelName;
+    protected $modelName;
     
-    private $model;
+    protected $model;
     
-    private $tableName;
+    protected $tableName;
     
-    private $primaryKey;
+    protected $primaryKeyName;
     
-    private $associatedModelName;
+    protected $associatedModelName;
     
-    private $associatedModel;
+    protected $associatedModel;
     
-    private $associatedTableName;
+    protected $associatedTableName;
     
-    private $associativeModelName;
+    protected $associativeModelName;
     
-    private $associativeTableName;
+    protected $associativeTableName;
     
-    private $associativeModel;
+    protected $associativeModel;
     
-    private $containsSet;
+    protected $containsSet;
     
-    private $isContainedSet;
+    protected $isContainedSet;
     
-    private $select;
+    protected $select;
     
-    private $from;
+    protected $from;
     
-    private $joins;
-    
-    private $whereClause;
-    
-    private $insertInto;
-    
-    private $values;
-    
-    private $update;
-    
-    private $set;
-    
-    private $deleteFrom;
+    protected $joins;
     
     function __construct($modelName) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
@@ -55,7 +43,7 @@ class QueryMap {
         $this->modelName = $modelName;
         $this->model = Reflection::getDeclarationOf($modelName);
         $this->tableName = self::resolveTableName($modelName);
-        $this->primaryKey = $this->model::getPrimaryKeyName();
+        $this->primaryKeyName = $this->model::getPrimaryKeyName();
         
         $this->containsSet = new ArrayObject();
         $this->isContainedSet = new ArrayObject();
@@ -109,19 +97,7 @@ class QueryMap {
         $this->containsSet->offsetSet($modelName, ['associativeModelName' => $through]);
     }
     
-    function getAssociativeModelNameOf($modelName) {
-        if ($this->containsSet->offsetExists($modelName)) {
-            $relationshipData = $this->containsSet->offsetGet($modelName);
-            
-            if (array_key_exists('associativeModelName', $relationshipData)) {
-                return $relationshipData['associativeModelName'];
-            }
-        }
-        
-        return null;
-    }
-    
-    function select($modelName, $primaryKeyValue = null) {
+    function select($modelName) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         
         $clone = $this->getClone();
@@ -148,29 +124,19 @@ class QueryMap {
                     $clone->associativeTableName = self::resolveTableName($clone->associativeModelName);
                     $clone->from = $clone->associativeTableName;
                     
-                    $clone->join($clone->modelName, $clone->primaryKey);
+                    $clone->join($clone->modelName, $clone->primaryKeyName);
                     $clone->join($modelName, $clone->associatedModel::getPrimaryKeyName());
                     
                     $associativeColumn = $clone->associativeModel::getAssociativeKeys()[$clone->modelName];
-                    if (isset($primaryKeyValue) && !empty($primaryKeyValue)) {
-                        $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
-                    }
                 } else {
-                    $clone->join($clone->modelName, $clone->primaryKey);
+                    $clone->join($clone->modelName, $clone->primaryKeyName);
                     
                     $associatedColumn = $clone->containsSet->offsetGet($modelName)['associatedColumn'];
-                    if (isset($primaryKeyValue) && !empty($primaryKeyValue)) {
-                        $clone->whereClause = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
-                    }
                 }
             } else {
                 $associatedColumn = $clone->isContainedSet->offsetGet($modelName)['associatedColumn'];
                 
                 $clone->join($clone->modelName, $associatedColumn);
-                
-                if (isset($primaryKeyValue) && !empty($primaryKeyValue)) {
-                    $clone->whereClause = "$clone->tableName.$associatedColumn = $primaryKeyValue";
-                }
             }
         }
         
@@ -193,23 +159,6 @@ class QueryMap {
         return clone $clone;
     }
     
-    function getRow($columnName, $value = null) {
-        $clone = $this->getClone();
-        
-        if (empty($value)) {
-            $value = $columnName;
-            $columnName = $clone->primaryKey;
-        }
-        
-        $selectStatement = new SelectStatement($clone->modelName);
-        $clone->select = $selectStatement->mount();
-        
-        $clone->from   = $clone->tableName;
-        $clone->whereClause  = "$columnName = '$value'";
-        
-        return $clone;
-    }
-    
     function getAll() {
         $clone = $this->getClone();
         
@@ -217,49 +166,6 @@ class QueryMap {
         $selectStatement = new SelectStatement($clone->modelName);
         $clone->select = $selectStatement->mount();
         $clone->from   = $this->tableName;
-        
-        return $clone;
-    }
-    
-    function insert(array $attributes) {
-        $clone = $this->getClone();
-        
-        $insertIntoStatement = new InsertIntoStatement($clone->modelName, $attributes);
-        $clone->insertInto = $insertIntoStatement->getInsertIntoStatement();
-        $clone->values = $insertIntoStatement->getValuesStatement();
-        
-        return $clone;
-    }
-    
-    function insertIntoAssociation($modelName, ...$rows) {
-        $clone = $this->getClone();
-        
-        $associativeModelName = $clone->containsSet->offsetGet($modelName)['associativeModelName'];
-        
-        $insertIntoStatement = new InsertIntoStatement($associativeModelName, ...$rows);
-        $clone->insertInto = $insertIntoStatement->getInsertIntoStatement();
-        $clone->values = $insertIntoStatement->getValuesStatement();
-        
-        return $clone;
-    }
-    
-    function update($primaryKeyValue, array $attributes) {
-        $clone = $this->getClone();
-        
-        $updateStatement = new UpdateStatement($clone->modelName, $primaryKeyValue, $attributes);
-        $clone->update = $updateStatement->getUpdateStatement();
-        $clone->set = $updateStatement->getSetStatement();
-        $clone->whereClause = $updateStatement->getWhereStatement();
-        
-        return $clone;
-    }
-    
-    function delete($columnName, ...$values) {
-        $clone = $this->getClone();
-        
-        $deleteStatement = new DeleteStatement($clone->modelName, $columnName, ...$values);
-        $clone->deleteFrom = $deleteStatement->getDeleteFromStatement();
-        $clone->whereClause = $deleteStatement->getWhereClauseStatement();
         
         return $clone;
     }
@@ -287,7 +193,7 @@ class QueryMap {
                         $columnName = $this->associativeModel::getAssociativeKeys()[$joinedModelName];
                     } else {
                         $tableName = $this->tableName;
-                        $columnName = $this->primaryKey;
+                        $columnName = $this->primaryKeyName;
                     }
                 } else {
                     if ($this->isContainedSet->offsetExists($joinedModelName)) {
@@ -308,30 +214,6 @@ class QueryMap {
                 array_push($map['joins'],
                     "$joinedTableName ON $joinedTableName.$joinedColumnName = $tableName.$columnName");
             }
-        }
-        
-        if (isset($this->insertInto)) {
-            $map['insertInto'] = $this->insertInto;
-        }
-        
-        if (isset($this->values)) {
-            $map['values'] = $this->values;
-        }
-        
-        if (isset($this->update)) {
-            $map['update'] = $this->update;
-        }
-        
-        if (isset($this->set)) {
-            $map['set'] = $this->set;
-        }
-        
-        if (isset($this->deleteFrom)) {
-            $map['deleteFrom'] = $this->deleteFrom;
-        }
-        
-        if (isset($this->whereClause)) {
-            $map['where'] = $this->whereClause;
         }
         
         return $map;

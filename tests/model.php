@@ -105,18 +105,18 @@ $model = new Model1();
 // print_r($model->getRow(20));
 // print_r($model->getRow('column1', 'value2'));
 
-// print_r($model->create(['column1' => 'a value'])->commit());
+print_r($model->create(['column1' => 'a value'])->commit());
 
-echo $model
-    ->create(['column1' => 'a value'])
-    ->createAssociation('Model2',
-        [
-            'table_2_id' => 1
-        ],
-        [
-            'table_2_id' => 2
-        ]
-    );
+// echo $model
+//     ->create(['column1' => 'a value'])
+//     ->createAssociation('Model2',
+//         [
+//             'table_2_id' => 1
+//         ],
+//         [
+//             'table_2_id' => 2
+//         ]
+//     );
 
 // $model->createAssociation('Model2', 
 //     [

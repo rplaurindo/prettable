@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-class UpdateStatement extends WritingStatement {
+class PDOUpdateStatement extends WritingStatement {
     
     private $updateStatement;
     
@@ -10,18 +10,19 @@ class UpdateStatement extends WritingStatement {
     
     private $whereStatement;
     
-    function __construct($modelName, $primaryKeyValue, array $attributes) {
-        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
+    function __construct($modelName, array $attributes) {
+        ReadQueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
         
-        $tableName = QueryMap::resolveTableName($modelName);
+        $tableName = ReadQueryMap::resolveTableName($modelName);
         $model = Reflection::getDeclarationOf($modelName);
         
         $this->updateStatement = $tableName;
         
-        $this->mountSet(...parent::resolveStringValues($attributes));
+//         $this->mountSet(...parent::resolveStringValues($attributes));
+        $this->mountSet($attributes);
         
-        $primaryKey = $model::getPrimaryKeyName();
-        $this->whereStatement = "$primaryKey = $primaryKeyValue";
+        $primaryKeyName = $model::getPrimaryKeyName();
+        $this->whereStatement = "$primaryKeyName = :$primaryKeyName";
     }
     
     function getUpdateStatement() {
@@ -39,7 +40,7 @@ class UpdateStatement extends WritingStatement {
     private function mountSet(array $attributes) {
         $mounted = [];
         foreach($attributes as $columnName => $value) {
-            array_push($mounted, "$columnName = $value");
+            array_push($mounted, "$columnName = :$columnName");
         }
         
         $this->setStatement = implode(", ", $mounted);
