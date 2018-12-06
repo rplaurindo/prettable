@@ -91,6 +91,7 @@ abstract class AbstractModel {
             $associativeModelName = $this->queryMap->getAssociativeModelNameOf($modelName);
             $associativeModel = Reflection::getDeclarationOf($associativeModelName);
             $foreignKey = $associativeModel::getAssociativeKeys()[$clone->modelName];
+        
             $rows = self::attachesAssociativeForeignKey($foreignKey, $this->primaryKeyValue, ...$rows);
         }
         
@@ -124,6 +125,7 @@ abstract class AbstractModel {
     
     function updateAssociation() {
         
+//         $associativeModelName = $this->queryMap->getAssociativeModelNameOf($modelName);
 //         if (is_subclass_of($associativeModelName, 'IdentifiableModelInterface')) {
 //             if ($associativeModel::isPrimaryKeySelfIncremental()) {
 //                 $clone->primaryKeyValue = $clone->connection->lastInsertId();
