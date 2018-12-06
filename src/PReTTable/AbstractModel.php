@@ -10,15 +10,15 @@ abstract class AbstractModel {
     
     private $model;
     
-    private $queryMap;
-    
     private $host;
+    
+    private $primaryKeyValue;
+    
+    private $queryMap;
     
     private $connection;
     
     private $prepare;
-    
-    private $primaryKeyValue;
 
     function __construct($host, array $data) {
         $this->modelName = get_class($this);
