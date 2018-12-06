@@ -3,7 +3,6 @@
 require 'autoload.php';
 
 use PReTTable\IdentifiableModelInterface;
-// use PReTTable\AssociativeModelInterface;
 use PReTTable\AbstractModel;
 use PReTTable\AssociativeModelInterface;
 
@@ -107,20 +106,30 @@ $model = new Model1();
 // print_r($model->getRow('column1', 'value2'));
 
 // print_r($model->create(['column1' => 'a value'])->commit());
-// $model->createAssociation('Model2', ['table_2_id' => 1], ['table_2_id' => 2]);
 
-$model->createAssociation('Model2', 
-    [
-        'table_1_id' => 1, 
-        'table_2_id' => 1
+echo $model
+    ->create(['column1' => 'a value'])
+    ->createAssociation('Model2',
+        [
+            'table_2_id' => 1
+        ],
+        [
+            'table_2_id' => 2
+        ]
+    );
+
+// $model->createAssociation('Model2', 
+//     [
+//         'table_1_id' => 1, 
+//         'table_2_id' => 1
         
-    ], 
-    [
-        'table_1_id' => 1, 
-        'table_2_id' => 2
+//     ], 
+//     [
+//         'table_1_id' => 1, 
+//         'table_2_id' => 2
         
-    ]
-);
+//     ]
+// );
 
 // print_r($model->update(22, ['column1' => 'a updated value'])->commit());
 

@@ -87,12 +87,11 @@ abstract class AbstractModel {
     function createAssociation($modelName, ...$rows) {
         $clone = $this->getClone();
         
-        $associativeModelName = $this->queryMap->getAssociativeModelNameOf($modelName);
-        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
-        
         if (isset($clone->primaryKeyValue)) {
-            $foreignKey = $associativeModel::getAssociativeKeys[$modelName];
-            $rows = attachesAssociativeForeignKey($foreignKey, ...$rows);
+            $associativeModelName = $this->queryMap->getAssociativeModelNameOf($modelName);
+            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+            $foreignKey = $associativeModel::getAssociativeKeys()[$clone->modelName];
+            $rows = self::attachesAssociativeForeignKey($foreignKey, $this->primaryKeyValue, ...$rows);
         }
         
         $map = $clone->queryMap->insertIntoAssociation($modelName, ...$rows)->getMap();
@@ -105,8 +104,6 @@ abstract class AbstractModel {
             VALUES $values
         ";
         
-        echo $query;
-        
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
@@ -115,7 +112,7 @@ abstract class AbstractModel {
             $clone->prepare = $clone->connection->prepare($query);
             $clone->prepare->execute();
             
-//             $clone->commit();
+            $clone->commit();
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;
@@ -248,9 +245,9 @@ abstract class AbstractModel {
         $this->connection = $connection->establishConnection($this->host, $database);
     }
     
-    private function attachesAssociativeForeignKey($foreignKeyName, ...$rows) {
+    private static function attachesAssociativeForeignKey($foreignKeyName, $value, ...$rows) {
         foreach ($rows as $index => $attributes) {
-            $attributes[$foreignKeyName] = $this->primaryKeyValue;
+            $attributes[$foreignKeyName] = $value;
             $rows[$index] = $attributes;
         }
         
