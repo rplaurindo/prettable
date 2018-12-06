@@ -94,8 +94,8 @@ class AssociativeModel implements AssociativeModelInterface {
     
     static function getAssociativeKeys() {
         return [
-            'Model1' => 'table1_id',
-            'Model2' => 'table2_id'
+            'Model1' => 'table_1_id',
+            'Model2' => 'table_2_id'
         ];
     }
     
@@ -107,8 +107,20 @@ $model = new Model1();
 // print_r($model->getRow('column1', 'value2'));
 
 // print_r($model->create(['column1' => 'a value'])->commit());
+// $model->createAssociation('Model2', ['table_2_id' => 1], ['table_2_id' => 2]);
 
-$model->createAssociation(['column1' => 'a value 1'], ['column1' => 'a value 2']);
+$model->createAssociation('Model2', 
+    [
+        'table_1_id' => 1, 
+        'table_2_id' => 1
+        
+    ], 
+    [
+        'table_1_id' => 1, 
+        'table_2_id' => 2
+        
+    ]
+);
 
 // print_r($model->update(22, ['column1' => 'a updated value'])->commit());
 

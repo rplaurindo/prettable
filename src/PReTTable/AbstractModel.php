@@ -71,7 +71,6 @@ abstract class AbstractModel {
             $clone->prepare->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
-            $clone->commit();
             echo $e;
             throw new PDOException($e);
         }
@@ -91,9 +90,10 @@ abstract class AbstractModel {
         $associativeModelName = $this->queryMap->getAssociativeModelNameOf($modelName);
         $associativeModel = Reflection::getDeclarationOf($associativeModelName);
         
-        $foreignKey = $associativeModel::getAssociativeKeys[$modelName];
-        
-        $rows = attachesAssociativeForeignKey($foreignKey, ...$rows);
+        if (isset($clone->primaryKeyValue)) {
+            $foreignKey = $associativeModel::getAssociativeKeys[$modelName];
+            $rows = attachesAssociativeForeignKey($foreignKey, ...$rows);
+        }
         
         $map = $clone->queryMap->insertIntoAssociation($modelName, ...$rows)->getMap();
         
@@ -114,15 +114,19 @@ abstract class AbstractModel {
             
             $clone->prepare = $clone->connection->prepare($query);
             $clone->prepare->execute();
+            
 //             $clone->commit();
         } catch (PDOException $e) {
             $clone->rollBack();
-            $clone->commit();
             echo $e;
             throw new PDOException($e);
         }
         
-//         fazer essa checagem somente na hora de fazer update em uma associação  
+        return true;
+    }
+    
+    function updateAssociation() {
+        
 //         if (is_subclass_of($associativeModelName, 'IdentifiableModelInterface')) {
 //             if ($associativeModel::isPrimaryKeySelfIncremental()) {
 //                 $clone->primaryKeyValue = $clone->connection->lastInsertId();
@@ -130,17 +134,7 @@ abstract class AbstractModel {
 //                 $clone->primaryKeyValue = $attributes[$clone->model::getPrimaryKeyName()];
 //             }
 //         }
-        
-        return true;
-    }
-    
-    private function attachesAssociativeForeignKey($foreignKeyName, ...$rows) {
-        foreach ($rows as $index => $attributes) {
-            $attributes[$foreignKeyName] = $this->lastInsertedPrimaryKey;
-            $rows[$index] = $attributes;
-        }
-        
-        return $rows;
+
     }
     
     function update($primaryKeyValue, array $attributes) {
@@ -167,7 +161,6 @@ abstract class AbstractModel {
             $clone->prepare->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
-            $clone->commit();
             echo $e;
             throw new PDOException($e);
         }
@@ -253,6 +246,15 @@ abstract class AbstractModel {
         
         $connection = new Connection();
         $this->connection = $connection->establishConnection($this->host, $database);
+    }
+    
+    private function attachesAssociativeForeignKey($foreignKeyName, ...$rows) {
+        foreach ($rows as $index => $attributes) {
+            $attributes[$foreignKeyName] = $this->primaryKeyValue;
+            $rows[$index] = $attributes;
+        }
+        
+        return $rows;
     }
     
 }
