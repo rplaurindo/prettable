@@ -97,6 +97,18 @@ class QueryMap {
         $this->containsSet->offsetSet($modelName, ['associativeModelName' => $through]);
     }
     
+    function getAssociativeModelNameOf($modelName) {
+        if ($this->containsSet->offsetExists($modelName)) {
+            $relationshipData = $this->containsSet->offsetGet($modelName);
+            
+            if (array_key_exists('associativeModelName', $relationshipData)) {
+                return $relationshipData['associativeModelName'];
+            }
+        }
+        
+        return null;
+    }
+    
     function select($modelName) {
         self::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface', __NAMESPACE__ . '\AssociativeModelInterface');
         

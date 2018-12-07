@@ -12,28 +12,22 @@ class PDOInsertIntoStatement {
         $this->tableName = QueryMap::resolveTableName($modelName);
     }
     
-    function getStatements(...$rows) {
-        $statements = [];
+    function getStatement(array $attributes) {
+        $insertIntoStatement = "$this->tableName (" . implode(", ", array_keys($attributes)) . ")";
         
-        $insertIntoStatement = "$this->tableName (" . implode(", ", array_keys($rows[0])) . ")";
-        
-        foreach ($rows as $attributes) {
-            $values = [];
-            foreach ($attributes as $columnName => $value) {
-                array_push($values, ":$columnName");
-            }
-            
-            $valuesStatement = implode(', ', $values);
-            
-            $statement = "
-                INSERT INTO $insertIntoStatement
-                VALUES ($valuesStatement)
-            ";
-            
-            array_push($statements, $statement);
+        $values = [];
+        foreach ($attributes as $columnName => $value) {
+            array_push($values, ":$columnName");
         }
         
-        return $statements;
+        $valuesStatement = implode(', ', $values);
+        
+        $statement = "
+            INSERT INTO $insertIntoStatement
+            VALUES ($valuesStatement)
+        ";
+        
+        return $statement;
         
     }
     

@@ -89,31 +89,30 @@ abstract class AbstractModel {
     function createAssociation($modelName, ...$rows) {
         $clone = $this->getClone();
         
+        $associativeModelName = $this->queryMap->getAssociativeModelNameOf($modelName);
+        
         if (isset($clone->primaryKeyValue)) {
-            $associativeModelName = $this->queryMap->getAssociativeModelNameOf($modelName);
             $associativeModel = Reflection::getDeclarationOf($associativeModelName);
             $foreignKey = $associativeModel::getAssociativeKeys()[$clone->modelName];
         
             $rows = self::attachesAssociativeForeignKey($foreignKey, $this->primaryKeyValue, ...$rows);
         }
         
-        $map = $clone->queryMap->insertIntoAssociation($modelName, ...$rows)->getMap();
-        
-        $insertInto = $map['insertInto'];
-        $values = $map['values'];
-        
-        $query = "
-            INSERT INTO $insertInto
-            VALUES $values
-        ";
+        $insertIntoStatement = new PDOInsertIntoStatement($associativeModelName);
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-            $clone->prepare = $clone->connection->prepare($query);
-            $clone->prepare->execute();
+            foreach ($rows as $attributes) {
+                $statement = $insertIntoStatement->getStatement($attributes);
+                $PDOstatement = $this->connection->prepare($statement);
+                foreach ($attributes as $columnName => $value) {
+                    $PDOstatement->bindValue(":$columnName", $value);
+                }
+                $PDOstatement->execute();
+            }
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;
