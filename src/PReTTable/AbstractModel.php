@@ -10,6 +10,8 @@ abstract class AbstractModel {
     
     private $model;
     
+    private $tableName;
+    
     private $host;
     
     private $primaryKeyValue;
@@ -23,6 +25,7 @@ abstract class AbstractModel {
     function __construct($host, array $data) {
         $this->modelName = get_class($this);
         $this->model = Reflection::getDeclarationOf($this->modelName);
+        $this->tableName = $this->model::getTableName();
         
         $this->host = $host;
         
@@ -52,14 +55,14 @@ abstract class AbstractModel {
     function create(array $attributes) {
         $clone = $this->getClone();
         
-        $insertIntoStatement = new PDOInsertIntoStatement($clone->modelName, $attributes);
+        $insertIntoStatement = new PDOInsertIntoStatement($clone->modelName);
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-            foreach ($insertIntoStatement->getStatements() as $statement) {
+            foreach ($insertIntoStatement->getStatements($attributes) as $statement) {
                 $PDOstatement = $this->connection->prepare($statement);
                 foreach ($attributes as $columnName => $value) {
 //                     another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type, 
@@ -68,7 +71,6 @@ abstract class AbstractModel {
                 }
                 $PDOstatement->execute();
             }
-            
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;
@@ -168,26 +170,29 @@ abstract class AbstractModel {
     
     function delete($columnName, ...$values) {
         $clone = $this->getClone();
-        
-        $map = $clone->queryMap->delete($columnName, ...$values)->getMap();
-        
-        $deleteFrom = $map['deleteFrom'];
-        $where = $map['where'];
-        
-        $query = "
-            DELETE FROM $deleteFrom
-            WHERE $where
+
+        $statement = "
+            DELETE FROM $clone->tableName
+            WHERE $columnName = :$columnName
         ";
         
         try {
-            $prepare = $clone->connection->prepare($query);
-            $prepare->execute();
+            if (!$clone->connection->inTransaction()) {
+                $clone->beginTransaction();
+            }
+            
+            foreach ($values as $value) {
+                $PDOstatement = $this->connection->prepare($statement);
+                $PDOstatement->bindParam(":$columnName", $value);
+                $PDOstatement->execute();
+            }
         } catch (PDOException $e) {
+            $clone->rollBack();
             echo $e;
             throw new PDOException($e);
         }
         
-        return true;
+        return $clone;
     }
     
     function getRow($columnName, $value = null) {

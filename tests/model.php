@@ -133,4 +133,4 @@ $model = new Model1();
 
 // print_r($model->update(44, ['column1' => 'a updated value'])->commit());
 
-echo $model->delete('id', 44, 45, 46, 47, 48);
+print_r($model->delete('id', 44, 45, 46, 47)->commit());

@@ -8,6 +8,38 @@ class PDOWhereClause extends WhereClause {
         parent::__construct(...$tables);
     }
     
+    private function mountWithoutAttachedTable(array $params) {
+        $mounted = [];
+        
+        foreach($params as $columnName => $value) {
+            if (gettype($value) == 'array') {
+                if (count($value)) {
+                    $firstValue = $value[0];
+                    $value = array_slice($value, 1);
+                    
+                    $statement = "$columnName $this->comparisonOperator '$firstValue'";
+                    foreach ($value as $v) {
+                        $statement .= " OR $columnName $this->comparisonOperator '$v'";
+                    }
+                    
+                    if (count($mounted)) {
+                        array_push($mounted, " $this->logicalOperator ($statement)");
+                    } else {
+                        array_push($mounted, "($statement)");
+                    }
+                }
+            } else {
+                if (count($mounted)) {
+                    array_push($mounted, " $this->logicalOperator $columnName $this->comparisonOperator :$columnName");
+                } else {
+                    array_push($mounted, "$columnName $this->comparisonOperator :$columnName");
+                }
+            }
+        }
+        
+        return implode("", $mounted);
+    }
+    
     private function mountWithAttachedTable(array $params) {
         $mounted = [];
         
@@ -31,46 +63,10 @@ class PDOWhereClause extends WhereClause {
                     }
                 } else {
                     if (count($mounted)) {
-                        array_push($mounted, " $this->logicalOperator $tableName.$columnName $this->comparisonOperator '$value'");
+                        array_push($mounted, " $this->logicalOperator $tableName.$columnName $this->comparisonOperator :$columnName");
                     } else {
-                        array_push($mounted, "$tableName.$columnName $this->comparisonOperator '$value'");
+                        array_push($mounted, "$tableName.$columnName $this->comparisonOperator :$columnName");
                     }
-                }
-            }
-        }
-        
-        return implode("", $mounted);
-    }
-    
-    private function mountWithoutAttachedTable(array $params) {
-        $mounted = [];
-        
-        foreach($params as $columnName => $value) {
-            if (gettype($value) == 'array') {
-                if (count($value)) {
-                    $firstValue = $value[0];
-                    $value = array_slice($value, 1);
-                    
-                    echo "\n\n";
-                    
-                    echo "\n\n";
-                    
-                    $statement = "$columnName $this->comparisonOperator '$firstValue'";
-                    foreach ($value as $v) {
-                        $statement .= " OR $columnName $this->comparisonOperator '$v'";
-                    }
-                    
-                    if (count($mounted)) {
-                        array_push($mounted, " $this->logicalOperator ($statement)");
-                    } else {
-                        array_push($mounted, "($statement)");
-                    }
-                }
-            } else {
-                if (count($mounted)) {
-                    array_push($mounted, " $this->logicalOperator $columnName $this->comparisonOperator '$value'");
-                } else {
-                    array_push($mounted, "$columnName $this->comparisonOperator '$value'");
                 }
             }
         }

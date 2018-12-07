@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-class PDOUpdateStatement extends WritingStatement {
+class PDOUpdateStatement {
     
     private $updateStatement;
     
