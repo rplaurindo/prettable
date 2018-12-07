@@ -7,12 +7,10 @@ class SelectStatement {
     private $models;
     
     function __construct(...$models) {
-        
         $this->models = $models;
-        
     }
     
-    function mount($attachTableName = false) {
+    function getStatement($attachTableName = false) {
         
         if (count($this->models) > 1) {
             return $this->mountCollection($attachTableName);
@@ -33,13 +31,13 @@ class SelectStatement {
     }
     
     private function mountMember($modelName, $attachTableName) {
-        ReadQueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
+        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
         
         $model = Reflection::getDeclarationOf($modelName);
         $columns = $model::getColumns();
         
         if ($attachTableName) {
-            $tableName = ReadQueryMap::resolveTableName($modelName);
+            $tableName = QueryMap::resolveTableName($modelName);
         }
         
         $mountedColumns = [];

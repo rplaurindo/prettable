@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-class PDOStatementQueryMap extends ReadQueryMap {
+class PDOStatementQueryMap extends SearchQueryMap {
     
     private $statement;
     
@@ -86,23 +86,6 @@ class PDOStatementQueryMap extends ReadQueryMap {
         return $clone;
     }
     
-    function getRow($columnName, $value = null) {
-        $clone = $this->getClone();
-        
-        if (empty($value)) {
-            $value = $columnName;
-            $columnName = $clone->primaryKey;
-        }
-        
-        $selectStatement = new SelectStatement($clone->modelName);
-        $clone->select = $selectStatement->mount();
-        
-        $clone->from   = $clone->tableName;
-        $clone->whereClause  = "$columnName = '$value'";
-        
-        return $clone;
-    }
-    
     function insertIntoAssociation($modelName, ...$rows) {
         $clone = $this->getClone();
         
@@ -111,27 +94,6 @@ class PDOStatementQueryMap extends ReadQueryMap {
         $insertIntoStatement = new InsertIntoStatement($associativeModelName, ...$rows);
         $clone->insertInto = $insertIntoStatement->getInsertIntoStatement();
         $clone->values = $insertIntoStatement->getValuesStatement();
-        
-        return $clone;
-    }
-    
-    function update($primaryKeyValue, array $attributes) {
-        $clone = $this->getClone();
-        
-        $updateStatement = new UpdateStatement($clone->modelName, $primaryKeyValue, $attributes);
-        $clone->update = $updateStatement->getUpdateStatement();
-        $clone->set = $updateStatement->getSetStatement();
-        $clone->whereClause = $updateStatement->getWhereStatement();
-        
-        return $clone;
-    }
-    
-    function delete($columnName, ...$values) {
-        $clone = $this->getClone();
-        
-        $deleteStatement = new DeleteStatement($clone->modelName, $columnName, ...$values);
-        $clone->deleteFrom = $deleteStatement->getDeleteFromStatement();
-        $clone->whereClause = $deleteStatement->getWhereClauseStatement();
         
         return $clone;
     }

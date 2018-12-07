@@ -7,9 +7,9 @@ class PDOInsertIntoStatement {
     private $tableName;
     
     function __construct($modelName) {
-        ReadQueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
+        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
         
-        $this->tableName = ReadQueryMap::resolveTableName($modelName);
+        $this->tableName = QueryMap::resolveTableName($modelName);
     }
     
     function getStatements(...$rows) {

@@ -2,7 +2,7 @@
 
 namespace PReTTable\Helpers;
 
-class PDOWhereClause extends WhereClause {
+class PDOWhereClause extends AbstractWhereClause {
     
     function __construct(...$tables) {
         parent::__construct(...$tables);

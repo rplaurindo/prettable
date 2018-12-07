@@ -102,10 +102,10 @@ class AssociativeModel implements AssociativeModelInterface {
 
 
 $model = new Model1();
-// print_r($model->getRow(20));
-// print_r($model->getRow('column1', 'value2'));
+print_r($model->getRow(2));
+// print_r($model->getRow('column1', 'value 2'));
 
-print_r($model->create(['column1' => 'a value'])->commit());
+// print_r($model->create(['column1' => 'a value'])->commit());
 
 // echo $model
 //     ->create(['column1' => 'a value'])
@@ -116,9 +116,9 @@ print_r($model->create(['column1' => 'a value'])->commit());
 //         [
 //             'table_2_id' => 2
 //         ]
-//     );
+//     )->commit();
 
-// $model->createAssociation('Model2', 
+// echo $model->createAssociation('Model2', 
 //     [
 //         'table_1_id' => 1, 
 //         'table_2_id' => 1
@@ -129,7 +129,7 @@ print_r($model->create(['column1' => 'a value'])->commit());
 //         'table_2_id' => 2
         
 //     ]
-// );
+// )->commit();
 
 // print_r($model->update(44, ['column1' => 'a updated value'])->commit());
 

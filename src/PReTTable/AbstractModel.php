@@ -25,8 +25,6 @@ abstract class AbstractModel {
     function __construct($host, array $data) {
         $this->modelName = get_class($this);
         $this->model = Reflection::getDeclarationOf($this->modelName);
-        $this->tableName = $this->model::getTableName();
-        
         $this->host = $host;
         
         $this->primaryKeyValue = null;
@@ -34,10 +32,13 @@ abstract class AbstractModel {
         Connection::setData($data);
         
         try {
-            $this->queryMap = new PDOStatementQueryMap($this->modelName);
+            $this->queryMap = new QueryMap($this->modelName);
         } catch (Exception $e) {
             echo $e;
+            throw new Exception($e);
         }
+        
+        $this->tableName = $this->model::getTableName();
     }
     
     function contains($modelName, $associatedColumn) {
@@ -113,15 +114,13 @@ abstract class AbstractModel {
             
             $clone->prepare = $clone->connection->prepare($query);
             $clone->prepare->execute();
-            
-            $clone->commit();
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;
             throw new PDOException($e);
         }
         
-        return true;
+        return $clone;
     }
     
     function updateAssociation() {
@@ -195,28 +194,41 @@ abstract class AbstractModel {
     }
     
     function getRow($columnName, $value = null) {
-        $map = $this->queryMap->getRow($columnName, $value)->getMap();
+        $clone = $this->getClone();
+
+//         func_get_args()
+        if (empty($value)) {
+            $value = $columnName;
+            
+            $primaryKeyName = $clone->model::getPrimaryKeyName();
+            $columnName = $primaryKeyName;
+        }
         
-        $select = $map['select'];
-        $from = $map['from'];
-        $where = $map['where'];
+        $selectStatement = new SelectStatement($clone->modelName);
+        $selectStatement = $selectStatement->getStatement();
         
         $query = "
-            SELECT $select 
-            FROM $from
-            WHERE $where
+            SELECT $selectStatement
+            FROM $clone->tableName
+            WHERE $columnName = :$columnName
         ";
         
         try {
-            $PDOStatement = $this->connection->query($query);
+            $PDOStatement = $this->connection->prepare($query);
+            $PDOStatement->bindParam(":$columnName", $value);
             $PDOStatement->setFetchMode(PDO::FETCH_ASSOC);
+            $PDOStatement->execute();
             $result = $PDOStatement->fetchAll();
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
         }
         
-        if (count($result)) {
+        if (
+            isset($result) && 
+            gettype($result) == 'array' && 
+            count($result)
+            ) {
             return $result[0];
         }
             

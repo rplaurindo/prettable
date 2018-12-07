@@ -5,7 +5,7 @@ namespace PReTTable;
 use Exception, ArrayObject;
 
 // a layer to mount a map of queries to read data
-class ReadQueryMap {
+class QueryMap {
     
     protected $modelName;
     
@@ -157,17 +157,6 @@ class ReadQueryMap {
         }
         
         return clone $clone;
-    }
-    
-    function getAll() {
-        $clone = $this->getClone();
-        
-//         func_get_args()
-        $selectStatement = new SelectStatement($clone->modelName);
-        $clone->select = $selectStatement->mount();
-        $clone->from   = $this->tableName;
-        
-        return $clone;
     }
     
     function getMap() {

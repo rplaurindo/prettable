@@ -2,7 +2,7 @@
 
 namespace PReTTable\Helpers;
 
-abstract class WhereClause {
+abstract class AbstractWhereClause {
     
     protected $tables;
     

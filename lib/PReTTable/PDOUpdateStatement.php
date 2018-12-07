@@ -13,11 +13,11 @@ class PDOUpdateStatement {
     private $whereStatement;
     
     function __construct($modelName, array $attributes) {
-        ReadQueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
+        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
         
         $this->attributes = $attributes;
         
-        $tableName = ReadQueryMap::resolveTableName($modelName);
+        $tableName = QueryMap::resolveTableName($modelName);
         $model = Reflection::getDeclarationOf($modelName);
         
         $this->updateStatement = $tableName;
