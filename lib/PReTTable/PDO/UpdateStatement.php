@@ -3,7 +3,7 @@
 namespace PReTTable\PDO;
 
 use 
-    PReTTable\QueryMap, 
+    PReTTable\QueryMap,
     PReTTable\Reflection;
 
 class UpdateStatement {
@@ -17,7 +17,7 @@ class UpdateStatement {
     private $whereStatement;
     
     function __construct($modelName, array $attributes) {
-        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\IdentifiableModelInterface');
+        QueryMap::checkIfModelIs($modelName, 'PReTTable\IdentifiableModelInterface');
         
         $this->attributes = $attributes;
         

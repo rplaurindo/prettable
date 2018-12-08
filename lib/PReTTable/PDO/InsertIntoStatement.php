@@ -9,7 +9,7 @@ class InsertIntoStatement {
     private $tableName;
     
     function __construct($modelName) {
-        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
+        QueryMap::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
         
         $this->tableName = QueryMap::resolveTableName($modelName);
     }
