@@ -10,16 +10,12 @@ class UpdateStatement {
     
     private $updateStatement;
     
-    private $attributes;
-    
     private $primaryKeyName;
     
     private $whereStatement;
     
-    function __construct($modelName, array $attributes) {
+    function __construct($modelName) {
         QueryMap::checkIfModelIs($modelName, 'PReTTable\IdentifiableModelInterface');
-        
-        $this->attributes = $attributes;
         
         $tableName = QueryMap::resolveTableName($modelName);
         $model = Reflection::getDeclarationOf($modelName);
@@ -30,9 +26,9 @@ class UpdateStatement {
         $this->whereStatement = "$this->primaryKeyName = :$this->primaryKeyName";
     }
     
-    function getStatement() {
+    function getStatement(array $attributes) {
         $settings = [];
-        foreach ($this->attributes as $columnName => $value) {
+        foreach ($attributes as $columnName => $value) {
             array_push($settings, "$columnName = :$columnName");
         }
         

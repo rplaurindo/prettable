@@ -133,15 +133,18 @@ $model = new Model1();
 //         ]
 //         )->commit();
 
-// print_r($model->update(44, ['column1' => 'a updated value'])->commit());
+print_r($model->update(49, ['column1' => 'a updated value'])->commit());
 
-echo $model->updateAssociations('Model2', 1,
-    [
-        'table_1_id' => 1,
-        'table_2_id' => 1
+// echo $model->updateAssociations('Model2', 1,
+//     [
+//         'table_2_id' => 1
         
-    ]
-    )->commit();
+//     ],
+//     [
+//         'table_2_id' => 3
+        
+//     ]
+//     )->commit();
 
 // print_r($model->delete('id', 44, 45, 46, 47)->commit());
 

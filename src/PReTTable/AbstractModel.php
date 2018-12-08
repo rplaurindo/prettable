@@ -95,11 +95,10 @@ abstract class AbstractModel {
         $clone = $this->getClone();
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
+        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+        $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
         
         if (isset($clone->primaryKeyValue)) {
-            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
-            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
-        
             $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
                                                         $clone->primaryKeyValue, 
                                                         ...$rows);
@@ -129,54 +128,10 @@ abstract class AbstractModel {
         return $clone;
     }
     
-    function updateAssociations($modelName, $primaryKeyValue, ...$rows) {
-        $clone = $this->getClone();
-        
-        $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
-        
-        if (isset($clone->primaryKeyValue)) {
-            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
-            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
-            
-            $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
-                                                        $clone->primaryKeyValue, 
-                                                        ...$rows);
-        }
-        
-        try {
-            if (!$clone->connection->inTransaction()) {
-                $clone->beginTransaction();
-            }
-            
-            foreach ($rows as $attributes) {
-                $statement = $insertIntoStatement->getStatement($attributes);
-                $PDOstatement = $clone->connection->prepare($statement);
-                foreach ($attributes as $columnName => $value) {
-                    $PDOstatement->bindValue(":$columnName", $value);
-                }
-                $PDOstatement->execute();
-            }
-        } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
-        }
-        
-//         if (is_subclass_of($associativeModelName, 'IdentifiableModelInterface')) {
-//             if ($associativeModel::isPrimaryKeySelfIncremental()) {
-//                 $clone->primaryKeyValue = $clone->connection->lastInsertId();
-//             } else {
-//                 $clone->primaryKeyValue = $attributes[$clone->model::getPrimaryKeyName()];
-//             }
-//         }
-
-        return $clone;
-    }
-    
     function update($primaryKeyValue, array $attributes) {
         $clone = $this->getClone();
 
-        $updateStatement = new UpdateStatement($clone->modelName, $attributes);
+        $updateStatement = new UpdateStatement($clone->modelName);
         $primaryKeyName = $updateStatement->getPrimaryKeyName();
         
         try {
@@ -184,7 +139,7 @@ abstract class AbstractModel {
                 $clone->beginTransaction();
             }
             
-            $PDOstatement = $clone->connection->prepare($updateStatement->getStatement());
+            $PDOstatement = $clone->connection->prepare($updateStatement->getStatement($attributes));
             foreach ($attributes as $columnName => $value) {
                 $PDOstatement->bindParam(":$columnName", $value);
             }
@@ -199,6 +154,52 @@ abstract class AbstractModel {
         }
         
         $clone->primaryKeyValue = $primaryKeyValue;
+        
+        return $clone;
+    }
+    
+    function updateAssociations($modelName, $primaryKeyValue, ...$rows) {
+        $clone = $this->getClone();
+        
+        $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
+        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+        $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
+        
+        if (gettype($primaryKeyValue) == 'array') {
+            $rows = array_merge($rows, $primaryKeyValue);
+            $primaryKeyValue = $clone->primaryKeyValue;
+        }
+        
+        $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
+        
+        $updateStatement = new UpdateStatement($clone->modelName, $attributes);
+        
+        try {
+            if (!$clone->connection->inTransaction()) {
+                $clone->beginTransaction();
+            }
+            
+//             foreach ($rows as $attributes) {
+//                 $statement = $insertIntoStatement->getStatement($attributes);
+//                 $PDOstatement = $clone->connection->prepare($statement);
+//                 foreach ($attributes as $columnName => $value) {
+//                     $PDOstatement->bindValue(":$columnName", $value);
+//                 }
+//                 $PDOstatement->execute();
+//             }
+        } catch (PDOException $e) {
+            $clone->rollBack();
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        //         if (is_subclass_of($associativeModelName, 'IdentifiableModelInterface')) {
+        //             if ($associativeModel::isPrimaryKeySelfIncremental()) {
+        //                 $clone->primaryKeyValue = $clone->connection->lastInsertId();
+        //             } else {
+        //                 $clone->primaryKeyValue = $attributes[$clone->model::getPrimaryKeyName()];
+        //             }
+        //         }
         
         return $clone;
     }
