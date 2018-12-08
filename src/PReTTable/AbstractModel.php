@@ -171,35 +171,33 @@ abstract class AbstractModel {
         }
         
         $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
-        
-        $updateStatement = new UpdateStatement($clone->modelName, $attributes);
+//         virou o padrao Strategy mudar para adequar melhor a estrutura
+        if (is_subclass_of($associativeModelName, 'IdentifiableModelInterface')) {
+            $statementStrategy = new UpdateStatement($associativeModelName);
+        } else {
+            $statementStrategy = new InsertIntoStatement($associativeModelName);
+        }
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-//             foreach ($rows as $attributes) {
-//                 $statement = $insertIntoStatement->getStatement($attributes);
-//                 $PDOstatement = $clone->connection->prepare($statement);
-//                 foreach ($attributes as $columnName => $value) {
-//                     $PDOstatement->bindValue(":$columnName", $value);
-//                 }
-//                 $PDOstatement->execute();
-//             }
+            $clone->deleteAssociations($modelName, $primaryKeyValue);
+            
+            foreach ($rows as $attributes) {
+                $statement = $statementStrategy->getStatement($attributes);
+                $PDOstatement = $clone->connection->prepare($statement);
+                foreach ($attributes as $columnName => $value) {
+                    $PDOstatement->bindValue(":$columnName", $value);
+                }
+                $PDOstatement->execute();
+            }
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;
             throw new PDOException($e);
         }
-        
-        //         if (is_subclass_of($associativeModelName, 'IdentifiableModelInterface')) {
-        //             if ($associativeModel::isPrimaryKeySelfIncremental()) {
-        //                 $clone->primaryKeyValue = $clone->connection->lastInsertId();
-        //             } else {
-        //                 $clone->primaryKeyValue = $attributes[$clone->model::getPrimaryKeyName()];
-        //             }
-        //         }
         
         return $clone;
     }

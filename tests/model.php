@@ -107,6 +107,8 @@ $model = new Model1();
 
 // print_r($model->create(['column1' => 'a value'])->commit());
 
+// aqui pode melhorar, uma chave pode ser passada para não precisar repetí-la, assim como em update, mas no caso de vir de um create, o mesmo if de update 
+// associations pode ser usado para definir a chave primária, porque, neste caso, não é necessário passa a chave como parâmetro 
 // echo $model->createAssociations('Model2',
 //     [
 //         'table_1_id' => 1,
@@ -133,18 +135,16 @@ $model = new Model1();
 //         ]
 //         )->commit();
 
-print_r($model->update(49, ['column1' => 'a updated value'])->commit());
+// print_r($model->update(49, ['column1' => 'a updated value'])->commit());
 
-// echo $model->updateAssociations('Model2', 1,
-//     [
-//         'table_2_id' => 1
-        
-//     ],
-//     [
-//         'table_2_id' => 3
-        
-//     ]
-//     )->commit();
+echo $model->updateAssociations('Model2', 1,
+    [
+        'table_2_id' => 1
+    ],
+    [
+        'table_2_id' => 3
+    ]
+    )->commit();
 
 // print_r($model->delete('id', 44, 45, 46, 47)->commit());
 
