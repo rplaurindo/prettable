@@ -91,7 +91,7 @@ abstract class AbstractModel {
         return $clone;
     }
     
-    function createAssociation($modelName, ...$rows) {
+    function createAssociations($modelName, ...$rows) {
         $clone = $this->getClone();
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
@@ -129,7 +129,7 @@ abstract class AbstractModel {
         return $clone;
     }
     
-    function updateAssociation($modelName, ...$rows) {
+    function updateAssociations($modelName, $primaryKeyValue, ...$rows) {
         $clone = $this->getClone();
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);

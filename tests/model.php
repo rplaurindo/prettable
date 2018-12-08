@@ -107,7 +107,7 @@ $model = new Model1();
 
 // print_r($model->create(['column1' => 'a value'])->commit());
 
-// echo $model->createAssociation('Model2',
+// echo $model->createAssociations('Model2',
 //     [
 //         'table_1_id' => 1,
 //         'table_2_id' => 1
@@ -124,7 +124,7 @@ $model = new Model1();
 
 // echo $model
 //     ->create(['column1' => 'a value'])
-//     ->createAssociation('Model2',
+//     ->createAssociations('Model2',
 //         [
 //             'table_2_id' => 1
 //         ],
@@ -135,14 +135,14 @@ $model = new Model1();
 
 // print_r($model->update(44, ['column1' => 'a updated value'])->commit());
 
-// echo $model->updateAssociation('Model2',
-//     [
-//         'table_1_id' => 1,
-//         'table_2_id' => 1
+echo $model->updateAssociations('Model2', 1,
+    [
+        'table_1_id' => 1,
+        'table_2_id' => 1
         
-//     ]
-//     )->commit();
+    ]
+    )->commit();
 
 // print_r($model->delete('id', 44, 45, 46, 47)->commit());
 
-echo $model->deleteAssociations('Model2', 2)->commit();
+// echo $model->deleteAssociations('Model2', 2)->commit();
