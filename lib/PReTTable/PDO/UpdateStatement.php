@@ -1,8 +1,12 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\PDO;
 
-class PDOUpdateStatement {
+use 
+    PReTTable\QueryMap, 
+    PReTTable\Reflection;
+
+class UpdateStatement {
     
     private $updateStatement;
     

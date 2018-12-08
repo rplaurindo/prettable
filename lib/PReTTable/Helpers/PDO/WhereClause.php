@@ -1,8 +1,10 @@
 <?php
 
-namespace PReTTable\Helpers;
+namespace PReTTable\Helpers\PDO;
 
-class PDOWhereClause extends AbstractWhereClause {
+use PReTTable\Helpers;
+
+class WhereClause extends Helpers\AbstractWhereClause {
     
     function __construct(...$tables) {
         parent::__construct(...$tables);

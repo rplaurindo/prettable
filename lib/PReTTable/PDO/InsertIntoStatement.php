@@ -1,8 +1,10 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\PDO;
 
-class PDOInsertIntoStatement {
+use PReTTable\QueryMap;
+
+class InsertIntoStatement {
     
     private $tableName;
     

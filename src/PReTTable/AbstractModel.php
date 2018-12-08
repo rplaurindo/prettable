@@ -2,7 +2,12 @@
 
 namespace PReTTable;
 
-use Exception, PDO, PDOException;
+use 
+    Exception, 
+    PDO, 
+    PDOException,
+    PReTTable\PDO\InsertIntoStatement,
+    PReTTable\PDO\UpdateStatement;
 
 abstract class AbstractModel {
     
@@ -56,7 +61,7 @@ abstract class AbstractModel {
     function create(array $attributes) {
         $clone = $this->getClone();
         
-        $insertIntoStatement = new PDOInsertIntoStatement($clone->modelName);
+        $insertIntoStatement = new InsertIntoStatement($clone->modelName);
         
         try {
             if (!$clone->connection->inTransaction()) {
@@ -98,7 +103,7 @@ abstract class AbstractModel {
             $rows = self::attachesAssociativeForeignKey($foreignKey, $this->primaryKeyValue, ...$rows);
         }
         
-        $insertIntoStatement = new PDOInsertIntoStatement($associativeModelName);
+        $insertIntoStatement = new InsertIntoStatement($associativeModelName);
         
         try {
             if (!$clone->connection->inTransaction()) {
@@ -138,7 +143,7 @@ abstract class AbstractModel {
     function update($primaryKeyValue, array $attributes) {
         $clone = $this->getClone();
 
-        $updateStatement = new PDOUpdateStatement($clone->modelName, $attributes);
+        $updateStatement = new UpdateStatement($clone->modelName, $attributes);
         $primaryKeyName = $updateStatement->getPrimaryKeyName();
         
         try {
