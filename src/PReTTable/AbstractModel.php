@@ -96,36 +96,40 @@ abstract class AbstractModel {
         $clone = $this->getClone();
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
-        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
-        $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
         
-        if (gettype($primaryKeyValue) == 'array') {
-            array_push($rows, $primaryKeyValue);
-            $primaryKeyValue = $clone->primaryKeyValue;
-        }
-        
-        $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
-        
-        $strategy = new QueryStatementStrategyContext(new InsertInto($associativeModelName));
-        
-        try {
-            if (!$clone->connection->inTransaction()) {
-                $clone->beginTransaction();
+        if (isset($associativeModelName)) {            
+            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
+            
+            if (gettype($primaryKeyValue) == 'array') {
+                array_push($rows, $primaryKeyValue);
+                $primaryKeyValue = $clone->primaryKeyValue;
             }
             
-            foreach ($rows as $attributes) {
-                $statement = $strategy->getStatement($attributes);
-                $PDOstatement = $clone->connection->prepare($statement);
-                foreach ($attributes as $columnName => $value) {
-                    $PDOstatement->bindValue(":$columnName", $value);
+            $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
+            
+            $strategy = new QueryStatementStrategyContext(new InsertInto($associativeModelName));
+            
+            try {
+                if (!$clone->connection->inTransaction()) {
+                    $clone->beginTransaction();
                 }
-                $PDOstatement->execute();
+                
+                foreach ($rows as $attributes) {
+                    $statement = $strategy->getStatement($attributes);
+                    $PDOstatement = $clone->connection->prepare($statement);
+                    foreach ($attributes as $columnName => $value) {
+                        $PDOstatement->bindValue(":$columnName", $value);
+                    }
+                    $PDOstatement->execute();
+                }
+            } catch (PDOException $e) {
+                $clone->rollBack();
+                echo $e;
+                throw new PDOException($e);
             }
-        } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
         }
+        
         
         return $clone;
     }
@@ -165,38 +169,42 @@ abstract class AbstractModel {
         $clone = $this->getClone();
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
-        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
-        $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
         
-        if (gettype($primaryKeyValue) == 'array') {
-            array_push($rows, $primaryKeyValue);
-            $primaryKeyValue = $clone->primaryKeyValue;
-        }
-        
-        $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
-        
-        $strategy = new QueryStatementStrategyContext(new InsertInto($associativeModelName));
-        
-        try {
-            if (!$clone->connection->inTransaction()) {
-                $clone->beginTransaction();
+        if (isset($associativeModelName)) {            
+            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
+            
+            if (gettype($primaryKeyValue) == 'array') {
+                array_push($rows, $primaryKeyValue);
+                $primaryKeyValue = $clone->primaryKeyValue;
             }
             
-            $clone->deleteAssociations($modelName, $primaryKeyValue);
+            $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
             
-            foreach ($rows as $attributes) {
-                $statement = $strategy->getStatement($attributes);
-                $PDOstatement = $clone->connection->prepare($statement);
-                foreach ($attributes as $columnName => $value) {
-                    $PDOstatement->bindValue(":$columnName", $value);
+            $strategy = new QueryStatementStrategyContext(new InsertInto($associativeModelName));
+            
+            try {
+                if (!$clone->connection->inTransaction()) {
+                    $clone->beginTransaction();
                 }
-                $PDOstatement->execute();
+                
+                $clone->deleteAssociations($modelName, $primaryKeyValue);
+                
+                foreach ($rows as $attributes) {
+                    $statement = $strategy->getStatement($attributes);
+                    $PDOstatement = $clone->connection->prepare($statement);
+                    foreach ($attributes as $columnName => $value) {
+                        $PDOstatement->bindValue(":$columnName", $value);
+                    }
+                    $PDOstatement->execute();
+                }
+            } catch (PDOException $e) {
+                $clone->rollBack();
+                echo $e;
+                throw new PDOException($e);
             }
-        } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
         }
+        
         
         return $clone;
     }
@@ -232,29 +240,32 @@ abstract class AbstractModel {
         $clone = $this->getClone();
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
-        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
-        $associativeTableName = $associativeModel::getTableName();
-        $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
         
-        $statement = "
-            DELETE FROM $associativeTableName
-            WHERE $foreignKeyName = :$foreignKeyName
-        ";
-        
-        try {
-            if (!$clone->connection->inTransaction()) {
-                $clone->beginTransaction();
-            }
+        if (isset($associativeModelName)) {            
+            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+            $associativeTableName = $associativeModel::getTableName();
+            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
             
-            foreach ($foreignKeyValues as $foreignKeyValue) {
-                $PDOstatement = $clone->connection->prepare($statement);
-                $PDOstatement->bindParam(":$foreignKeyName", $foreignKeyValue);
-                $PDOstatement->execute();
+            $statement = "
+                DELETE FROM $associativeTableName
+                WHERE $foreignKeyName = :$foreignKeyName
+            ";
+            
+            try {
+                if (!$clone->connection->inTransaction()) {
+                    $clone->beginTransaction();
+                }
+                
+                foreach ($foreignKeyValues as $foreignKeyValue) {
+                    $PDOstatement = $clone->connection->prepare($statement);
+                    $PDOstatement->bindParam(":$foreignKeyName", $foreignKeyValue);
+                    $PDOstatement->execute();
+                }
+            } catch (PDOException $e) {
+                $clone->rollBack();
+                echo $e;
+                throw new PDOException($e);
             }
-        } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
         }
         
         return $clone;
@@ -268,43 +279,48 @@ abstract class AbstractModel {
     
     function getAssociatedKeys($modelName, $primaryKeyValue) {
         $clone = $this->getClone();
+        $result = [];
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
-        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
-        $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
-        $relatedForeignKeyName = $associativeModel::getAssociativeKeys()[$modelName];
         
-        if (isset($clone->primaryKeyValue)) {
-            $primaryKeyValue = $clone->primaryKeyValue;
-        }
-        
-        $map = $clone->queryMap->select($modelName)->getMap();
-        
-        $from = $map['from'];
-        $joins = implode("\n            INNER JOIN ", $map['joins']);
-        
-        $statement = "
-            SELECT $relatedForeignKeyName
-            FROM $from
-            INNER JOIN $joins
-            WHERE $from.$foreignKeyName = :$foreignKeyName
-        ";
-        
-        try {
-            if (!$clone->connection->inTransaction()) {
-                $clone->beginTransaction();
+        if (isset($associativeModelName)) {
+            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
+            $relatedForeignKeyName = $associativeModel::getAssociativeKeys()[$modelName];
+            
+            if (isset($clone->primaryKeyValue)) {
+                $primaryKeyValue = $clone->primaryKeyValue;
             }
             
-            $PDOstatement = $clone->connection->prepare($statement);
-            $PDOstatement->bindParam(":$foreignKeyName", $primaryKeyValue);            
-            $PDOstatement->execute();
+            $map = $clone->queryMap->select($modelName)->getMap();
             
-            $result = $PDOstatement->fetchAll(PDO::FETCH_COLUMN, $relatedForeignKeyName);
-        } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
+            $from = $map['from'];
+            $joins = implode("\n            INNER JOIN ", $map['joins']);
+            
+            $statement = "
+                SELECT $relatedForeignKeyName
+                FROM $from
+                INNER JOIN $joins
+                WHERE $from.$foreignKeyName = :$foreignKeyName
+            ";
+            
+            try {
+                if (!$clone->connection->inTransaction()) {
+                    $clone->beginTransaction();
+                }
+                
+                $PDOstatement = $clone->connection->prepare($statement);
+                $PDOstatement->bindParam(":$foreignKeyName", $primaryKeyValue);            
+                $PDOstatement->execute();
+                
+                $result = $PDOstatement->fetchAll(PDO::FETCH_COLUMN, $relatedForeignKeyName);
+            } catch (PDOException $e) {
+                $clone->rollBack();
+                echo $e;
+                throw new PDOException($e);
+            }
         }
+        
 
         return $result;
     }
