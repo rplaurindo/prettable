@@ -1,8 +1,12 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\QueryStatements;
 
-class SelectStatement {
+use 
+    PReTTable\QueryMap,
+    PReTTable\Reflection;
+
+class Select {
     
     private $models;
     

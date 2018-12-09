@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\Strategies\QueryStatements\PDO;
+namespace PReTTable\QueryStatements\Strategies\PDO;
 
 use 
     PReTTable\QueryMap,

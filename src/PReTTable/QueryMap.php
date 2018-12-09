@@ -2,7 +2,10 @@
 
 namespace PReTTable;
 
-use Exception, ArrayObject;
+use 
+    Exception, 
+    ArrayObject,
+    PReTTable\QueryStatements\Select;
 
 // a layer to mount a map of queries to read data
 class QueryMap {
@@ -121,7 +124,7 @@ class QueryMap {
         if ($clone->containsSet->offsetExists($modelName) 
             || $clone->isContainedSet->offsetExists($modelName)) {
                 
-            $selectStatement = new SelectStatement($modelName);
+            $selectStatement = new Select($modelName);
             $clone->select = $selectStatement->mount(true);
             
             $clone->from = $clone->associatedTableName;

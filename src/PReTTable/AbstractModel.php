@@ -259,6 +259,18 @@ abstract class AbstractModel {
         return $clone;
     }
     
+    function deleteFromAssociation($modelName, $primaryKeyValue, ...$keys) {
+        $clone = $this->getClone();
+        
+        
+    }
+    
+    function getAssociatedKeys($modelName, $primaryKeyValue) {
+        $clone = $this->getClone();
+        
+        
+    }
+    
     function getRow($columnName, $value = null) {
         $clone = $this->getClone();
 
