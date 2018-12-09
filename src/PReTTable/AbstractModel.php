@@ -271,10 +271,54 @@ abstract class AbstractModel {
         return $clone;
     }
     
-    function deleteFromAssociation($modelName, $primaryKeyValue, ...$keys) {
+    function deleteFromAssociation($modelName, $primaryKeyValue, 
+                                   ...$relatedKeyValues) {
         $clone = $this->getClone();
         
+        $associativeModelName = $clone->queryMap
+            ->getAssociativeModelNameOf($modelName);
         
+        if (isset($associativeModelName)) {
+            $associativeModel = Reflection
+                ::getDeclarationOf($associativeModelName);
+            $associativeTableName = $associativeModel::getTableName();
+            $foreignKeyName = $associativeModel
+                ::getAssociativeKeys()[$clone->modelName];
+            $relatedForeignKeyName = $associativeModel
+                ::getAssociativeKeys()[$modelName];
+            
+            if (isset($clone->primaryKeyValue)) {
+                $primaryKeyValue = $clone->primaryKeyValue;
+            }
+            
+            $statement = "
+                DELETE FROM $associativeTableName
+                WHERE 
+                    $foreignKeyName = :$foreignKeyName 
+                    AND $relatedForeignKeyName = :$relatedForeignKeyName
+            ";
+            
+            try {
+                if (!$clone->connection->inTransaction()) {
+                    $clone->beginTransaction();
+                }
+                
+                foreach ($relatedKeyValues as $relatedKeyValue) {
+                    $PDOstatement = $clone->connection->prepare($statement);
+                    $PDOstatement->bindParam(":$foreignKeyName", 
+                                             $primaryKeyValue);
+                    $PDOstatement->bindParam(":$relatedForeignKeyName", 
+                                             $relatedKeyValue);
+                    $PDOstatement->execute();
+                }
+            } catch (PDOException $e) {
+                $clone->rollBack();
+                echo $e;
+                throw new PDOException($e);
+            }
+        }
+        
+        return $clone;
     }
     
     function getAssociatedKeys($modelName, $primaryKeyValue) {
@@ -285,6 +329,8 @@ abstract class AbstractModel {
         
         if (isset($associativeModelName)) {
             $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+            $associativeTableName = $associativeModel::getTableName();
+            
             $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
             $relatedForeignKeyName = $associativeModel::getAssociativeKeys()[$modelName];
             
@@ -292,16 +338,12 @@ abstract class AbstractModel {
                 $primaryKeyValue = $clone->primaryKeyValue;
             }
             
-            $map = $clone->queryMap->select($modelName)->getMap();
-            
-            $from = $map['from'];
-            $joins = implode("\n            INNER JOIN ", $map['joins']);
+//             $joins = implode("\n            INNER JOIN ", $map['joins']);
             
             $statement = "
                 SELECT $relatedForeignKeyName
-                FROM $from
-                INNER JOIN $joins
-                WHERE $from.$foreignKeyName = :$foreignKeyName
+                FROM $associativeTableName
+                WHERE $foreignKeyName = :$foreignKeyName
             ";
             
             try {
@@ -321,7 +363,6 @@ abstract class AbstractModel {
             }
         }
         
-
         return $result;
     }
     

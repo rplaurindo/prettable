@@ -159,4 +159,7 @@ $model = new Model1();
 //     ->commit()
 // ;
 
-print_r($model->getAssociatedKeys('Model2', 76));
+// print_r($model->getAssociatedKeys('Model2', 76));
+
+echo $model->deleteFromAssociation('Model2', 76, 1)->commit();
+
