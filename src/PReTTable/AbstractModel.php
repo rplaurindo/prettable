@@ -430,6 +430,10 @@ abstract class AbstractModel {
             
         return null;
     }
+     
+    function getAll() {
+        return [];
+    }
     
     function commit() {
         return $this->connection->commit();

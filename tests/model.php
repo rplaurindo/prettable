@@ -105,6 +105,8 @@ $model = new Model1();
 // print_r($model->getRow(2));
 // print_r($model->getRow('column1', 'value 2'));
 
+// print_r($model->getAll());
+
 // echo $model->create(['column1' => 'a value'])
 //     ->commit()
 // ;
@@ -159,7 +161,7 @@ $model = new Model1();
 //     ->commit()
 // ;
 
-print_r($model->getAssociatedKeys('Model2', 76));
+// print_r($model->getAssociatedKeys('Model2', 76));
 
 // echo $model->deleteFromAssociation('Model2', 76, 1)->commit();
 
