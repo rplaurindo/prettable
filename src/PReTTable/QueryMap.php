@@ -125,7 +125,7 @@ class QueryMap {
             || $clone->isContainedSet->offsetExists($modelName)) {
                 
             $selectStatement = new Select($modelName);
-            $clone->select = $selectStatement->mount(true);
+            $clone->select = $selectStatement->getStatement(true);
             
             $clone->from = $clone->associatedTableName;
             

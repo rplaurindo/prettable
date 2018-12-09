@@ -35,7 +35,7 @@ class Select {
     }
     
     private function mountMember($modelName, $attachTableName) {
-        QueryMap::checkIfModelIs($modelName, __NAMESPACE__ . '\ModelInterface');
+        QueryMap::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
         
         $model = Reflection::getDeclarationOf($modelName);
         $columns = $model::getColumns();

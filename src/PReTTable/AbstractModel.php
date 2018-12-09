@@ -6,8 +6,9 @@ use
     Exception, 
     PDO,
     PDOException,
-    PReTTable\Strategies\QueryStatements\PDO\InsertInto,
-    PReTTable\Strategies\QueryStatements\PDO\Update;
+    PReTTable\QueryStatements\Strategies\PDO\InsertInto,
+    PReTTable\QueryStatements\Strategies\PDO\Update,
+    PReTTable\QueryStatements\Select;
 
 abstract class AbstractModel {
     
@@ -268,7 +269,44 @@ abstract class AbstractModel {
     function getAssociatedKeys($modelName, $primaryKeyValue) {
         $clone = $this->getClone();
         
+        $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
+        $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+        $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
+        $relatedForeignKeyName = $associativeModel::getAssociativeKeys()[$modelName];
         
+        if (isset($clone->primaryKeyValue)) {
+            $primaryKeyValue = $clone->primaryKeyValue;
+        }
+        
+        $map = $clone->queryMap->select($modelName)->getMap();
+        
+        $from = $map['from'];
+        $joins = implode("\n            INNER JOIN ", $map['joins']);
+        
+        $statement = "
+            SELECT $relatedForeignKeyName
+            FROM $from
+            INNER JOIN $joins
+            WHERE $from.$foreignKeyName = :$foreignKeyName
+        ";
+        
+        try {
+            if (!$clone->connection->inTransaction()) {
+                $clone->beginTransaction();
+            }
+            
+            $PDOstatement = $clone->connection->prepare($statement);
+            $PDOstatement->bindParam(":$foreignKeyName", $primaryKeyValue);            
+            $PDOstatement->execute();
+            
+            $result = $PDOstatement->fetchAll(PDO::FETCH_COLUMN, $relatedForeignKeyName);
+        } catch (PDOException $e) {
+            $clone->rollBack();
+            echo $e;
+            throw new PDOException($e);
+        }
+
+        return $result;
     }
     
     function getRow($columnName, $value = null) {
@@ -282,7 +320,7 @@ abstract class AbstractModel {
             $columnName = $primaryKeyName;
         }
         
-        $selectStatement = new SelectStatement($clone->modelName);
+        $selectStatement = new Select($clone->modelName);
         $selectStatement = $selectStatement->getStatement();
         
         $query = "
@@ -292,11 +330,12 @@ abstract class AbstractModel {
         ";
         
         try {
-            $PDOStatement = $clone->connection->prepare($query);
-            $PDOStatement->bindParam(":$columnName", $value);
-            $PDOStatement->setFetchMode(PDO::FETCH_ASSOC);
-            $PDOStatement->execute();
-            $result = $PDOStatement->fetchAll();
+            $PDOstatement = $clone->connection->prepare($query);
+            $PDOstatement->bindParam(":$columnName", $value);
+            $PDOstatement->execute();
+            
+            $PDOstatement->setFetchMode(PDO::FETCH_ASSOC);
+            $result = $PDOstatement->fetchAll();
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);

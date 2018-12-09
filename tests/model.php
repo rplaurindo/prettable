@@ -140,16 +140,16 @@ $model = new Model1();
 // como fazer verificação se há chave nova relacionada? Talvez o melhor caminho seja pegar todas as chaves associadas, guardar em um array e depois usar
 // in_array para chevar, caso não esteja ele deverá ser tratado como uma nova associação, senão basta fazer update nos atributos. Ainda tem o caso dele 
 // estar nas chaves associadas, mas não estar mais nos parâmetros, caso em que deve ser deletado.   
-echo $model->updateAssociations('Model2', 1,
-    [
-        'table_2_id' => 1
-    ],
-    [
-        'table_2_id' => 3
-    ]
-    )->commit()
-//     )
-;
+// echo $model->updateAssociations('Model2', 1,
+//     [
+//         'table_2_id' => 1
+//     ],
+//     [
+//         'table_2_id' => 3
+//     ]
+//     )->commit()
+// //     )
+// ;
 
 // echo $model->delete('id', 44, 45, 46, 47)
 //     ->commit()
@@ -158,3 +158,5 @@ echo $model->updateAssociations('Model2', 1,
 // echo $model->deleteAssociations('Model2', 2)
 //     ->commit()
 // ;
+
+print_r($model->getAssociatedKeys('Model2', 76));
