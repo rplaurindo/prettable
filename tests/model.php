@@ -105,24 +105,20 @@ $model = new Model1();
 // print_r($model->getRow(2));
 // print_r($model->getRow('column1', 'value 2'));
 
-// print_r($model->create(['column1' => 'a value'])->commit());
-
-// aqui pode melhorar, uma chave pode ser passada para não precisar repetí-la, assim como em update, mas no caso de vir de um create, o mesmo if de update 
-// associations pode ser usado para definir a chave primária, porque, neste caso, não é necessário passa a chave como parâmetro 
-// echo $model->createAssociations('Model2',
+// echo $model->create(['column1' => 'a value'])
+//     ->commit()
+// ;
+ 
+// echo $model->createAssociations('Model2', 1,
 //     [
-//         'table_1_id' => 1,
 //         'table_2_id' => 1
 //     ],
 //     [
-//         'table_1_id' => 1,
-//         'table_2_id' => 2
-//     ],
-//     [
-//         'table_1_id' => 2,
 //         'table_2_id' => 2
 //     ]
-//     )->commit();
+//     )->commit()
+// //     )
+// ;
 
 // echo $model
 //     ->create(['column1' => 'a value'])
@@ -133,10 +129,17 @@ $model = new Model1();
 //         [
 //             'table_2_id' => 2
 //         ]
-//         )->commit();
+//         )->commit()
+// //         )
+// ;
 
-// print_r($model->update(49, ['column1' => 'a updated value'])->commit());
+// echo $model->update(49, ['column1' => 'a updated value'])
+//     ->commit()
+// ;
 
+// como fazer verificação se há chave nova relacionada? Talvez o melhor caminho seja pegar todas as chaves associadas, guardar em um array e depois usar
+// in_array para chevar, caso não esteja ele deverá ser tratado como uma nova associação, senão basta fazer update nos atributos. Ainda tem o caso dele 
+// estar nas chaves associadas, mas não estar mais nos parâmetros, caso em que deve ser deletado.   
 echo $model->updateAssociations('Model2', 1,
     [
         'table_2_id' => 1
@@ -144,8 +147,14 @@ echo $model->updateAssociations('Model2', 1,
     [
         'table_2_id' => 3
     ]
-    )->commit();
+    )->commit()
+//     )
+;
 
-// print_r($model->delete('id', 44, 45, 46, 47)->commit());
+// echo $model->delete('id', 44, 45, 46, 47)
+//     ->commit()
+// ;
 
-// echo $model->deleteAssociations('Model2', 2)->commit();
+// echo $model->deleteAssociations('Model2', 2)
+//     ->commit()
+// ;

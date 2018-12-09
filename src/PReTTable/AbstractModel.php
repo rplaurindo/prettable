@@ -68,7 +68,7 @@ abstract class AbstractModel {
                 $clone->beginTransaction();
             }
             
-            $statement = $insertIntoStatement->getStatements($attributes);
+            $statement = $insertIntoStatement->getStatement($attributes);
             $PDOstatement = $clone->connection->prepare($statement);
             foreach ($attributes as $columnName => $value) {
 //                 another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type,
@@ -91,18 +91,19 @@ abstract class AbstractModel {
         return $clone;
     }
     
-    function createAssociations($modelName, ...$rows) {
+    function createAssociations($modelName, $primaryKeyValue, ...$rows) {
         $clone = $this->getClone();
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
         $associativeModel = Reflection::getDeclarationOf($associativeModelName);
         $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
         
-        if (isset($clone->primaryKeyValue)) {
-            $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
-                                                        $clone->primaryKeyValue, 
-                                                        ...$rows);
+        if (gettype($primaryKeyValue) == 'array') {
+            array_push($rows, $primaryKeyValue);
+            $primaryKeyValue = $clone->primaryKeyValue;
         }
+        
+        $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
         
         $insertIntoStatement = new InsertIntoStatement($associativeModelName);
         
@@ -166,7 +167,7 @@ abstract class AbstractModel {
         $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
         
         if (gettype($primaryKeyValue) == 'array') {
-            $rows = array_merge($rows, $primaryKeyValue);
+            array_push($rows, $primaryKeyValue);
             $primaryKeyValue = $clone->primaryKeyValue;
         }
         
