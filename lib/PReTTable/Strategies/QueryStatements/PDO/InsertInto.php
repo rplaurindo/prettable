@@ -1,10 +1,12 @@
 <?php
 
-namespace PReTTable\PDO;
+namespace PReTTable\Strategies\QueryStatements\PDO;
 
-use PReTTable\QueryMap;
+use 
+    PReTTable\QueryMap,
+    PReTTable\QueryStatementStrategyInterface;
 
-class InsertIntoStatement {
+class InsertInto implements QueryStatementStrategyInterface {
     
     private $tableName;
     

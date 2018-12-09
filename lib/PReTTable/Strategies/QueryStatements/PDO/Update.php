@@ -1,12 +1,13 @@
 <?php
 
-namespace PReTTable\PDO;
+namespace PReTTable\Strategies\QueryStatements\PDO;
 
 use 
     PReTTable\QueryMap,
-    PReTTable\Reflection;
+    PReTTable\Reflection,
+    PReTTable\QueryStatementStrategyInterface;
 
-class UpdateStatement {
+class Update implements QueryStatementStrategyInterface {
     
     private $updateStatement;
     

@@ -4,10 +4,10 @@ namespace PReTTable;
 
 use 
     Exception, 
-    PDO, 
+    PDO,
     PDOException,
-    PReTTable\PDO\InsertIntoStatement,
-    PReTTable\PDO\UpdateStatement;
+    PReTTable\Strategies\QueryStatements\PDO\InsertInto,
+    PReTTable\Strategies\QueryStatements\PDO\Update;
 
 abstract class AbstractModel {
     
@@ -61,14 +61,14 @@ abstract class AbstractModel {
     function create(array $attributes) {
         $clone = $this->getClone();
         
-        $insertIntoStatement = new InsertIntoStatement($clone->modelName);
+        $strategy = new QueryStatementStrategyContext(new InsertInto($clone->modelName));
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-            $statement = $insertIntoStatement->getStatement($attributes);
+            $statement = $strategy->getStatement($attributes);
             $PDOstatement = $clone->connection->prepare($statement);
             foreach ($attributes as $columnName => $value) {
 //                 another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type,
@@ -105,7 +105,7 @@ abstract class AbstractModel {
         
         $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
         
-        $insertIntoStatement = new InsertIntoStatement($associativeModelName);
+        $strategy = new QueryStatementStrategyContext(new InsertInto($associativeModelName));
         
         try {
             if (!$clone->connection->inTransaction()) {
@@ -113,7 +113,7 @@ abstract class AbstractModel {
             }
             
             foreach ($rows as $attributes) {
-                $statement = $insertIntoStatement->getStatement($attributes);
+                $statement = $strategy->getStatement($attributes);
                 $PDOstatement = $clone->connection->prepare($statement);
                 foreach ($attributes as $columnName => $value) {
                     $PDOstatement->bindValue(":$columnName", $value);
@@ -131,16 +131,17 @@ abstract class AbstractModel {
     
     function update($primaryKeyValue, array $attributes) {
         $clone = $this->getClone();
-
-        $updateStatement = new UpdateStatement($clone->modelName);
+        
         $primaryKeyName = $updateStatement->getPrimaryKeyName();
+
+        $strategy = new QueryStatementStrategyContext(new Update($clone->modelName));
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-            $PDOstatement = $clone->connection->prepare($updateStatement->getStatement($attributes));
+            $PDOstatement = $clone->connection->prepare($strategy->getStatement($attributes));
             foreach ($attributes as $columnName => $value) {
                 $PDOstatement->bindParam(":$columnName", $value);
             }
@@ -172,12 +173,8 @@ abstract class AbstractModel {
         }
         
         $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
-//         virou o padrao Strategy mudar para adequar melhor a estrutura
-        if (is_subclass_of($associativeModelName, 'IdentifiableModelInterface')) {
-            $statementStrategy = new UpdateStatement($associativeModelName);
-        } else {
-            $statementStrategy = new InsertIntoStatement($associativeModelName);
-        }
+        
+        $strategy = new QueryStatementStrategyContext(new InsertInto($associativeModelName));
         
         try {
             if (!$clone->connection->inTransaction()) {
@@ -187,7 +184,7 @@ abstract class AbstractModel {
             $clone->deleteAssociations($modelName, $primaryKeyValue);
             
             foreach ($rows as $attributes) {
-                $statement = $statementStrategy->getStatement($attributes);
+                $statement = $strategy->getStatement($attributes);
                 $PDOstatement = $clone->connection->prepare($statement);
                 foreach ($attributes as $columnName => $value) {
                     $PDOstatement->bindValue(":$columnName", $value);
