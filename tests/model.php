@@ -102,7 +102,10 @@ class AssociativeModel implements AssociativeModelInterface {
 
 
 $model = new Model1();
+
 // print_r($model->getRow(2));
+
+// if there isn't a self-incremental primary key
 // print_r($model->getRow('column1', 'value 2'));
 
 // print_r($model->getAll());

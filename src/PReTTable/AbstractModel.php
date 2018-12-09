@@ -413,8 +413,7 @@ abstract class AbstractModel {
             $PDOstatement->bindParam(":$columnName", $value);
             $PDOstatement->execute();
             
-            $PDOstatement->setFetchMode(PDO::FETCH_ASSOC);
-            $result = $PDOstatement->fetchAll();
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
