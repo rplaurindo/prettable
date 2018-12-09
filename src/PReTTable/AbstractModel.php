@@ -62,7 +62,8 @@ abstract class AbstractModel {
     function create(array $attributes) {
         $clone = $this->getClone();
         
-        $strategy = new QueryStatementStrategyContext(new InsertInto($clone->modelName));
+        $strategy = new QueryStatementStrategyContext(new InsertInto($clone
+            ->modelName));
         
         try {
             if (!$clone->connection->inTransaction()) {
@@ -86,7 +87,8 @@ abstract class AbstractModel {
         if ($clone->model::isPrimaryKeySelfIncremental()) {
             $clone->primaryKeyValue = $clone->connection->lastInsertId();
         } else {
-            $clone->primaryKeyValue = $attributes[$clone->model::getPrimaryKeyName()];
+            $clone->primaryKeyValue = $attributes[$clone->model
+                ::getPrimaryKeyName()];
         }
         
         return $clone;
@@ -106,9 +108,12 @@ abstract class AbstractModel {
                 $primaryKeyValue = $clone->primaryKeyValue;
             }
             
-            $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
+            $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
+                                                        $primaryKeyValue, 
+                                                        ...$rows);
             
-            $strategy = new QueryStatementStrategyContext(new InsertInto($associativeModelName));
+            $strategy = new QueryStatementStrategyContext(
+                new InsertInto($associativeModelName));
             
             try {
                 if (!$clone->connection->inTransaction()) {
@@ -139,14 +144,16 @@ abstract class AbstractModel {
         
         $primaryKeyName = $updateStatement->getPrimaryKeyName();
 
-        $strategy = new QueryStatementStrategyContext(new Update($clone->modelName));
+        $strategy = new QueryStatementStrategyContext(new Update($clone
+            ->modelName));
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-            $PDOstatement = $clone->connection->prepare($strategy->getStatement($attributes));
+            $PDOstatement = $clone->connection->prepare($strategy
+                ->getStatement($attributes));
             foreach ($attributes as $columnName => $value) {
                 $PDOstatement->bindParam(":$columnName", $value);
             }
@@ -168,20 +175,26 @@ abstract class AbstractModel {
     function updateAssociations($modelName, $primaryKeyValue, ...$rows) {
         $clone = $this->getClone();
         
-        $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
+        $associativeModelName = $clone->queryMap
+            ->getAssociativeModelNameOf($modelName);
         
         if (isset($associativeModelName)) {            
-            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
-            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
+            $associativeModel = Reflection
+                ::getDeclarationOf($associativeModelName);
+            $foreignKeyName = $associativeModel
+                ::getAssociativeKeys()[$clone->modelName];
             
             if (gettype($primaryKeyValue) == 'array') {
                 array_push($rows, $primaryKeyValue);
                 $primaryKeyValue = $clone->primaryKeyValue;
             }
             
-            $rows = self::attachesAssociativeForeignKey($foreignKeyName, $primaryKeyValue, ...$rows);
+            $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
+                                                        $primaryKeyValue, 
+                                                        ...$rows);
             
-            $strategy = new QueryStatementStrategyContext(new InsertInto($associativeModelName));
+            $strategy = new QueryStatementStrategyContext(
+                new InsertInto($associativeModelName));
             
             try {
                 if (!$clone->connection->inTransaction()) {
@@ -239,12 +252,15 @@ abstract class AbstractModel {
     function deleteAssociations($modelName, ...$foreignKeyValues) {
         $clone = $this->getClone();
         
-        $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
+        $associativeModelName = $clone->queryMap
+            ->getAssociativeModelNameOf($modelName);
         
         if (isset($associativeModelName)) {            
-            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+            $associativeModel = Reflection
+                ::getDeclarationOf($associativeModelName);
             $associativeTableName = $associativeModel::getTableName();
-            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
+            $foreignKeyName = $associativeModel
+                ::getAssociativeKeys()[$clone->modelName];
             
             $statement = "
                 DELETE FROM $associativeTableName
@@ -258,7 +274,8 @@ abstract class AbstractModel {
                 
                 foreach ($foreignKeyValues as $foreignKeyValue) {
                     $PDOstatement = $clone->connection->prepare($statement);
-                    $PDOstatement->bindParam(":$foreignKeyName", $foreignKeyValue);
+                    $PDOstatement->bindParam(":$foreignKeyName", 
+                                             $foreignKeyValue);
                     $PDOstatement->execute();
                 }
             } catch (PDOException $e) {
@@ -305,8 +322,8 @@ abstract class AbstractModel {
                 
                 foreach ($relatedKeyValues as $relatedKeyValue) {
                     $PDOstatement = $clone->connection->prepare($statement);
-                    $PDOstatement->bindParam(":$foreignKeyName", 
-                                             $primaryKeyValue);
+                    $PDOstatement
+                        ->bindParam(":$foreignKeyName", $primaryKeyValue);
                     $PDOstatement->bindParam(":$relatedForeignKeyName", 
                                              $relatedKeyValue);
                     $PDOstatement->execute();
@@ -325,14 +342,18 @@ abstract class AbstractModel {
         $clone = $this->getClone();
         $result = [];
         
-        $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
+        $associativeModelName = $clone->queryMap
+            ->getAssociativeModelNameOf($modelName);
         
         if (isset($associativeModelName)) {
-            $associativeModel = Reflection::getDeclarationOf($associativeModelName);
+            $associativeModel = Reflection
+                ::getDeclarationOf($associativeModelName);
             $associativeTableName = $associativeModel::getTableName();
             
-            $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
-            $relatedForeignKeyName = $associativeModel::getAssociativeKeys()[$modelName];
+            $foreignKeyName = $associativeModel
+                ::getAssociativeKeys()[$clone->modelName];
+            $relatedForeignKeyName = $associativeModel
+                ::getAssociativeKeys()[$modelName];
             
             if (isset($clone->primaryKeyValue)) {
                 $primaryKeyValue = $clone->primaryKeyValue;
@@ -355,7 +376,8 @@ abstract class AbstractModel {
                 $PDOstatement->bindParam(":$foreignKeyName", $primaryKeyValue);            
                 $PDOstatement->execute();
                 
-                $result = $PDOstatement->fetchAll(PDO::FETCH_COLUMN, $relatedForeignKeyName);
+                $result = $PDOstatement
+                    ->fetchAll(PDO::FETCH_COLUMN, $relatedForeignKeyName);
             } catch (PDOException $e) {
                 $clone->rollBack();
                 echo $e;
@@ -431,10 +453,12 @@ abstract class AbstractModel {
         }
         
         $connection = new Connection();
-        $this->connection = $connection->establishConnection($this->host, $database);
+        $this->connection = $connection->establishConnection($this->host, 
+                                                             $database);
     }
     
-    private static function attachesAssociativeForeignKey($foreignKeyName, $value, ...$rows) {
+    private static function attachesAssociativeForeignKey($foreignKeyName, 
+                                                          $value, ...$rows) {
         foreach ($rows as $index => $attributes) {
             $attributes[$foreignKeyName] = $value;
             $rows[$index] = $attributes;
