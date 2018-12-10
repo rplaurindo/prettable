@@ -3,7 +3,7 @@
 namespace PReTTable\QueryStatements\Strategies\PDO;
 
 use 
-    PReTTable\QueryMap,
+    PReTTable\Repository\QueryMap,
     PReTTable\QueryStatementStrategyInterface;
 
 class InsertInto implements QueryStatementStrategyInterface {
@@ -17,7 +17,8 @@ class InsertInto implements QueryStatementStrategyInterface {
     }
     
     function getStatement(array $attributes) {
-        $insertIntoStatement = "$this->tableName (" . implode(", ", array_keys($attributes)) . ")";
+        $insertIntoStatement = 
+            "$this->tableName (" . implode(", ", array_keys($attributes)) . ")";
         
         $values = [];
         foreach ($attributes as $columnName => $value) {

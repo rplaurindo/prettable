@@ -3,9 +3,9 @@
 require 'autoload.php';
 
 use 
-    PReTTable\IdentifiableModelInterface,
-    PReTTable\AbstractModel,
-    PReTTable\AssociativeModelInterface,
+    PReTTable\Repository\IdentifiableModelInterface,
+    PReTTable\Repository\AbstractModel,
+    PReTTable\Repository\AssociativeModelInterface,
     PReTTable\PaginableInterface,
     PReTTable\Helpers\Pagination
 ;
@@ -183,4 +183,3 @@ $model = new Model1();
 // print_r($model->getAssociatedKeys('Model2', 76));
 
 // echo $model->deleteFromAssociation('Model2', 76, 1)->commit();
-

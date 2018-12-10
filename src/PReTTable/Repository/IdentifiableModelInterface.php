@@ -1,6 +1,8 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\Repository;
+
+use PReTTable\ModelInterface;
 
 interface IdentifiableModelInterface extends ModelInterface {
     

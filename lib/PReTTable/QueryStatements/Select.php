@@ -3,7 +3,7 @@
 namespace PReTTable\QueryStatements;
 
 use 
-    PReTTable\QueryMap,
+    PReTTable\Repository\QueryMap,
     PReTTable\Reflection;
 
 class Select {

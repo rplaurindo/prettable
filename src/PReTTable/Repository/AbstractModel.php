@@ -1,11 +1,15 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\Repository;
 
 use 
     Exception, 
     PDO,
     PDOException,
+    PReTTable\Connection,
+    PReTTable\Reflection,
+    PReTTable\PaginableInterface,
+    PReTTable\QueryStatementStrategyContext,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
     PReTTable\QueryStatements\Select;
