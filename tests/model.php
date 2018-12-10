@@ -2,9 +2,13 @@
 
 require 'autoload.php';
 
-use PReTTable\IdentifiableModelInterface;
-use PReTTable\AbstractModel;
-use PReTTable\AssociativeModelInterface;
+use 
+    PReTTable\IdentifiableModelInterface,
+    PReTTable\AbstractModel,
+    PReTTable\AssociativeModelInterface,
+    PReTTable\PaginableInterface,
+    PReTTable\Helpers\Pagination
+;
 
 class ModelBaseTest extends AbstractModel {
     
@@ -17,7 +21,7 @@ class ModelBaseTest extends AbstractModel {
     
 }
 
-class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
+class Model1 extends ModelBaseTest implements IdentifiableModelInterface, PaginableInterface {
     
     function __construct() {
         parent::__construct('test_schema');
@@ -43,6 +47,15 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface {
             'id',
             'column1'
         ];
+    }
+    
+    function getStatement($limit, $pageNumber = 1) {
+        $offset = Pagination::calculateOffset($limit, $pageNumber);
+        
+        return "
+            LIMIT $limit
+            OFFSET $offset
+        ";
     }
     
 }

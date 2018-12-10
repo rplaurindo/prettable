@@ -26,7 +26,9 @@ abstract class AbstractModel {
     
     private $connection;
     
-    private $prepare;
+    private $orderBy;
+    
+    private $pager;
 
     function __construct($host, array $data) {
         $this->modelName = get_class($this);
@@ -45,6 +47,10 @@ abstract class AbstractModel {
         }
         
         $this->tableName = $this->model::getTableName();
+    }
+    
+    function setPager(PaginableInterface $pager) {
+        $this->pager = $pager;
     }
     
     function contains($modelName, $associatedColumn) {
@@ -429,8 +435,14 @@ abstract class AbstractModel {
             
         return null;
     }
-     
-    function getAll() {
+    
+    function setOrder($columnName, $by = '') {
+        $this->orderBy = "\nORDER BY $columnName $by";
+    }
+    
+    function getAll($limit = null, $page = 1) {
+//         $paginationStatement;
+//         testar se há limit, caso sim, paginar. Se page não for informado, a página será a primeira por padrão 
         return [];
     }
     
