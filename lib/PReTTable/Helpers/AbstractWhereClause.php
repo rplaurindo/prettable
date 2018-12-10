@@ -32,7 +32,7 @@ abstract class AbstractWhereClause {
         $this->logicalOperator = $operator;
     }
     
-    function mount(array $params) {
+    function getStatement(array $params) {
         
         if (count($this->tables)) {
             return $this->mountWithAttachedTable($params);
@@ -42,8 +42,8 @@ abstract class AbstractWhereClause {
         
     }
     
-    private abstract function mountWithAttachedTable(array $params);
+    protected abstract function mountWithAttachedTable(array $params);
     
-    private abstract function mountWithoutAttachedTable(array $params);
+    protected abstract function mountWithoutAttachedTable(array $params);
     
 }

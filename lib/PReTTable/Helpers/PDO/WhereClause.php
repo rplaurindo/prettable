@@ -10,24 +10,17 @@ class WhereClause extends Helpers\AbstractWhereClause {
         parent::__construct(...$tables);
     }
     
-    private function mountWithoutAttachedTable(array $params) {
+    protected function mountWithoutAttachedTable(array $params) {
         $mounted = [];
         
         foreach($params as $columnName => $value) {
             if (gettype($value) == 'array') {
                 if (count($value)) {
-                    $firstValue = $value[0];
-                    $value = array_slice($value, 1);
-                    
-                    $statement = "$columnName $this->comparisonOperator '$firstValue'";
-                    foreach ($value as $v) {
-                        $statement .= " OR $columnName $this->comparisonOperator '$v'";
-                    }
-                    
+                    $statement = implode(', ', $value);
                     if (count($mounted)) {
-                        array_push($mounted, " $this->logicalOperator ($statement)");
+                        array_push($mounted, " $columnName IN ($statement)");
                     } else {
-                        array_push($mounted, "($statement)");
+                        array_push($mounted, "$columnName IN ($statement)");
                     }
                 }
             } else {
@@ -42,25 +35,18 @@ class WhereClause extends Helpers\AbstractWhereClause {
         return implode("", $mounted);
     }
     
-    private function mountWithAttachedTable(array $params) {
+    protected function mountWithAttachedTable(array $params) {
         $mounted = [];
         
         foreach ($this->tables as $tableName) {
             foreach($params[$tableName] as $columnName => $value) {
                 if (gettype($value) == 'array') {
                     if (count($value)) {
-                        $firstValue = $value[0];
-                        $value = array_slice($value, 1);
-                        
-                        $statement = "$tableName.$columnName $this->comparisonOperator '$firstValue'";
-                        foreach ($value as $v) {
-                            $statement .= " OR $tableName.$columnName $this->comparisonOperator '$v'";
-                        }
-                        
+                        $statement = implode(', ', $value);
                         if (count($mounted)) {
-                            array_push($mounted, " $this->logicalOperator ($statement)");
+                            array_push($mounted, " ($tableName.$columnName IN ($statement))");
                         } else {
-                            array_push($mounted, "($statement)");
+                            array_push($mounted, "($tableName.$columnName IN ($statement))");
                         }
                     }
                 } else {

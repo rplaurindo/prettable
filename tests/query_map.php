@@ -2,9 +2,9 @@
 
 require 'autoload.php';
 
-use PReTTable\IdentifiableModelInterface;
-use PReTTable\AssociativeModelInterface;
-use PReTTable\QueryMap;
+use PReTTable\Repository\IdentifiableModelInterface;
+use PReTTable\Repository\AssociativeModelInterface;
+use PReTTable\Repository\QueryMap;
 
 class Model1 implements IdentifiableModelInterface {
     
@@ -16,7 +16,7 @@ class Model1 implements IdentifiableModelInterface {
         return 'table1';
     }
     
-    static function getPrimaryKey() {
+    static function getPrimaryKeyName() {
         return 'ID_table1';
     }
     
@@ -80,21 +80,9 @@ class Model2 implements IdentifiableModelInterface {
         ];
     }
     
-    function create(array $attributes) {
-        return $this->queryMap->insert($attributes);
-    }
-    
 //     dar a oportunidade de passar um id para cá para montar a clausula where
     function read($tableName, $id = null) {
         return $this->queryMap->select($tableName, $id);
-    }
-    
-    function update($id, array $attributes) {
-        return $this->queryMap->update($id, $attributes);
-    }
-    
-    function delete($columnName, ...$values) {
-        return $this->queryMap->delete($columnName, ...$values);
     }
 
     function join($modelName, $relatedColumn) {
@@ -127,7 +115,7 @@ class Model3 implements IdentifiableModelInterface {
             'column1'
         ];
     }
-    
+
 }
 
 class Model4 implements IdentifiableModelInterface {
@@ -153,21 +141,22 @@ class Model5 {
     
 }
 
-class AssociativeModel implements IdentifiableModelInterface, AssociativeModelInterface {
+// class AssociativeModel implements IdentifiableModelInterface, AssociativeModelInterface {
+class AssociativeModel implements AssociativeModelInterface {
     
     static function getTableName() {
         return 'associative_table';
     }
     
-    static function getPrimaryKey() {
-        return 'id';
-    }
+//     static function getPrimaryKeyName() {
+//         return 'id';
+//     }
     
     static function getColumns() {
         return array_values(self::$association);
     }
     
-    static function getAssociativeKeys($modelName) {
+    static function getAssociativeKeys() {
         return [
             'Model1' => 'table1_id',
             'Model2' => 'table2_id'
@@ -200,7 +189,7 @@ $model2 = new Model2();
 // print_r($model2->getRow('column', 1)->getMap());
 
 // print_r($model2->read('Model1')->getMap());
-print_r($model2->read('Model1', 1)->getMap());
+// print_r($model2->read('Model1', 1)->getMap());
 // print_r($model2->read('AssociativeModel')->getMap());
 
 // print_r($model2
@@ -227,24 +216,24 @@ print_r($model2->read('Model1', 1)->getMap());
 //     ->getMap()
 // );
 
-use PReTTable\Helpers;
+use PReTTable\Helpers\PDO\WhereClause;
 
-$whereClause = new Helpers\WhereClause('table1', 'table2');
-// print_r($whereClause->mount(
-//     [
-//         'table1' => [
-//             'col1OfModel1' => [
-//                 'val1',
-//                 'val2'
-//             ],
-//             'col2OfModel1' => 'val3'
-//         ],
-//         'table2' => [
-//             'col1OfModel2' => 'val1',
-//             'col2OfModel2' => 'val2'
-//         ]
-//     ]
-// ));
+$whereClause = new WhereClause('table1', 'table2');
+echo $whereClause->getStatement(
+    [
+        'table1' => [
+            'col1OfModel1' => [
+                'val1',
+                'val2'
+            ],
+            'col2OfModel1' => 'val3'
+        ],
+        'table2' => [
+            'col1OfModel2' => 'val1',
+            'col2OfModel2' => 'val2'
+        ]
+    ]
+);
 
 // $whereClause = new Helpers\WhereClause();
 // print_r($whereClause->mount(
@@ -257,7 +246,7 @@ $whereClause = new Helpers\WhereClause('table1', 'table2');
 //     ]
 // ));
 
-use PReTTable\SelectStatement;
+use PReTTable\QueryStatements\Select;
 
-$selectStatement = new SelectStatement(Model5::class);
-// $selectStatement->mount();
+$select = new Select(Model5::class);
+// echo $select->getStatement();
