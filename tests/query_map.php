@@ -69,10 +69,6 @@ class Model2 implements IdentifiableModelInterface {
         return 'ID_table2';
     }
     
-    static function isPrimaryKeySelfIncremental() {
-        return true;
-    }
-    
     static function getColumns() {
         return [
             'ID_table2' => 'idAlias',
