@@ -1,10 +1,8 @@
 <?php
 
-namespace PReTTable\Helpers\PDO;
+namespace PReTTable\Helpers;
 
-use PReTTable\Helpers;
-
-class WhereClause extends Helpers\AbstractWhereClause {
+class WhereClause extends AbstractWhereClause {
     
     function __construct(...$tables) {
         parent::__construct(...$tables);
@@ -18,16 +16,16 @@ class WhereClause extends Helpers\AbstractWhereClause {
                 if (count($value)) {
                     $statement = implode(', ', $value);
                     if (count($mounted)) {
-                        array_push($mounted, " $columnName IN ($statement)");
+                        array_push($mounted, " $this->logicalOperator $columnName IN ($statement)");
                     } else {
                         array_push($mounted, "$columnName IN ($statement)");
                     }
                 }
             } else {
                 if (count($mounted)) {
-                    array_push($mounted, " $this->logicalOperator $columnName $this->comparisonOperator :$columnName");
+                    array_push($mounted, " $this->logicalOperator $columnName $this->comparisonOperator $value");
                 } else {
-                    array_push($mounted, "$columnName $this->comparisonOperator :$columnName");
+                    array_push($mounted, "$columnName $this->comparisonOperator $value");
                 }
             }
         }
@@ -44,16 +42,16 @@ class WhereClause extends Helpers\AbstractWhereClause {
                     if (count($value)) {
                         $statement = implode(', ', $value);
                         if (count($mounted)) {
-                            array_push($mounted, " ($tableName.$columnName IN ($statement))");
+                            array_push($mounted, " $this->logicalOperator ($tableName.$columnName IN ($statement))");
                         } else {
                             array_push($mounted, "($tableName.$columnName IN ($statement))");
                         }
                     }
                 } else {
                     if (count($mounted)) {
-                        array_push($mounted, " $this->logicalOperator $tableName.$columnName $this->comparisonOperator :$columnName");
+                        array_push($mounted, " $this->logicalOperator $tableName.$columnName $this->comparisonOperator $value");
                     } else {
-                        array_push($mounted, "$tableName.$columnName $this->comparisonOperator :$columnName");
+                        array_push($mounted, "$tableName.$columnName $this->comparisonOperator $value");
                     }
                 }
             }

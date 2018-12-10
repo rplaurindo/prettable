@@ -3,7 +3,7 @@
 namespace PReTTable\Repository;
 
 use 
-    Exception, 
+    Exception,
     PDO,
     PDOException,
     PReTTable\Connection,
@@ -12,9 +12,10 @@ use
     PReTTable\QueryStatementStrategyContext,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
-    PReTTable\QueryStatements\Select;
+    PReTTable\QueryStatements\Select
+;
 
-abstract class AbstractModel {
+abstract class AbstractModel implements IdentifiableModelInterface, WritableModelInterface {
     
     private $modelName;
     
@@ -43,12 +44,7 @@ abstract class AbstractModel {
         
         Connection::setData($data);
         
-        try {
-            $this->queryMap = new QueryMap($this->modelName);
-        } catch (Exception $e) {
-            echo $e;
-            throw new Exception($e);
-        }
+        $this->queryMap = new QueryMap($this->modelName);
         
         $this->tableName = $this->model::getTableName();
     }

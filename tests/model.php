@@ -3,14 +3,15 @@
 require 'autoload.php';
 
 use 
-    PReTTable\Repository\WritableModelInterface,
+//     PReTTable\Repository\WritableModelInterface,
     PReTTable\Repository\AbstractModel,
     PReTTable\Repository\AssociativeModelInterface,
     PReTTable\PaginableInterface,
     PReTTable\Helpers\Pagination
 ;
 
-class ModelBaseTest extends AbstractModel {
+// class ModelBaseTest extends AbstractModel {
+abstract class ModelBaseTest extends AbstractModel {
     
     function __construct($database, $host = null) {
         $data = include 'database.php';
@@ -21,7 +22,7 @@ class ModelBaseTest extends AbstractModel {
     
 }
 
-class Model1 extends ModelBaseTest implements WritableModelInterface, PaginableInterface {
+class Model1 extends ModelBaseTest implements PaginableInterface {
     
     function __construct() {
         parent::__construct('test_schema');
@@ -63,7 +64,7 @@ class Model1 extends ModelBaseTest implements WritableModelInterface, PaginableI
     
 }
 
-class Model2 implements WritableModelInterface {
+class Model2 extends ModelBaseTest {
     
     function __construct() {
         

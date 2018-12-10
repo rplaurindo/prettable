@@ -2,7 +2,9 @@
 
 namespace PReTTable\Repository;
 
-interface WritableModelInterface extends IdentifiableModelInterface {
+use PReTTable\ModelInterface;
+
+interface WritableModelInterface extends ModelInterface {
     
     static function isPrimaryKeySelfIncremental();
     

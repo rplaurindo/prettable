@@ -2,9 +2,11 @@
 
 require 'autoload.php';
 
-use PReTTable\Repository\IdentifiableModelInterface;
-use PReTTable\Repository\AssociativeModelInterface;
-use PReTTable\Repository\QueryMap;
+use 
+    PReTTable\Repository\AssociativeModelInterface,
+    PReTTable\Repository\IdentifiableModelInterface,
+    PReTTable\Repository\QueryMap
+;
 
 class Model1 implements IdentifiableModelInterface {
     
@@ -212,7 +214,7 @@ $model2 = new Model2();
 //     ->getMap()
 // );
 
-use PReTTable\Helpers\PDO\WhereClause;
+use PReTTable\Helpers\WhereClause;
 
 $whereClause = new WhereClause('table1', 'table2');
 echo $whereClause->getStatement(
@@ -222,7 +224,11 @@ echo $whereClause->getStatement(
                 'val1',
                 'val2'
             ],
-            'col2OfModel1' => 'val3'
+            'col2OfModel1' => [
+                'val1',
+                'val2'
+            ],
+            'col3OfModel1' => 'val3'
         ],
         'table2' => [
             'col1OfModel2' => 'val1',
