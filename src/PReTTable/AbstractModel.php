@@ -440,9 +440,13 @@ abstract class AbstractModel {
         $this->orderBy = "\nORDER BY $columnName $by";
     }
     
-    function getAll($limit = null, $page = 1) {
+    function getAll($limit = null, $pageNumber = 1) {
+//         testar se há limit. Se page não for informado, a página será a primeira, por padrão 
 //         $paginationStatement;
-//         testar se há limit, caso sim, paginar. Se page não for informado, a página será a primeira por padrão 
+        return [];
+    }
+    
+    function get($modelName, $limit = null, $pageNumber = 1) {
         return [];
     }
     

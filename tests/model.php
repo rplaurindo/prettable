@@ -26,6 +26,9 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface, Pagina
     function __construct() {
         parent::__construct('test_schema');
         
+        $this->setOrder('column1', 'DESC');
+        $this->setPager($this);
+        
         $this->containsThrough('Model2', 'AssociativeModel');
     }
     
