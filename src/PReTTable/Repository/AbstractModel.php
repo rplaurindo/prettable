@@ -108,7 +108,7 @@ abstract class AbstractModel {
         $clone = $this->getClone();
         
         $associativeModelName = $clone->queryMap->getAssociativeModelNameOf($modelName);
-        
+//         levantar exceção ao invés de fazer if
         if (isset($associativeModelName)) {            
             $associativeModel = Reflection::getDeclarationOf($associativeModelName);
             $foreignKeyName = $associativeModel::getAssociativeKeys()[$clone->modelName];
