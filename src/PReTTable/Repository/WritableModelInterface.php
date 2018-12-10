@@ -2,10 +2,7 @@
 
 namespace PReTTable\Repository;
 
-use PReTTable\ModelInterface;
-
-// ver se tem de herdar de Identifiable
-interface WritableModelInterface extends ModelInterface {
+interface WritableModelInterface extends IdentifiableModelInterface {
     
     static function isPrimaryKeySelfIncremental();
     

@@ -3,7 +3,7 @@
 require 'autoload.php';
 
 use 
-    PReTTable\Repository\IdentifiableModelInterface,
+    PReTTable\Repository\WritableModelInterface,
     PReTTable\Repository\AbstractModel,
     PReTTable\Repository\AssociativeModelInterface,
     PReTTable\PaginableInterface,
@@ -21,7 +21,7 @@ class ModelBaseTest extends AbstractModel {
     
 }
 
-class Model1 extends ModelBaseTest implements IdentifiableModelInterface, PaginableInterface {
+class Model1 extends ModelBaseTest implements WritableModelInterface, PaginableInterface {
     
     function __construct() {
         parent::__construct('test_schema');
@@ -63,7 +63,7 @@ class Model1 extends ModelBaseTest implements IdentifiableModelInterface, Pagina
     
 }
 
-class Model2 implements IdentifiableModelInterface {
+class Model2 implements WritableModelInterface {
     
     function __construct() {
         
@@ -126,9 +126,9 @@ $model = new Model1();
 
 // print_r($model->getAll());
 
-// echo $model->create(['column1' => 'a value'])
-//     ->commit()
-// ;
+echo $model->create(['column1' => 'a value'])
+    ->commit()
+;
  
 // echo $model->createAssociations('Model2', 1,
 //     [
