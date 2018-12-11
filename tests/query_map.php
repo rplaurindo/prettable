@@ -230,6 +230,7 @@ echo $whereClause->addStatements(
         'col3OfModel1' => 'val3'
     ])
     ->addAnd($whereClause->between('interval', 0, 10))
+    ->addAnd($whereClause->like('column', '%value%'))
     ->getStatement()
 ;
 
