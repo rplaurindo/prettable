@@ -2,9 +2,9 @@
 
 namespace PReTTable\Helpers;
 
-abstract class AbstractWhereClause {
+abstract class AbstractWhereClauseStatement {
     
-    protected $tables;
+    protected $tableName;
     
     protected $comparisonOperator;
     
@@ -12,19 +12,11 @@ abstract class AbstractWhereClause {
     
     protected $statement;
     
-    function __construct(...$tables) {
-        $this->tables = $tables;
+    function __construct($tableName = null) {
+        $this->tableName = $tableName;
         $this->comparisonOperator = '=';
         $this->logicalOperator = 'AND';
         $this->statement = '';
-    }
-    
-    function attachTables(...$tables) {
-        $this->tables = $tables;
-    }
-    
-    function cleanTables() {
-        $this->tables = [];
     }
     
     function setComparisonOperator($operator) {
@@ -35,12 +27,30 @@ abstract class AbstractWhereClause {
         $this->logicalOperator = $operator;
     }
     
-    function mount(array $params) {
-        if (count($this->tables)) {
-            return $this->mountWithAttachedTable($params);
+    function addStatements(array $params) {
+        $clone = $this->getClone();
+        
+        foreach($params as $columnName => $value) {
+            $clone->addStatement($columnName, $value);
         }
         
-        return $this->mountWithoutAttachedTable($params);
+        return $clone;
+    }
+    
+    function addOr(AbstractWhereClauseStatement $statement) {
+        $clone = $this->getClone();
+        
+        $clone->statement .= " OR ({$statement->getStatement()})";
+        
+        return $clone;
+    }
+    
+    function addAnd(AbstractWhereClauseStatement $statement) {
+        $clone = $this->getClone();
+        
+        $clone->statement .= " AND ({$statement->getStatement()})";
+        
+        return $clone;
     }
     
     function getStatement() {
@@ -61,13 +71,11 @@ abstract class AbstractWhereClause {
         return $resolved;
     }
     
-    protected abstract function mountWithAttachedTable(array $params);
+    abstract function like($columnName, $value);
     
-    protected abstract function mountWithoutAttachedTable(array $params);
+    abstract function between($columnName, $start, $end);
     
-    abstract function addStatement($columnName, $value, $tableName = null);
-    
-    abstract function addBetweenStatement($columnName, $start, $end, $tableName = null);
+    protected abstract function addStatement($columnName, $value);
     
     protected function getClone() {
         return clone $this;

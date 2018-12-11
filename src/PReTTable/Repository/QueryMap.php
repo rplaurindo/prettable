@@ -48,7 +48,7 @@ class QueryMap {
         $this->modelName = $modelName;
         $this->model = Reflection::getDeclarationOf($modelName);
         $this->tableName = self::resolveTableName($modelName);
-        $this->primaryKeyName = $this->model::getPrimaryKeyName();
+        $this->primaryKeyName = $this->model->getPrimaryKeyName();
         
         $this->containsSet = new ArrayObject();
         $this->isContainedSet = new ArrayObject();
@@ -155,10 +155,10 @@ class QueryMap {
                     
                     $clone->join($clone->modelName, $clone->primaryKeyName);
                     $clone->join($modelName, 
-                                 $clone->associatedModel::getPrimaryKeyName());
+                                 $clone->associatedModel->getPrimaryKeyName());
                     
                     $associativeColumn = $clone->associativeModel
-                        ::getAssociativeKeys()[$clone->modelName];
+                        ->getAssociativeKeys()[$clone->modelName];
                 } else {
                     $clone->join($clone->modelName, $clone->primaryKeyName);
                     
@@ -216,7 +216,7 @@ class QueryMap {
                         ->containsSet->offsetGet($joinedModelName))) {
                         $tableName = $this->associativeTableName;
                         $columnName = $this->associativeModel
-                            ::getAssociativeKeys()[$joinedModelName];
+                            ->getAssociativeKeys()[$joinedModelName];
                     } else {
                         $tableName = $this->tableName;
                         $columnName = $this->primaryKeyName;
@@ -229,11 +229,11 @@ class QueryMap {
                     } else if (array_key_exists($this->associatedModelName, 
                                $this->isContainedSet)) {
                         $tableName = $this->associatedTableName;
-                        $columnName = $this->associatedModel::getPrimaryKeyName();
+                        $columnName = $this->associatedModel->getPrimaryKeyName();
                     } else if (isset($this->associativeModelName)) {
                         $tableName = $this->associativeTableName;
                         $columnName = $this->associativeModel
-                            ::getAssociativeKeys()[$joinedModelName];
+                            ->getAssociativeKeys()[$joinedModelName];
                     } else {
                         $tableName = $this->associatedTableName;
                         $columnName = $this->containsSet

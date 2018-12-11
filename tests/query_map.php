@@ -214,41 +214,24 @@ $model2 = new Model2();
 //     ->getMap()
 // );
 
-use PReTTable\Helpers\WhereClause;
+use PReTTable\Helpers\WhereClauseStatement;
 
-$whereClause = new WhereClause('table1', 'table2');
-echo $whereClause->mount(
+$whereClause = new WhereClauseStatement('table1');
+echo $whereClause->addStatements(
     [
-        'table1' => [
-            'col1OfModel1' => [
-                'val1',
-                'val2'
-            ],
-            'col2OfModel1' => [
-                'val1',
-                'val2'
-            ],
-            'col3OfModel1' => 'val3'
+        'col1OfModel1' => [
+            'val1',
+            'val2'
         ],
-        'table2' => [
-            'col1OfModel2' => 'val1',
-            'col2OfModel2' => 'val2'
-        ]
+        'col2OfModel1' => [
+            'val1',
+            'val2'
+        ],
+        'col3OfModel1' => 'val3'
     ])
-    ->addBetweenStatement('interval', 0, 10, 'table1')
+    ->addAnd($whereClause->between('interval', 0, 10))
     ->getStatement()
 ;
-
-// $whereClause = new Helpers\WhereClause();
-// print_r($whereClause->mount(
-//     [
-//         'col1' => [
-//             'val1',
-//             'val2'
-//         ],
-//         'col2' => 'val3'
-//     ]
-// ));
 
 use PReTTable\QueryStatements\Select;
 
