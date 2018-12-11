@@ -3,14 +3,12 @@
 require 'autoload.php';
 
 use 
-//     PReTTable\Repository\WritableModelInterface,
     PReTTable\Repository\AbstractModel,
     PReTTable\Repository\AssociativeModelInterface,
     PReTTable\PaginableInterface,
     PReTTable\Helpers\Pagination
 ;
 
-// class ModelBaseTest extends AbstractModel {
 abstract class ModelBaseTest extends AbstractModel {
     
     function __construct($database, $host = null) {

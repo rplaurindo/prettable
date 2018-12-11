@@ -8,56 +8,78 @@ class WhereClause extends AbstractWhereClause {
         parent::__construct(...$tables);
     }
     
-    protected function mountWithoutAttachedTable(array $params) {
-        $mounted = [];
+    function addStatement($columnName, $value, $tableName = null) {
+        $clone = $this->getClone();
         
-        foreach($params as $columnName => $value) {
-            if (gettype($value) == 'array') {
-                if (count($value)) {
-                    $statement = implode(', ', $value);
-                    if (count($mounted)) {
-                        array_push($mounted, " $this->logicalOperator $columnName IN ($statement)");
-                    } else {
-                        array_push($mounted, "$columnName IN ($statement)");
-                    }
-                }
-            } else {
-                if (count($mounted)) {
-                    array_push($mounted, " $this->logicalOperator $columnName $this->comparisonOperator $value");
-                } else {
-                    array_push($mounted, "$columnName $this->comparisonOperator $value");
-                }
-            }
+        $columnStatement = $columnName;
+        
+        if (isset($tableName)) {
+            $columnStatement = "$tableName.$columnName";
         }
         
-        return implode("", $mounted);
+        if (gettype($value) == 'array') {
+            if (count($value)) {
+                $value = self::resolveStringValues(...$value);
+                $valuesStatement = implode(', ', $value);
+                $statement = "($columnStatement IN ($valuesStatement))";
+            }
+        } else {
+            $value = self::resolveStringValues($value)[0];
+            $statement = "($columnStatement $clone->comparisonOperator $value)";
+        }
+        
+        if (empty($clone->statement)) {
+            $clone->statement .= $statement;
+        } else {
+            $clone->statement .= " $clone->logicalOperator $statement";
+        }
+        
+        return $clone;
+    }
+    
+    function addBetweenStatement($columnName, $start, $end, $tableName = null) {
+        $clone = $this->getClone();
+        
+        $columnStatement = $columnName;
+        
+        if (isset($tableName)) {
+            $columnStatement = "$tableName.$columnName";
+        }
+        
+        $start = self::resolveStringValues($start)[0];
+        $end = self::resolveStringValues($end)[0];
+        
+        $betweenStatement = "$columnStatement BETWEEN $start AND $end";
+        
+        if (empty($clone->statement)) {
+            $clone->statement .= "$betweenStatement";
+        } else {
+            $clone->statement .= " $clone->logicalOperator $betweenStatement";
+        }
+        
+        return $clone;
+    }
+    
+    protected function mountWithoutAttachedTable(array $params) {
+        $clone = $this;
+        
+        foreach($params as $columnName => $value) {
+            $clone = $clone->addStatement($columnName, $value);
+        }
+        
+        return $clone;
     }
     
     protected function mountWithAttachedTable(array $params) {
-        $mounted = [];
+        $clone = $this;
         
         foreach ($this->tables as $tableName) {
             foreach($params[$tableName] as $columnName => $value) {
-                if (gettype($value) == 'array') {
-                    if (count($value)) {
-                        $statement = implode(', ', $value);
-                        if (count($mounted)) {
-                            array_push($mounted, " $this->logicalOperator ($tableName.$columnName IN ($statement))");
-                        } else {
-                            array_push($mounted, "($tableName.$columnName IN ($statement))");
-                        }
-                    }
-                } else {
-                    if (count($mounted)) {
-                        array_push($mounted, " $this->logicalOperator $tableName.$columnName $this->comparisonOperator $value");
-                    } else {
-                        array_push($mounted, "$tableName.$columnName $this->comparisonOperator $value");
-                    }
-                }
+                $clone = $clone->addStatement($columnName, $value, $tableName);
             }
         }
         
-        return implode("", $mounted);
+        return $clone;
     }
     
 }

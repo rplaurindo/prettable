@@ -217,7 +217,7 @@ $model2 = new Model2();
 use PReTTable\Helpers\WhereClause;
 
 $whereClause = new WhereClause('table1', 'table2');
-echo $whereClause->getStatement(
+echo $whereClause->mount(
     [
         'table1' => [
             'col1OfModel1' => [
@@ -234,8 +234,10 @@ echo $whereClause->getStatement(
             'col1OfModel2' => 'val1',
             'col2OfModel2' => 'val2'
         ]
-    ]
-);
+    ])
+    ->addBetweenStatement('interval', 0, 10, 'table1')
+    ->getStatement()
+;
 
 // $whereClause = new Helpers\WhereClause();
 // print_r($whereClause->mount(
