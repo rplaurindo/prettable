@@ -59,10 +59,12 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
             $statement = "($columnStatement $this->comparisonOperator $value)";
         }
         
-        if (empty($this->statement)) {
-            $this->statement .= $statement;
-        } else {
-            $this->statement .= " $this->logicalOperator $statement";
+        if (isset($statement)) {
+            if (empty($this->statement)) {
+                $this->statement .= $statement;
+            } else {
+                $this->statement .= " $this->logicalOperator $statement";
+            }
         }
         
         return $this;
