@@ -19,7 +19,8 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
         
         $value = self::resolveStringValues($value)[0];
         
-        $clone->statement .= "($columnStatement LIKE $value)";
+        $statement = "($columnStatement LIKE $value)";
+        $clone->addStatement($statement);
         
         return $clone;
     }
@@ -36,12 +37,13 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
         $start = self::resolveStringValues($start)[0];
         $end = self::resolveStringValues($end)[0];
         
-        $clone->statement .= "$columnStatement BETWEEN $start AND $end";
+        $statement = "$columnStatement BETWEEN $start AND $end";
+        $clone->addStatement($statement);
         
         return $clone;
     }
     
-    protected function addStatement($columnName, $value) {
+    protected function addStatementTo($columnName, $value) {
         $columnStatement = $columnName;
         
         if (isset($this->tableName)) {
@@ -59,13 +61,7 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
             $statement = "($columnStatement $this->comparisonOperator $value)";
         }
         
-        if (isset($statement)) {
-            if (empty($this->statement)) {
-                $this->statement .= $statement;
-            } else {
-                $this->statement .= " $this->logicalOperator $statement";
-            }
-        }
+        $this->addStatement($statement);
         
         return $this;
     }

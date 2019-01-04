@@ -31,10 +31,20 @@ abstract class AbstractWhereClauseStatement {
         $clone = $this->getClone();
         
         foreach($params as $columnName => $value) {
-            $clone->addStatement($columnName, $value);
+            $clone->addStatementTo($columnName, $value);
         }
         
         return $clone;
+    }
+    
+    function addStatement($statement) {
+        if (empty($this->statement)) {
+            $this->statement .= $statement;
+        } else {
+            $this->statement .= "
+                $this->logicalOperator $statement
+            ";
+        }
     }
     
     function addOr(AbstractWhereClauseStatement $statement) {
@@ -75,7 +85,7 @@ abstract class AbstractWhereClauseStatement {
     
     abstract function between($columnName, $start, $end);
     
-    protected abstract function addStatement($columnName, $value);
+    protected abstract function addStatementTo($columnName, $value);
     
     protected function getClone() {
         return clone $this;
