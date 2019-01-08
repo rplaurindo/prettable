@@ -460,12 +460,10 @@ abstract class AbstractModel
         $query = "
             SELECT $selectStatement
             FROM $clone->tableName
-            WHERE $columnName = :$columnName
         ";
         
         try {
             $PDOstatement = $clone->connection->prepare($query);
-            $PDOstatement->bindParam(":$columnName", $value);
             $PDOstatement->execute();
             
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
