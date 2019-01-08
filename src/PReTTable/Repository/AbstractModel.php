@@ -451,8 +451,7 @@ abstract class AbstractModel
     }
     
     function getAll($limit = null, $pageNumber = 1) {
-//         testar se há limit. Se page não for informado, a página será a primeira, por padrão 
-//         $paginationStatement;
+//         testar se há limit. Se page não for informado, a página será a primeira para passar ao método paginador strategy que retorna um query statement piece
         return [];
     }
     
