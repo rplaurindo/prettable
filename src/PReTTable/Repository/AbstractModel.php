@@ -465,7 +465,9 @@ abstract class AbstractModel
     }
     
     function setOrder($columnName, $by = '') {
-        $this->orderBy = "\nORDER BY $columnName $by";
+        $this->orderBy = "
+            ORDER BY $columnName $by
+        ";
     }
     
     protected function beginTransaction() {
