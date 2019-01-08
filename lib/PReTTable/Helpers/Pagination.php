@@ -9,7 +9,7 @@ class Pagination {
     private $count;
     private $totalPages;
     private $currentPageNumber;
-//     a array with items of page
+    //     a array with items of page
     private $page;
     
     function __construct(array $collection, $limit) {
@@ -49,7 +49,7 @@ class Pagination {
         if (isset($count)) {
             $limit = self::resolvesLimit($count, $limit);
             $totalPages = self::calculatesTotalPages($count, $limit);
-//             cause' of these filters isn't possible the offset exceed maximum
+            //             cause' of these filters isn't possible the offset exceed maximum
             $pageNumber = self::resolvesPageNumber($pageNumber, $totalPages);
         } else if ($pageNumber < 1) {
             $pageNumber = 1;

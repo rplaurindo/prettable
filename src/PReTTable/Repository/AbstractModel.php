@@ -8,7 +8,7 @@ use
     PDOException,
     PReTTable\Connection,
     PReTTable\Reflection,
-    PReTTable\PaginableInterface,
+    PReTTable\PaginableStrategyInterface,
     PReTTable\QueryStatementStrategyContext,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
@@ -36,7 +36,7 @@ abstract class AbstractModel
     
     private $orderBy;
     
-    private $pager;
+    private $pagerStrategy;
 
     function __construct($host, array $data) {
         $this->modelName = get_class($this);
@@ -52,8 +52,8 @@ abstract class AbstractModel
         $this->tableName = $this->model::getTableName();
     }
     
-    function setPager(PaginableInterface $pager) {
-        $this->pager = $pager;
+    function setPager(PaginableStrategyInterface $pagerStrategy) {
+        $this->pagerStrategy  = $pagerStrategy;
     }
     
     function contains($modelName, $associatedColumn) {
@@ -103,11 +103,11 @@ abstract class AbstractModel
             isset($result) &&
             gettype($result) == 'array' &&
             count($result)
-            ) {
-                return $result[0];
-            }
-            
-            return null;
+        ) {
+            return $result[0];
+        }
+        
+        return null;
     }
     
     function create(array $attributes) {
@@ -452,7 +452,37 @@ abstract class AbstractModel
     
     function getAll($limit = null, $pageNumber = 1) {
 //         testar se há limit. Se page não for informado, a página será a primeira para passar ao método paginador strategy que retorna um query statement piece
-        return [];
+        $clone = $this->getClone();
+        
+        $selectStatement = new Select($clone->modelName);
+        $selectStatement = $selectStatement->getStatement();
+        
+        $query = "
+            SELECT $selectStatement
+            FROM $clone->tableName
+            WHERE $columnName = :$columnName
+        ";
+        
+        try {
+            $PDOstatement = $clone->connection->prepare($query);
+            $PDOstatement->bindParam(":$columnName", $value);
+            $PDOstatement->execute();
+            
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        if (
+            isset($result) &&
+            gettype($result) == 'array' &&
+            count($result)
+            ) {
+                return $result[0];
+            }
+            
+            return null;
     }
     
     function get($modelName, $limit = null, $pageNumber = 1) {

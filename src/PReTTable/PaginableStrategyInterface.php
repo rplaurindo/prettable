@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-interface PaginableInterface {
+interface PaginableStrategyInterface {
     
     function getStatement($limit, $pageNumber = 1);
     

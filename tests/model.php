@@ -5,7 +5,7 @@ require 'autoload.php';
 use 
     PReTTable\Repository\AbstractModel,
     PReTTable\Repository\AssociativeModelInterface,
-    PReTTable\PaginableInterface,
+    PReTTable\PaginableStrategyInterface,
     PReTTable\Helpers\Pagination
 ;
 
@@ -20,7 +20,20 @@ abstract class ModelBaseTest extends AbstractModel {
     
 }
 
-class Model1 extends ModelBaseTest implements PaginableInterface {
+class MySQL implements PaginableStrategyInterface {
+    
+    function getStatement($limit, $pageNumber = 1) {
+        $offset = Pagination::calculatesOffset($limit, $pageNumber);
+        
+        return "
+            LIMIT $limit
+            OFFSET $offset
+        ";
+    }
+    
+}
+
+class Model1 extends ModelBaseTest {
     
     function __construct() {
         parent::__construct('test_schema');
@@ -49,15 +62,6 @@ class Model1 extends ModelBaseTest implements PaginableInterface {
             'id',
             'column1'
         ];
-    }
-    
-    function getStatement($limit, $pageNumber = 1) {
-        $offset = Pagination::calculateOffset($limit, $pageNumber);
-        
-        return "
-            LIMIT $limit
-            OFFSET $offset
-        ";
     }
     
 }
