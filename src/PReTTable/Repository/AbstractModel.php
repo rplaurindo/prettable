@@ -68,6 +68,48 @@ abstract class AbstractModel
         $this->queryMap->containsThrough($modelName, $through);
     }
     
+    function getRow($columnName, $value = null) {
+        $clone = $this->getClone();
+        
+        //         func_get_args()
+        if (empty($value)) {
+            $value = $columnName;
+            
+            $primaryKeyName = $clone->model::getPrimaryKeyName();
+            $columnName = $primaryKeyName;
+        }
+        
+        $selectStatement = new Select($clone->modelName);
+        $selectStatement = $selectStatement->getStatement();
+        
+        $query = "
+            SELECT $selectStatement
+            FROM $clone->tableName
+            WHERE $columnName = :$columnName
+        ";
+        
+        try {
+            $PDOstatement = $clone->connection->prepare($query);
+            $PDOstatement->bindParam(":$columnName", $value);
+            $PDOstatement->execute();
+            
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        if (
+            isset($result) &&
+            gettype($result) == 'array' &&
+            count($result)
+            ) {
+                return $result[0];
+            }
+            
+            return null;
+    }
+    
     function create(array $attributes) {
         $clone = $this->getClone();
         
@@ -408,52 +450,6 @@ abstract class AbstractModel
         return $result;
     }
     
-    function getRow($columnName, $value = null) {
-        $clone = $this->getClone();
-
-//         func_get_args()
-        if (empty($value)) {
-            $value = $columnName;
-            
-            $primaryKeyName = $clone->model::getPrimaryKeyName();
-            $columnName = $primaryKeyName;
-        }
-        
-        $selectStatement = new Select($clone->modelName);
-        $selectStatement = $selectStatement->getStatement();
-        
-        $query = "
-            SELECT $selectStatement
-            FROM $clone->tableName
-            WHERE $columnName = :$columnName
-        ";
-        
-        try {
-            $PDOstatement = $clone->connection->prepare($query);
-            $PDOstatement->bindParam(":$columnName", $value);
-            $PDOstatement->execute();
-            
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo $e;
-            throw new PDOException($e);
-        }
-        
-        if (
-            isset($result) && 
-            gettype($result) == 'array' && 
-            count($result)
-            ) {
-            return $result[0];
-        }
-            
-        return null;
-    }
-    
-    function setOrder($columnName, $by = '') {
-        $this->orderBy = "\nORDER BY $columnName $by";
-    }
-    
     function getAll($limit = null, $pageNumber = 1) {
 //         testar se há limit. Se page não for informado, a página será a primeira, por padrão 
 //         $paginationStatement;
@@ -466,6 +462,10 @@ abstract class AbstractModel
     
     function commit() {
         return $this->connection->commit();
+    }
+    
+    function setOrder($columnName, $by = '') {
+        $this->orderBy = "\nORDER BY $columnName $by";
     }
     
     protected function beginTransaction() {
