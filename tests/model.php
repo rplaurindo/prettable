@@ -39,7 +39,7 @@ class Model1 extends ModelBaseTest {
         parent::__construct('test_schema');
         
         $this->setOrder('column1', 'DESC');
-        $this->setPager($this);
+        $this->setPager(new MySQL());
         
         $this->containsThrough('Model2', 'AssociativeModel');
     }
@@ -124,14 +124,16 @@ $model = new Model1();
 
 // print_r($model->getRow(2));
 
+print_r($model->getAll(1, 2));
+
 // if there isn't a self-incremental primary key
 // print_r($model->getRow('column1', 'value 2'));
 
 // print_r($model->getAll());
 
-echo $model->create(['column1' => 'a value'])
-    ->commit()
-;
+// echo $model->create(['column1' => 'a value'])
+//     ->commit()
+// ;
  
 // echo $model->createAssociations('Model2', 1,
 //     [

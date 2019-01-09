@@ -9,6 +9,7 @@ use
     PReTTable\Connection,
     PReTTable\Reflection,
     PReTTable\PaginableStrategyInterface,
+    PReTTable\PaginableStrategyContext,
     PReTTable\QueryStatementStrategyContext,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
@@ -36,7 +37,9 @@ abstract class AbstractModel
     
     private $orderBy;
     
-    private $pagerStrategy;
+    private $pagerStrategyContext;
+    
+    private $strategyContextIsDefined;
 
     function __construct($host, array $data) {
         $this->modelName = get_class($this);
@@ -50,10 +53,17 @@ abstract class AbstractModel
         $this->queryMap = new QueryMap($this->modelName);
         
         $this->tableName = $this->model::getTableName();
+        
+        $this->pagerStrategyContext = new PaginableStrategyContext();
+        
+        $this->strategyContextIsDefined = false;
     }
     
+//     a proxy to set strategy context
     function setPager(PaginableStrategyInterface $pagerStrategy) {
-        $this->pagerStrategy  = $pagerStrategy;
+        $this->strategyContextIsDefined = true;
+        
+        $this->pagerStrategyContext->setStrategy($pagerStrategy);
     }
     
     function contains($modelName, $associatedColumn) {
@@ -71,7 +81,7 @@ abstract class AbstractModel
     function getRow($columnName, $value = null) {
         $clone = $this->getClone();
         
-        //         func_get_args()
+//         func_get_args()
         if (empty($value)) {
             $value = $columnName;
             
@@ -451,7 +461,6 @@ abstract class AbstractModel
     }
     
     function getAll($limit = null, $pageNumber = 1) {
-//         testar se há limit. Se page não for informado, a página será a primeira para passar ao método paginador strategy que retorna um query statement piece
         $clone = $this->getClone();
         
         $selectStatement = new Select($clone->modelName);
@@ -462,9 +471,24 @@ abstract class AbstractModel
             FROM $clone->tableName
         ";
         
+        if (isset($clone->orderBy)) {
+            $query .= "
+                $clone->orderBy
+            ";
+        }
+        
+        if (isset($limit)) {
+            if (!$clone->strategyContextIsDefined) {
+                throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
+            }
+            
+            $query .= "
+                {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
+            ";
+        }
+        
         try {
-            $PDOstatement = $clone->connection->prepare($query);
-            $PDOstatement->execute();
+            $PDOstatement = $clone->connection->query($query);
             
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -472,15 +496,7 @@ abstract class AbstractModel
             throw new PDOException($e);
         }
         
-        if (
-            isset($result) &&
-            gettype($result) == 'array' &&
-            count($result)
-            ) {
-                return $result[0];
-            }
-            
-            return null;
+        return $result;
     }
     
     function get($modelName, $limit = null, $pageNumber = 1) {
