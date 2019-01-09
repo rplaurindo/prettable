@@ -45,7 +45,7 @@ class Model1 extends ModelBaseTest {
     }
     
     static function getTableName() {
-        return 'table_1';
+        return 'table1';
     }
     
     static function getPrimaryKeyName() {
@@ -73,7 +73,7 @@ class Model2 extends ModelBaseTest {
     }
     
     static function getTableName() {
-        return 'table_2';
+        return 'table2';
     }
     
     static function getPrimaryKeyName() {
@@ -105,15 +105,15 @@ class AssociativeModel implements AssociativeModelInterface {
     
     static function getColumns() {
         return [
-            'table_1_id',
-            'table_2_id'
+            'table1_id',
+            'table2_id'
         ];
     }
     
     static function getAssociativeKeys() {
         return [
-            'Model1' => 'table_1_id',
-            'Model2' => 'table_2_id'
+            'Model1' => 'table1_id',
+            'Model2' => 'table2_id'
         ];
     }
     
@@ -135,10 +135,10 @@ echo $model->create(['table1col' => 'a value'])
  
 // echo $model->createAssociations('Model2', 1,
 //     [
-//         'table_2_id' => 1
+//         'table2_id' => 1
 //     ],
 //     [
-//         'table_2_id' => 2
+//         'table2_id' => 2
 //     ]
 //     )->commit()
 // //     )
@@ -148,10 +148,10 @@ echo $model->create(['table1col' => 'a value'])
 //     ->create(['column1' => 'a value'])
 //     ->createAssociations('Model2',
 //         [
-//             'table_2_id' => 1
+//             'table2_id' => 1
 //         ],
 //         [
-//             'table_2_id' => 2
+//             'table2_id' => 2
 //         ]
 //         )->commit()
 // //         )
@@ -166,10 +166,10 @@ echo $model->create(['table1col' => 'a value'])
 // estar nas chaves associadas, mas não estar mais nos parâmetros, caso em que deve ser deletado.   
 // echo $model->updateAssociations('Model2', 1,
 //     [
-//         'table_2_id' => 1
+//         'table2_id' => 1
 //     ],
 //     [
-//         'table_2_id' => 3
+//         'table2_id' => 3
 //     ]
 //     )->commit()
 // //     )

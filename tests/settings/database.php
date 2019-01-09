@@ -7,7 +7,8 @@ return [
             'development' => [
                 'adapter' => 'mysql',
                 'username' => 'root',
-                'password' => '1234'
+                'password' => '1234',
+//                 'charset' => 'UTF-8'
             ]
         ]
     ]
