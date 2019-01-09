@@ -3,7 +3,7 @@
 return [
 
     'localhost' => [
-        'test_schema' => [
+        'mydb' => [
             'development' => [
                 'adapter' => 'mysql',
                 'username' => 'root',

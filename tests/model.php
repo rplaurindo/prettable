@@ -36,7 +36,7 @@ class MySQL implements PaginableStrategyInterface {
 class Model1 extends ModelBaseTest {
     
     function __construct() {
-        parent::__construct('test_schema');
+        parent::__construct('mydb');
         
         $this->setOrder('column1', 'DESC');
         $this->setPager(new MySQL());
@@ -124,16 +124,14 @@ $model = new Model1();
 
 // print_r($model->getRow(2));
 
-print_r($model->getAll(1, 2));
-
 // if there isn't a self-incremental primary key
 // print_r($model->getRow('column1', 'value 2'));
 
-// print_r($model->getAll());
+// print_r($model->getAll(1, 2));
 
-// echo $model->create(['column1' => 'a value'])
-//     ->commit()
-// ;
+echo $model->create(['table1col' => 'a value'])
+    ->commit()
+;
  
 // echo $model->createAssociations('Model2', 1,
 //     [

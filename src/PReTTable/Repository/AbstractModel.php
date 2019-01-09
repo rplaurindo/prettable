@@ -52,7 +52,7 @@ abstract class AbstractModel
         
         $this->queryMap = new QueryMap($this->modelName);
         
-        $this->tableName = $this->model::getTableName();
+        $this->tableName = $this->model->getTableName();
         
         $this->pagerStrategyContext = new PaginableStrategyContext();
         
@@ -85,7 +85,7 @@ abstract class AbstractModel
         if (empty($value)) {
             $value = $columnName;
             
-            $primaryKeyName = $clone->model::getPrimaryKeyName();
+            $primaryKeyName = $clone->model->getPrimaryKeyName();
             $columnName = $primaryKeyName;
         }
         
@@ -145,11 +145,11 @@ abstract class AbstractModel
             throw new PDOException($e);
         }
         
-        if ($clone->model::isPrimaryKeySelfIncremental()) {
+        if ($clone->model->isPrimaryKeySelfIncremental()) {
             $clone->primaryKeyValue = $clone->connection->lastInsertId();
         } else {
             $clone->primaryKeyValue = $attributes[$clone->model
-                ::getPrimaryKeyName()];
+                ->getPrimaryKeyName()];
         }
         
         return $clone;
