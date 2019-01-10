@@ -38,7 +38,7 @@ class Model1 extends ModelBaseTest {
     function __construct() {
         parent::__construct('mydb');
         
-        $this->setOrder('column1', 'DESC');
+//         $this->setOrder('id', 'DESC');
         $this->setPager(new MySQL());
         
         $this->containsThrough('Model2', 'AssociativeModel');
@@ -60,7 +60,8 @@ class Model1 extends ModelBaseTest {
     static function getColumns() {
         return [
             'id',
-            'column1'
+            'table1col',
+            'table1col1'
         ];
     }
     
@@ -127,12 +128,13 @@ $model = new Model1();
 // if there isn't a self-incremental primary key
 // print_r($model->getRow('column1', 'value 2'));
 
-// print_r($model->getAll(1, 2));
+print_r($model->getAll(2, 2));
 
-echo $model->create(['table1col' => 'a value'])
-    ->commit()
-;
- 
+// for ($i = 1; $i <= 1; $i++) {
+//     $model = $model->create(['table1col' => "a value $i"]);
+// }
+// echo $model->commit();
+
 // echo $model->createAssociations('Model2', 1,
 //     [
 //         'table2_id' => 1

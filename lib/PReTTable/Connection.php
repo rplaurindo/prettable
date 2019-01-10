@@ -27,11 +27,6 @@ class Connection {
         
         $adapter = $data['adapter'];
         
-        if (array_key_exists('charset', $data)) {
-            $charset = $data['charset'];
-            $charsetStatement = ";charset=$charset";
-        }
-        
         $username = null;
         if (array_key_exists('username', $data)) {
             $username = $data['username'];
@@ -43,12 +38,6 @@ class Connection {
         }
         
         $dsn = "$adapter:=$host;dbname=$database";
-        
-        if (isset($charsetStatement)) {
-            $dsn .= "$charsetStatement";
-        }
-        
-//         echo "\n$dsn\n\n";
         
         try {
             $clone->connection = new PDO($dsn, $username, $password);
