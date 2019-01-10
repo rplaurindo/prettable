@@ -460,6 +460,14 @@ abstract class AbstractModel
         return $result;
     }
     
+    function join($modelName, $associatedColumn) {
+        $clone = $this->getClone();
+        
+        $clone->queryMap->join($modelName, $associatedColumn);
+        
+        return $clone;
+    }
+    
     function getAll($limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
         
@@ -507,7 +515,6 @@ abstract class AbstractModel
         
         $selectStatement = $map['select'];
         $fromStatement = $map['from'];
-        $joinsStatement = "";
         $whereStatement = $map['where'];
 
         $query = "
@@ -523,7 +530,7 @@ abstract class AbstractModel
             }
         }
         
-        if (!empty($joinsStatement)) {
+        if (isset($joinsStatement)) {
             $query .= "
                 $joinsStatement
             ";
@@ -583,18 +590,23 @@ abstract class AbstractModel
         return clone $this;
     }
     
-    protected function establishConnection($database, $host = null) {
+    protected function establishConnection($databaseSchema, $host = null) {
+        if (!isset($databaseSchema)) {
+            throw new Exception('A database schema should be passed.');
+        }
+        
         if (isset($host)) {
             $this->host = $host;
         }
         
         $connection = new Connection();
-        $this->connection = $connection->establishConnection($this->host, 
-                                                             $database);
+        $this->connection = $connection
+            ->establishConnection($this->host, $databaseSchema);
     }
     
     private static function attachesAssociativeForeignKey($foreignKeyName, 
-                                                          $value, ...$rows) {
+                                                          $value, 
+                                                          ...$rows) {
         foreach ($rows as $index => $attributes) {
             $attributes[$foreignKeyName] = $value;
             $rows[$index] = $attributes;

@@ -20,8 +20,7 @@ class Select {
             return $this->mountCollection($attachTableName);
         }
         
-        return implode(', ', $this->mountMember($this->models[0], $attachTableName));
-        
+        return implode(', ', $this->mountMember($this->models[0], $attachTableName));        
     }
     
     private function mountCollection($attachTableName) {
@@ -55,7 +54,6 @@ class Select {
                 } else {
                     array_push($mountedColumns, "$columnName as $alias");
                 }
-                
             } else {
                 $columnName = $v;
                 array_push($mountedColumns, ($attachTableName ? "$tableName.$columnName" : $columnName));

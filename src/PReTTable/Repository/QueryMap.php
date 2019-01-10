@@ -123,7 +123,14 @@ class QueryMap {
         return null;
     }
     
-    function select($modelName, $primaryKeyValue = null) {
+    function select($modelName) {
+        $functionArguments = func_num_args();
+        
+        if (count($functionArguments) == 2) {
+            $primaryKeyValue = $modelName;
+            $modelName = $functionArguments[1];
+        }
+        
         self::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
@@ -158,17 +165,30 @@ class QueryMap {
                     $clone->join($clone->modelName, $clone->primaryKeyName);
                     $clone->join($modelName,
                                  $clone->associatedModel->getPrimaryKeyName());
+                    
+                    $associativeColumn = $clone->associativeModel->getAssociativeKeys()[$clone->modelName];
+                    if (isset($primaryKeyValue)) {
+                        $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
+                    }
                 } else {
                     $clone->join($clone->modelName, $clone->primaryKeyName);
                     
                     $associatedColumn = $clone->containsSet
                         ->offsetGet($modelName)['associatedColumn'];
+                    
+                    if (isset($primaryKeyValue)) {
+                        $clone->whereClause = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
+                    }
                 }
             } else {
                 $associatedColumn = $clone->isContainedSet
                     ->offsetGet($modelName)['associatedColumn'];
                 
                 $clone->join($clone->modelName, $associatedColumn);
+                
+                if (isset($primaryKeyValue)) {
+                    $clone->whereClause = "$clone->tableName.$associatedColumn = $primaryKeyValue";
+                }
             }
         }
         
