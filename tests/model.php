@@ -9,17 +9,6 @@ use
     PReTTable\Helpers\Pagination
 ;
 
-abstract class ModelBaseTest extends AbstractModel {
-    
-    function __construct($database, $host = null) {
-        $data = include 'database.php';
-        $host = 'localhost';
-        parent::__construct($host, $data);
-        $this->establishConnection($database);
-    }
-    
-}
-
 class MySQL implements PaginableStrategyInterface {
     
     function getStatement($limit, $pageNumber = 1) {
@@ -29,6 +18,17 @@ class MySQL implements PaginableStrategyInterface {
             LIMIT $limit
             OFFSET $offset
         ";
+    }
+    
+}
+
+abstract class ModelBaseTest extends AbstractModel {
+    
+    function __construct($databaseSchema, $host = null) {
+        $data = include 'database.php';
+        $host = 'localhost';
+        parent::__construct($host, $data);
+        $this->establishConnection($databaseSchema);
     }
     
 }
@@ -70,7 +70,7 @@ class Model1 extends ModelBaseTest {
 class Model2 extends ModelBaseTest {
     
     function __construct() {
-        
+        parent::__construct('mydb');
     }
     
     static function getTableName() {
@@ -88,7 +88,8 @@ class Model2 extends ModelBaseTest {
     static function getColumns() {
         return [
             'id',
-            'column1'
+            'table2col',
+            'table2col1'
         ];
     }
     
@@ -123,10 +124,17 @@ class AssociativeModel implements AssociativeModelInterface {
 
 $model = new Model1();
 
-// for ($i = 1; $i <= 1; $i++) {
+// for ($i = 1; $i <= 10; $i++) {
 //     $model = $model->create(['table1col' => "a value $i"]);
 // }
 // echo $model->commit();
+
+// $mode2 = new Model2();
+
+// for ($i = 1; $i <= 10; $i++) {
+//     $mode2 = $mode2->create(['table2col' => "a value $i"]);
+// }
+// echo $mode2->commit();
 
 // echo $model->createAssociations('Model2', 1,
 //     [
@@ -159,7 +167,9 @@ $model = new Model1();
 
 // print_r($model->getAll());
 // print_r($model->getAll(2));
-print_r($model->getAll(2, 2));
+// print_r($model->getAll(2, 2));
+
+// print_r($model->get($primaryKeyValue, $modelName));
 
 // echo $model->update(49, ['column1' => 'a updated value'])
 //     ->commit()
