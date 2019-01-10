@@ -158,9 +158,6 @@ class QueryMap {
                     $clone->join($clone->modelName, $clone->primaryKeyName);
                     $clone->join($modelName,
                                  $clone->associatedModel->getPrimaryKeyName());
-                    
-                    $associativeColumn = $clone->associativeModel
-                        ->getAssociativeKeys()[$clone->modelName];
                 } else {
                     $clone->join($clone->modelName, $clone->primaryKeyName);
                     
