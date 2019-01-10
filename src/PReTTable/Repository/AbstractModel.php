@@ -517,7 +517,7 @@ abstract class AbstractModel
         
         $select = $map['select'];
         $from = $map['from'];
-//         $whereClause = $map['where'];
+        $whereClause = $map['where'];
         
         $joinsStatement = "";
 
@@ -540,9 +540,9 @@ abstract class AbstractModel
             ";
         }
         
-//         $query .= "
-//             $whereStatement
-//         ";
+        $query .= "
+            WHERE $whereClause
+        ";
         
         if (isset($clone->order)) {
             $query .= "
@@ -560,19 +560,16 @@ abstract class AbstractModel
             ";
         }
         
-        echo $query;
-        
         try {
-//             $PDOstatement = $clone->connection->query($query);
+            $PDOstatement = $clone->connection->query($query);
             
-//             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
         }
         
-//         return $result;
-        return [];
+        return $result;
     }
     
     function commit() {

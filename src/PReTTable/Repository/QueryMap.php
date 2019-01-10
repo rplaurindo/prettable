@@ -41,7 +41,7 @@ class QueryMap {
     
     protected $joins;
     
-    protected $where;
+    protected $whereClause;
     
     function __construct($modelName) {
         self::checkIfModelIs($modelName,
@@ -265,8 +265,8 @@ class QueryMap {
             }
         }
         
-        if (isset($this->where)) {
-            $map['where'] = $this->where;
+        if (isset($this->whereClause)) {
+            $map['where'] = $this->whereClause;
         }
         
         return $map;
