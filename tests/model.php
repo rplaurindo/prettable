@@ -167,9 +167,9 @@ $model = new Model1();
 
 // print_r($model->getAll());
 // print_r($model->getAll(2));
-// print_r($model->getAll(2, 2));
+print_r($model->getAll(2, 2));
 
-// print_r($model->get($primaryKeyValue, $modelName));
+// print_r($model->get(2, 'Model2'));
 
 // echo $model->update(49, ['column1' => 'a updated value'])
 //     ->commit()

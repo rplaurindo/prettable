@@ -35,7 +35,9 @@ abstract class AbstractModel
     
     private $connection;
     
-    private $orderBy;
+    private $order;
+    
+    private $by;
     
     private $pagerStrategyContext;
     
@@ -479,9 +481,9 @@ abstract class AbstractModel
             FROM $clone->tableName
         ";
         
-        if (isset($clone->orderBy)) {
+        if (isset($clone->order)) {
             $query .= "
-                $clone->orderBy
+                {$clone->getMountedOrderBy()}
             ";
         }
         
@@ -511,15 +513,17 @@ abstract class AbstractModel
         $clone = $this->getClone();
         $queryMap = $clone->queryMap->select($primaryKeyValue, $modelName);
         
-        $map = $queryMap->queryMap->getMap();
+        $map = $queryMap->getMap();
         
-        $selectStatement = $map['select'];
-        $fromStatement = $map['from'];
-        $whereStatement = $map['where'];
+        $select = $map['select'];
+        $from = $map['from'];
+//         $whereClause = $map['where'];
+        
+        $joinsStatement = "";
 
         $query = "
-            $selectStatement
-            $fromStatement
+            SELECT $select
+            FROM $from
         ";
         
         if (array_key_exists('joins', $map)) {
@@ -536,13 +540,13 @@ abstract class AbstractModel
             ";
         }
         
-        $query .= "
-            $whereStatement
-        ";
+//         $query .= "
+//             $whereStatement
+//         ";
         
-        if (isset($clone->orderBy)) {
+        if (isset($clone->order)) {
             $query .= "
-                $clone->orderBy
+                {$clone->getMountedOrderBy(true)}
             ";
         }
         
@@ -556,16 +560,19 @@ abstract class AbstractModel
             ";
         }
         
+        echo $query;
+        
         try {
-            $PDOstatement = $clone->connection->query($query);
+//             $PDOstatement = $clone->connection->query($query);
             
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+//             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
         }
         
-        return $result;
+//         return $result;
+        return [];
     }
     
     function commit() {
@@ -573,9 +580,8 @@ abstract class AbstractModel
     }
     
     function setOrder($columnName, $by = '') {
-        $this->orderBy = "
-            ORDER BY $columnName $by
-        ";
+        $this->order = $columnName;
+        $this->by = $by;
     }
     
     protected function beginTransaction() {
@@ -584,10 +590,6 @@ abstract class AbstractModel
     
     protected function rollBack() {
         $this->connection->exec('ROLLBACK');
-    }
-    
-    protected function getClone() {
-        return clone $this;
     }
     
     protected function establishConnection($databaseSchema, $host = null) {
@@ -602,6 +604,23 @@ abstract class AbstractModel
         $connection = new Connection();
         $this->connection = $connection
             ->establishConnection($this->host, $databaseSchema);
+    }
+    
+//     to comply the Prototype pattern
+    protected function getClone() {
+        return clone $this;
+    }
+    
+    private function getMountedOrderBy($attachTable = false) {
+        if ($attachTable) {
+            $columnStatement = "$this->tableName.$this->order";
+        } else {
+            $columnStatement = $this->order;
+        }
+        
+        return "
+            ORDER BY $columnStatement $this->by
+        ";
     }
     
     private static function attachesAssociativeForeignKey($foreignKeyName, 

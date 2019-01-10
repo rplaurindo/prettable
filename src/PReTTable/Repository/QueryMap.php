@@ -124,7 +124,7 @@ class QueryMap {
     }
     
     function select($modelName) {
-        $functionArguments = func_num_args();
+        $functionArguments = func_get_args();
         
         if (count($functionArguments) == 2) {
             $primaryKeyValue = $modelName;
