@@ -83,7 +83,7 @@ abstract class AbstractModel
     function getRow($columnName, $value = null) {
         $clone = $this->getClone();
         
-//         func_get_args()
+        //         func_get_args()
         if (empty($value)) {
             $value = $columnName;
             
@@ -91,15 +91,15 @@ abstract class AbstractModel
             $columnName = $primaryKeyName;
         }
         
-        $selectStatement = new Select($clone->modelName);
-        $selectStatement = $selectStatement->getStatement();
+        $select = new Select($clone->modelName);
+        $selectStatement = "SELECT {$select->getStatement()}";
         
         $query = "
-            SELECT $selectStatement
+            $selectStatement
             FROM $clone->tableName
             WHERE $columnName = :$columnName
         ";
-        
+            
         try {
             $PDOstatement = $clone->connection->prepare($query);
             $PDOstatement->bindParam(":$columnName", $value);
@@ -434,7 +434,7 @@ abstract class AbstractModel
             $primaryKeyValue = $clone->primaryKeyValue;
         }
         
-//         $joins = implode("\n            INNER JOIN ", $map['joins']);
+//         fazer join aqui
         
         $statement = "
             SELECT $relatedForeignKeyName
@@ -473,18 +473,16 @@ abstract class AbstractModel
     function getAll($limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
         
-        $selectStatement = new Select($clone->modelName);
-        $selectStatement = $selectStatement->getStatement();
+        $select = new Select($clone->modelName);
+        $selectStatement = "SELECT {$select->getStatement()}";
         
         $query = "
-            SELECT $selectStatement
-            FROM $clone->tableName
-        ";
+            $selectStatement
+            FROM $clone->tableName";
         
         if (isset($clone->order)) {
             $query .= "
-                {$clone->getMountedOrderBy()}
-            ";
+                {$clone->getMountedOrderBy()}";
         }
         
         if (isset($limit)) {
@@ -496,7 +494,7 @@ abstract class AbstractModel
                 {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
             ";
         }
-        
+        echo $query;
         try {
             $PDOstatement = $clone->connection->query($query);
             
@@ -523,15 +521,14 @@ abstract class AbstractModel
 
         $query = "
             SELECT $select
-            FROM $from
-        ";
+            FROM $from";
         
-        if (array_key_exists('joins', $map)) {
-            foreach ($map['joins'] as $join) {
-                $joinsStatement .= "
-                    INNER JOIN $join
-                ";
-            }
+        $joins = $queryMap->getJoins();
+        if (count($joins)) {
+            $joinsStatement .= "
+            INNER JOIN " . 
+            implode("
+            INNER JOIN ", $joins);
         }
         
         if (isset($joinsStatement)) {
@@ -541,13 +538,11 @@ abstract class AbstractModel
         }
         
         $query .= "
-            WHERE $whereClause
-        ";
+            WHERE $whereClause";
         
         if (isset($clone->order)) {
             $query .= "
-                {$clone->getMountedOrderBy(true)}
-            ";
+                {$clone->getMountedOrderBy(true)}";
         }
         
         if (isset($limit)) {
@@ -627,8 +622,7 @@ abstract class AbstractModel
         }
         
         return "
-            ORDER BY $columnStatement $this->by
-        ";
+            ORDER BY $columnStatement $this->by";
     }
     
 }

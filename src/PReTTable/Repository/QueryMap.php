@@ -143,7 +143,6 @@ class QueryMap {
         
         if ($clone->containsSet->offsetExists($modelName)
             || $clone->isContainedSet->offsetExists($modelName)) {
-            
             $selectStatement = new Select($modelName);
             $clone->select = $selectStatement->getStatement(true);
             
@@ -225,44 +224,7 @@ class QueryMap {
         }
         
         if ($this->joins->count()) {
-            $map['joins'] = [];
-            
-            foreach ($this->joins as $joinedModelName => $joinedColumnName) {
-                $joinedTableName = self::resolveTableName($joinedModelName);
-            
-                if ($this->containsSet->offsetExists($joinedModelName)) {
-                    if (array_key_exists('associativeModelName', $this
-                        ->containsSet->offsetGet($joinedModelName))) {
-                        $tableName = $this->associativeTableName;
-                        $columnName = $this->associativeModel
-                            ->getAssociativeKeys()[$joinedModelName];
-                    } else {
-                        $tableName = $this->tableName;
-                        $columnName = $this->primaryKeyName;
-                    }
-                } else {
-                    if ($this->isContainedSet->offsetExists($joinedModelName)) {
-                        $tableName = $this->tableName;
-                        $columnName = $this->isContainedSet
-                            ->offsetGet($joinedModelName)['associatedColumn'];
-                    } else if (array_key_exists($this->associatedModelName,
-                               $this->isContainedSet)) {
-                        $tableName = $this->associatedTableName;
-                        $columnName = $this->associatedModel->getPrimaryKeyName();
-                    } else if (isset($this->associativeModelName)) {
-                        $tableName = $this->associativeTableName;
-                        $columnName = $this->associativeModel
-                            ->getAssociativeKeys()[$joinedModelName];
-                    } else {
-                        $tableName = $this->associatedTableName;
-                        $columnName = $this->containsSet
-                            ->offsetGet($this->associatedModelName)['associatedColumn'];
-                    }
-                }
-                
-                array_push($map['joins'],
-                    "$joinedTableName ON $joinedTableName.$joinedColumnName = $tableName.$columnName");
-            }
+            $map['joins'] = $this->getJoins();
         }
         
         if (isset($this->whereClause)) {
@@ -270,6 +232,49 @@ class QueryMap {
         }
         
         return $map;
+    }
+    
+    function getJoins() {
+        $joins = [];
+        
+        foreach ($this->joins as $joinedModelName => $joinedColumnName) {
+            $joinedTableName = self::resolveTableName($joinedModelName);
+            
+            if ($this->containsSet->offsetExists($joinedModelName)) {
+                if (array_key_exists('associativeModelName', $this
+                    ->containsSet->offsetGet($joinedModelName))) {
+                        $tableName = $this->associativeTableName;
+                        $columnName = $this->associativeModel
+                        ->getAssociativeKeys()[$joinedModelName];
+                    } else {
+                        $tableName = $this->tableName;
+                        $columnName = $this->primaryKeyName;
+                    }
+            } else {
+                if ($this->isContainedSet->offsetExists($joinedModelName)) {
+                    $tableName = $this->tableName;
+                    $columnName = $this->isContainedSet
+                    ->offsetGet($joinedModelName)['associatedColumn'];
+                } else if (array_key_exists($this->associatedModelName,
+                    $this->isContainedSet)) {
+                        $tableName = $this->associatedTableName;
+                        $columnName = $this->associatedModel->getPrimaryKeyName();
+                    } else if (isset($this->associativeModelName)) {
+                        $tableName = $this->associativeTableName;
+                        $columnName = $this->associativeModel
+                        ->getAssociativeKeys()[$joinedModelName];
+                    } else {
+                        $tableName = $this->associatedTableName;
+                        $columnName = $this->containsSet
+                        ->offsetGet($this->associatedModelName)['associatedColumn'];
+                    }
+            }
+            
+            array_push($joins,
+                "$joinedTableName ON $joinedTableName.$joinedColumnName = $tableName.$columnName");
+        }
+        
+        return $joins;
     }
     
     protected function getClone() {
