@@ -38,7 +38,7 @@ class Model1 extends ModelBaseTest {
     function __construct() {
         parent::__construct('mydb');
         
-//         $this->setOrder('id', 'DESC');
+        $this->setOrder('id', 'DESC');
         $this->setPager(new MySQL());
         
         $this->containsThrough('Model2', 'AssociativeModel');

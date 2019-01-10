@@ -11,7 +11,7 @@ class PaginableStrategyContext {
     }
     
     function getStatement($limit, $pageNumber = 1) {
-        return $this->_pagerStrategy->getStatement($limit);
+        return $this->_pagerStrategy->getStatement($limit, $pageNumber);
     }
     
     function setStrategy(PaginableStrategyInterface $pagerStrategy) {
