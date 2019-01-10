@@ -157,6 +157,8 @@ $model = new Model1();
 
 // print_r($model->getRow(2));
 
+// print_r($model->getAll());
+// print_r($model->getAll(2));
 print_r($model->getAll(2, 2));
 
 // echo $model->update(49, ['column1' => 'a updated value'])
