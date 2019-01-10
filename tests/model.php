@@ -123,13 +123,6 @@ class AssociativeModel implements AssociativeModelInterface {
 
 $model = new Model1();
 
-// print_r($model->getRow(2));
-
-// if there isn't a self-incremental primary key
-// print_r($model->getRow('column1', 'value 2'));
-
-print_r($model->getAll(2, 2));
-
 // for ($i = 1; $i <= 1; $i++) {
 //     $model = $model->create(['table1col' => "a value $i"]);
 // }
@@ -158,6 +151,13 @@ print_r($model->getAll(2, 2));
 //         )->commit()
 // //         )
 // ;
+
+// if there isn't a self-incremental primary key
+// print_r($model->getRow('table1col', 'a value 2'));
+
+// print_r($model->getRow(2));
+
+print_r($model->getAll(2, 2));
 
 // echo $model->update(49, ['column1' => 'a updated value'])
 //     ->commit()
