@@ -123,7 +123,7 @@ class QueryMap {
         return null;
     }
     
-    function select($primaryKeyValue, $modelName = null) {
+    function select($modelName, $primaryKeyValue = null) {
         self::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
