@@ -499,8 +499,66 @@ abstract class AbstractModel
         return $result;
     }
     
-    function get($modelName, $limit = null, $pageNumber = 1) {
-        return [];
+    function get($primaryKeyValue, $modelName, $limit = null, $pageNumber = 1) {
+        $clone = $this->getClone();
+        $queryMap = $clone->queryMap->select($primaryKeyValue, $modelName);
+        
+        $map = $queryMap->queryMap->getMap();
+        
+        $selectStatement = $map['select'];
+        $fromStatement = $map['from'];
+        $joinsStatement = "";
+        $whereStatement = $map['where'];
+
+        $query = "
+            $selectStatement
+            $fromStatement
+        ";
+        
+        if (array_key_exists('joins', $map)) {
+            foreach ($map['joins'] as $join) {
+                $joinsStatement .= "
+                    INNER JOIN $join
+                ";
+            }
+        }
+        
+        if (!empty($joinsStatement)) {
+            $query .= "
+                $joinsStatement
+            ";
+        }
+        
+        $query .= "
+            $whereStatement
+        ";
+        
+        if (isset($clone->orderBy)) {
+            $query .= "
+                $clone->orderBy
+            ";
+        }
+        
+        if (isset($limit)) {
+            if (!$clone->strategyContextIsDefined) {
+                throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
+            }
+            
+            $query .= "
+                {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
+            ";
+        }
+        
+        try {
+            $PDOstatement = $clone->connection->query($query);
+            
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        return $result;
     }
     
     function commit() {

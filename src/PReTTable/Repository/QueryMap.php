@@ -41,8 +41,10 @@ class QueryMap {
     
     protected $joins;
     
+    protected $where;
+    
     function __construct($modelName) {
-        self::checkIfModelIs($modelName, 
+        self::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface');
         
         $this->modelName = $modelName;
@@ -85,8 +87,8 @@ class QueryMap {
     }
     
     function contains($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName, 
-            __NAMESPACE__ . '\IdentifiableModelInterface', 
+        self::checkIfModelIs($modelName,
+            __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
         
         $this->containsSet
@@ -94,7 +96,7 @@ class QueryMap {
     }
     
     function isContained($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName, 
+        self::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface');
         
         $this->isContainedSet
@@ -102,8 +104,8 @@ class QueryMap {
     }
     
     function containsThrough($modelName, $through) {
-        self::checkIfModelIs($modelName, 
-            __NAMESPACE__ . '\IdentifiableModelInterface', 
+        self::checkIfModelIs($modelName,
+            __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
         
         $this->containsSet->offsetSet($modelName, ['associativeModelName' => $through]);
@@ -121,9 +123,9 @@ class QueryMap {
         return null;
     }
     
-    function select($modelName) {
-        self::checkIfModelIs($modelName, 
-            __NAMESPACE__ . '\IdentifiableModelInterface', 
+    function select($primaryKeyValue, $modelName = null) {
+        self::checkIfModelIs($modelName,
+            __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
         
         $clone = $this->getClone();
@@ -132,16 +134,16 @@ class QueryMap {
         $clone->associatedModel = Reflection::getDeclarationOf($modelName);
         $clone->associatedTableName = self::resolveTableName($modelName);
         
-        if ($clone->containsSet->offsetExists($modelName) 
+        if ($clone->containsSet->offsetExists($modelName)
             || $clone->isContainedSet->offsetExists($modelName)) {
-                
+            
             $selectStatement = new Select($modelName);
             $clone->select = $selectStatement->getStatement(true);
             
             $clone->from = $clone->associatedTableName;
             
             if ($clone->containsSet->offsetExists($modelName)) {
-                if (array_key_exists('associativeModelName', 
+                if (array_key_exists('associativeModelName',
                         $clone->containsSet->offsetGet($modelName))
                     ) {
                     $clone->associativeModelName = $clone
@@ -154,7 +156,7 @@ class QueryMap {
                     $clone->from = $clone->associativeTableName;
                     
                     $clone->join($clone->modelName, $clone->primaryKeyName);
-                    $clone->join($modelName, 
+                    $clone->join($modelName,
                                  $clone->associatedModel->getPrimaryKeyName());
                     
                     $associativeColumn = $clone->associativeModel
@@ -177,7 +179,7 @@ class QueryMap {
     }
     
     function join($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName, 
+        self::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface', 
             __NAMESPACE__ . '\AssociativeModelInterface');
         
@@ -226,7 +228,7 @@ class QueryMap {
                         $tableName = $this->tableName;
                         $columnName = $this->isContainedSet
                             ->offsetGet($joinedModelName)['associatedColumn'];
-                    } else if (array_key_exists($this->associatedModelName, 
+                    } else if (array_key_exists($this->associatedModelName,
                                $this->isContainedSet)) {
                         $tableName = $this->associatedTableName;
                         $columnName = $this->associatedModel->getPrimaryKeyName();
@@ -246,10 +248,14 @@ class QueryMap {
             }
         }
         
+        if (isset($this->where)) {
+            $map['where'] = $this->where;
+        }
+        
         return $map;
     }
     
-    protected function getClone(){
+    protected function getClone() {
         return clone $this;
     }
     
