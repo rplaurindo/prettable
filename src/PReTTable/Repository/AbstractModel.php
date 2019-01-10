@@ -611,6 +611,17 @@ abstract class AbstractModel
         return clone $this;
     }
     
+    private static function attachesAssociativeForeignKey($foreignKeyName, 
+                                                          $value, 
+                                                          ...$rows) {
+        foreach ($rows as $index => $attributes) {
+            $attributes[$foreignKeyName] = $value;
+            $rows[$index] = $attributes;
+        }
+        
+        return $rows;
+    }
+    
     private function getMountedOrderBy($attachTable = false) {
         if ($attachTable) {
             $columnStatement = "$this->tableName.$this->order";
@@ -621,17 +632,6 @@ abstract class AbstractModel
         return "
             ORDER BY $columnStatement $this->by
         ";
-    }
-    
-    private static function attachesAssociativeForeignKey($foreignKeyName, 
-                                                          $value, 
-                                                          ...$rows) {
-        foreach ($rows as $index => $attributes) {
-            $attributes[$foreignKeyName] = $value;
-            $rows[$index] = $attributes;
-        }
-        
-        return $rows;
     }
     
 }
