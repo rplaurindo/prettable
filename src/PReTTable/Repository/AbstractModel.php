@@ -477,12 +477,14 @@ abstract class AbstractModel
         
         $joinsStatement = "";
         
-        $query = "
-            SELECT {$select->getStatement()}
-            FROM $clone->tableName";
+//         $query = "
+//             SELECT {$select->getStatement()}
+//             FROM $clone->tableName";
         
-        $joins = $clone->queryMap->getJoins();
+        $joinsMap = $clone->queryMap->getJoinsMap();
+        $joins = $joinsMap['joins'];
         if (count($joins)) {
+//             pegar os campos de todo mundo que faz join
             $joinsStatement .= "
             INNER JOIN " .
             implode("
@@ -539,7 +541,8 @@ abstract class AbstractModel
             SELECT $select
             FROM $from";
         
-        $joins = $queryMap->getJoins();
+        $joinsMap = $queryMap->getJoinsMap();
+        $joins = $joinsMap['joins'];
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " . 

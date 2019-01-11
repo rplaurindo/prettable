@@ -224,7 +224,9 @@ class QueryMap {
         }
         
         if ($this->joins->count()) {
-            $map['joins'] = $this->getJoins();
+            $joinsMap = $this->getJoinsMap();
+            $map['joinedFields'] = $joinsMap['joinedFields'];
+            $map['joins'] = $joinsMap['joins'];
         }
         
         if (isset($this->whereClause)) {
@@ -234,8 +236,11 @@ class QueryMap {
         return $map;
     }
     
-    function getJoins() {
-        $joins = [];
+    function getJoinsMap() {
+        $map = [
+            'joins' => [],
+            'joinedFields' => []
+        ];
         
         foreach ($this->joins as $joinedModelName => $joinedColumnName) {
             $joinedTableName = self::resolveTableName($joinedModelName);
@@ -270,11 +275,11 @@ class QueryMap {
                     }
             }
             
-            array_push($joins,
+            array_push($map['joins'],
                 "$joinedTableName ON $joinedTableName.$joinedColumnName = $tableName.$columnName");
         }
         
-        return $joins;
+        return $map;
     }
     
     protected function getClone() {
