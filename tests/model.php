@@ -63,8 +63,7 @@ class Model1 extends ModelBaseTest {
     static function getColumns() {
         return [
             'id',
-            'table1col',
-            'table1col1'
+            'table1col'
         ];
     }
     
@@ -91,8 +90,7 @@ class Model2 extends ModelBaseTest {
     static function getColumns() {
         return [
             'id',
-            'table2col',
-            'table2col1'
+            'table2col'
         ];
     }
     
@@ -126,17 +124,16 @@ class AssociativeModel implements AssociativeModelInterface {
 
 
 $model = new Model1();
+$mode2 = new Model2();
 
-// for ($i = 1; $i <= 10; $i++) {
-//     $model = $model->create(['table1col' => "a value $i"]);
-// }
+for ($i = 1; $i <= 10; $i++) {
+    $model = $model->create(['table1col' => "a value $i"]);
+}
 // echo $model->commit();
 
-// $mode2 = new Model2();
-
-// for ($i = 1; $i <= 10; $i++) {
-//     $mode2 = $mode2->create(['table2col' => "a value $i"]);
-// }
+for ($i = 1; $i <= 10; $i++) {
+    $mode2 = $mode2->create(['table2col' => "a value $i"]);
+}
 // echo $mode2->commit();
 
 // echo $model->createAssociations('Model2', 1,
@@ -171,10 +168,10 @@ $model = new Model1();
 // print_r($model->getAll());
 // print_r($model->getAll(2));
 // print_r($model->getAll(2, 2));
-print_r($model->join('AssociativeModel', 'table1_id')->getAll(2, 2));
+// print_r($model->join('AssociativeModel', 'table1_id')->getAll(2, 2));
 
 // print_r($model->get(2, 'Model2'));
-// print_r($model->get(2, 'Model2', 2, 3));
+print_r($model->get(2, 'Model2', 2, 3));
 
 // echo $model->update(49, ['column1' => 'a updated value'])
 //     ->commit()
