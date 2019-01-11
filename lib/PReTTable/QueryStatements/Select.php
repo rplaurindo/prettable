@@ -8,26 +8,20 @@ use
 
 class Select {
     
-    private $models;
-    
-    function __construct(...$models) {
-        $this->models = $models;
-    }
-    
-    function getStatement($attachTableName = false) {
+    function getStatement(...$modelNames) {
         
-        if (count($this->models) > 1) {
-            return $this->mountCollection($attachTableName);
+        if (count($modelNames) > 1) {
+            return $this->mountCollection(...$modelNames);
         }
         
-        return implode(', ', $this->mountMember($this->models[0], $attachTableName));        
+        return implode(', ', $this->mountMember($modelNames[0], false));        
     }
     
-    private function mountCollection($attachTableName) {
+    private function mountCollection(...$modelNames) {
         $mountedColumns = [];
         
-        foreach($this->models as $modelName) {
-            $mountedColumns = array_merge($mountedColumns, $this->mountMember($modelName, $attachTableName));
+        foreach($modelNames as $modelName) {
+            $mountedColumns = array_merge($mountedColumns, $this->mountMember($modelName, true));
         }
         
         return implode(', ', $mountedColumns);

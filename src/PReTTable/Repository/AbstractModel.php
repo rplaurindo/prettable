@@ -83,7 +83,6 @@ abstract class AbstractModel
     function getRow($columnName, $value = null) {
         $clone = $this->getClone();
         
-        //         func_get_args()
         if (empty($value)) {
             $value = $columnName;
             
@@ -434,7 +433,7 @@ abstract class AbstractModel
             $primaryKeyValue = $clone->primaryKeyValue;
         }
         
-//         fazer join aqui
+//         ver se precisa fazer join aqui
         
         $statement = "
             SELECT $relatedForeignKeyName
@@ -472,19 +471,17 @@ abstract class AbstractModel
     
     function getAll($limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
+
+        $select = new Select();
         
-        $select = new Select($clone->modelName);
+        $query = "
+            SELECT {$select->getStatement($clone->modelName, ...$clone->queryMap->getInvolvedModelNames())}
+            FROM $clone->tableName";
         
         $joinsStatement = "";
         
-//         $query = "
-//             SELECT {$select->getStatement()}
-//             FROM $clone->tableName";
-        
-        $joinsMap = $clone->queryMap->getJoinsMap();
-        $joins = $joinsMap['joins'];
+        $joins = $clone->queryMap->getJoins();
         if (count($joins)) {
-//             pegar os campos de todo mundo que faz join
             $joinsStatement .= "
             INNER JOIN " .
             implode("
@@ -499,7 +496,7 @@ abstract class AbstractModel
         
         if (isset($clone->order)) {
             $query .= "
-                {$clone->getMountedOrderBy()}";
+                {$clone->getMountedOrderBy(true)}";
         }
         
         if (isset($limit)) {
@@ -511,22 +508,23 @@ abstract class AbstractModel
                 {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
             ";
         }
-        echo $query;
+        
         try {
-//             $PDOstatement = $clone->connection->query($query);
+            echo $query;
+            $PDOstatement = $clone->connection->query($query);
             
-//             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
         }
         
-//         return $result;
-        return [];
+        return $result;
     }
     
     function get($primaryKeyValue, $modelName, $limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
+        
         $queryMap = $clone->queryMap->select($primaryKeyValue, $modelName);
         
         $map = $queryMap->getMap();
@@ -541,8 +539,7 @@ abstract class AbstractModel
             SELECT $select
             FROM $from";
         
-        $joinsMap = $queryMap->getJoinsMap();
-        $joins = $joinsMap['joins'];
+        $joins = $queryMap->getJoins();
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " . 
@@ -575,6 +572,7 @@ abstract class AbstractModel
         }
         
         try {
+            echo $query;
             $PDOstatement = $clone->connection->query($query);
             
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);

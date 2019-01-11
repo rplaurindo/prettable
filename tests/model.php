@@ -44,7 +44,7 @@ class Model1 extends ModelBaseTest {
         $this->containsThrough('Model2', 'AssociativeModel');
         
 //         to make join
-        $this->contains('AssociativeModel', 'table1_id');
+        $this->contains('Model3', 'table1_id');
     }
     
     static function getTableName() {
@@ -96,6 +96,33 @@ class Model2 extends ModelBaseTest {
     
 }
 
+class Model3 extends ModelBaseTest {
+    
+    function __construct() {
+        parent::__construct('mydb');
+    }
+    
+    static function getTableName() {
+        return 'table3';
+    }
+    
+    static function getPrimaryKeyName() {
+        return 'id';
+    }
+    
+    static function isPrimaryKeySelfIncremental() {
+        return true;
+    }
+    
+    static function getColumns() {
+        return [
+            'id',
+            'table3col'
+        ];
+    }
+    
+}
+
 class AssociativeModel implements AssociativeModelInterface {
     
     function __construct() {
@@ -124,16 +151,16 @@ class AssociativeModel implements AssociativeModelInterface {
 
 
 $model = new Model1();
-$mode2 = new Model2();
+// $mode2 = new Model2();
 
-for ($i = 1; $i <= 10; $i++) {
-    $model = $model->create(['table1col' => "a value $i"]);
-}
+// for ($i = 1; $i <= 10; $i++) {
+//     $model = $model->create(['table1col' => "a value $i"]);
+// }
 // echo $model->commit();
 
-for ($i = 1; $i <= 10; $i++) {
-    $mode2 = $mode2->create(['table2col' => "a value $i"]);
-}
+// for ($i = 1; $i <= 10; $i++) {
+//     $mode2 = $mode2->create(['table2col' => "a value $i"]);
+// }
 // echo $mode2->commit();
 
 // echo $model->createAssociations('Model2', 1,
@@ -167,11 +194,11 @@ for ($i = 1; $i <= 10; $i++) {
 
 // print_r($model->getAll());
 // print_r($model->getAll(2));
-// print_r($model->getAll(2, 2));
-// print_r($model->join('AssociativeModel', 'table1_id')->getAll(2, 2));
+// print_r($model->join('Model3', 'table1_id')->getAll(2));
+print_r($model->getAll(2, 2));
 
 // print_r($model->get(2, 'Model2'));
-print_r($model->get(2, 'Model2', 2, 3));
+// print_r($model->get(2, 'Model2', 2, 3));
 
 // echo $model->update(49, ['column1' => 'a updated value'])
 //     ->commit()

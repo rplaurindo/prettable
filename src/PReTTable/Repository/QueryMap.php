@@ -31,11 +31,15 @@ class QueryMap {
     
     protected $associativeModel;
     
+    protected $involvedModelNames;
+    
     protected $containsSet;
     
     protected $isContainedSet;
     
     protected $select;
+    
+    protected $selectFields;
     
     protected $from;
     
@@ -56,7 +60,8 @@ class QueryMap {
         $this->isContainedSet = new ArrayObject();
         
         $this->joins = new ArrayObject();
-//         $this->joins = [];
+        
+        $this->involvedModelNames = new ArrayObject();
     }
     
     static function resolveTableName($modelName) {
@@ -140,16 +145,11 @@ class QueryMap {
         $clone->associatedModelName = $modelName;
         $clone->associatedModel = Reflection::getDeclarationOf($modelName);
         $clone->associatedTableName = self::resolveTableName($modelName);
-        
-        $modelNames = [
-            $clone->modelName,
-            $clone->associatedModel
-        ];
+
+        $clone->select = new Select();
         
         if ($clone->containsSet->offsetExists($modelName)
             || $clone->isContainedSet->offsetExists($modelName)) {
-            $selectStatement = new Select(...$modelNames);
-            $clone->select = $selectStatement->getStatement(true);
             $clone->from = $clone->associatedTableName;
             
             if ($clone->containsSet->offsetExists($modelName)) {
@@ -158,6 +158,8 @@ class QueryMap {
                     ) {
                     $clone->associativeModelName = $clone
                         ->getAssociativeModelNameOf($modelName);
+                    
+                    $clone->involvedModelNames->append($clone->associativeModelName);
                     
                     $clone->associativeModel = Reflection
                         ::getDeclarationOf($clone->associativeModelName);
@@ -175,6 +177,8 @@ class QueryMap {
                         $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
                     }
                 } else {
+                    $clone->involvedModelNames->append($modelName);
+                    
                     $clone->join($clone->modelName, $clone->primaryKeyName);
                     
                     $associatedColumn = $clone->containsSet
@@ -185,6 +189,8 @@ class QueryMap {
                     }
                 }
             } else {
+                $clone->involvedModelNames->append($modelName);
+                
                 $associatedColumn = $clone->isContainedSet
                     ->offsetGet($modelName)['associatedColumn'];
                 
@@ -211,17 +217,25 @@ class QueryMap {
                 || $clone->isContainedSet->offsetExists($modelName))
             || $modelName == $clone->modelName
             ) {
+                
             $clone->joins->offsetSet($modelName, $associatedColumn);
+            $clone->involvedModelNames->append($modelName);
+            
         }
         
         return clone $clone;
+    }
+    
+    function getInvolvedModelNames() {
+        return $this->involvedModelNames->getArrayCopy();
     }
     
     function getMap() {
         $map = [];
         
         if (isset($this->select)) {
-            $map['select'] = $this->select;
+            $map['select'] = $this->select
+                ->getStatement(...$this->involvedModelNames->getArrayCopy());
         }
         
         if (isset($this->from)) {
@@ -229,9 +243,7 @@ class QueryMap {
         }
         
         if ($this->joins->count()) {
-            $joinsMap = $this->getJoinsMap();
-            $map['joinedFields'] = $joinsMap['joinedFields'];
-            $map['joins'] = $joinsMap['joins'];
+            $map['joins'] = $this->getJoins();
         }
         
         if (isset($this->whereClause)) {
@@ -241,11 +253,8 @@ class QueryMap {
         return $map;
     }
     
-    function getJoinsMap() {
-        $map = [
-            'joins' => [],
-            'joinedFields' => []
-        ];
+    function getJoins() {
+        $joins = [];
         
         foreach ($this->joins as $joinedModelName => $joinedColumnName) {
             $joinedTableName = self::resolveTableName($joinedModelName);
@@ -280,11 +289,11 @@ class QueryMap {
                     }
             }
             
-            array_push($map['joins'],
+            array_push($joins,
                 "$joinedTableName ON $joinedTableName.$joinedColumnName = $tableName.$columnName");
         }
         
-        return $map;
+        return $joins;
     }
     
     protected function getClone() {
