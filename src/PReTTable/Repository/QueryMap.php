@@ -148,6 +148,8 @@ class QueryMap {
         
         if ($clone->containsSet->offsetExists($modelName)
             || $clone->isContainedSet->offsetExists($modelName)) {
+            $selectStatement = new Select(...$modelNames);
+            $clone->select = $selectStatement->getStatement(true);
             $clone->from = $clone->associatedTableName;
             
             if ($clone->containsSet->offsetExists($modelName)) {
@@ -156,8 +158,6 @@ class QueryMap {
                     ) {
                     $clone->associativeModelName = $clone
                         ->getAssociativeModelNameOf($modelName);
-                    
-                    array_push($modelNames, $clone->associativeModelName);
                     
                     $clone->associativeModel = Reflection
                         ::getDeclarationOf($clone->associativeModelName);
@@ -195,9 +195,6 @@ class QueryMap {
                 }
             }
         }
-        
-        $selectStatement = new Select(...$modelNames);
-        $clone->select = $selectStatement->getStatement(true);
         
         return $clone;
     }
