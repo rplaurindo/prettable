@@ -42,6 +42,9 @@ class Model1 extends ModelBaseTest {
         $this->setPager(new MySQL());
         
         $this->containsThrough('Model2', 'AssociativeModel');
+        
+//         to make join
+        $this->contains('AssociativeModel', 'table1_id');
     }
     
     static function getTableName() {

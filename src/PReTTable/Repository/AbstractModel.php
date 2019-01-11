@@ -474,11 +474,26 @@ abstract class AbstractModel
         $clone = $this->getClone();
         
         $select = new Select($clone->modelName);
-        $selectStatement = "SELECT {$select->getStatement()}";
+        
+        $joinsStatement = "";
         
         $query = "
-            $selectStatement
+            SELECT {$select->getStatement()}
             FROM $clone->tableName";
+        
+        $joins = $clone->queryMap->getJoins();
+        if (count($joins)) {
+            $joinsStatement .= "
+            INNER JOIN " .
+            implode("
+            INNER JOIN ", $joins);
+        }
+        
+        if (!empty($joinsStatement)) {
+            $query .= "
+                $joinsStatement
+            ";
+        }
         
         if (isset($clone->order)) {
             $query .= "
@@ -496,15 +511,16 @@ abstract class AbstractModel
         }
         echo $query;
         try {
-            $PDOstatement = $clone->connection->query($query);
+//             $PDOstatement = $clone->connection->query($query);
             
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+//             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
         }
         
-        return $result;
+//         return $result;
+        return [];
     }
     
     function get($primaryKeyValue, $modelName, $limit = null, $pageNumber = 1) {
@@ -531,7 +547,7 @@ abstract class AbstractModel
             INNER JOIN ", $joins);
         }
         
-        if (isset($joinsStatement)) {
+        if (!empty($joinsStatement)) {
             $query .= "
                 $joinsStatement
             ";
