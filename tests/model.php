@@ -194,8 +194,8 @@ $model = new Model1();
 
 // print_r($model->getAll());
 // print_r($model->getAll(2));
-// print_r($model->join('Model3', 'table1_id')->getAll(2));
-print_r($model->getAll(2, 2));
+print_r($model->join('Model3', 'table1_id')->getAll(2));
+// print_r($model->getAll(2, 2));
 
 // print_r($model->get(2, 'Model2'));
 // print_r($model->get(2, 'Model2', 2, 3));

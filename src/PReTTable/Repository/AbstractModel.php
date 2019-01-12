@@ -496,7 +496,7 @@ abstract class AbstractModel
         
         if (isset($clone->order)) {
             $query .= "
-                {$clone->getMountedOrderBy(true)}";
+                {$clone->getMountedOrderBy()}";
         }
         
         if (isset($limit)) {
@@ -558,7 +558,7 @@ abstract class AbstractModel
         
         if (isset($clone->order)) {
             $query .= "
-                {$clone->getMountedOrderBy(true)}";
+                {$clone->getMountedOrderBy()}";
         }
         
         if (isset($limit)) {
@@ -631,8 +631,8 @@ abstract class AbstractModel
         return $rows;
     }
     
-    private function getMountedOrderBy($attachTable = false) {
-        if ($attachTable) {
+    private function getMountedOrderBy() {
+        if (count($this->queryMap->getInvolvedModelNames())) {
             $columnStatement = "$this->tableName.$this->order";
         } else {
             $columnStatement = $this->order;
