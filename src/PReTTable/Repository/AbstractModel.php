@@ -21,6 +21,8 @@ abstract class AbstractModel
         IdentifiableModelInterface, 
         WritableModelInterface {
     
+    private $primaryKeyValue;
+    
     private $modelName;
     
     private $model;
@@ -28,8 +30,6 @@ abstract class AbstractModel
     private $tableName;
     
     private $host;
-    
-    private $primaryKeyValue;
     
     private $queryMap;
     
@@ -61,7 +61,9 @@ abstract class AbstractModel
         $this->strategyContextIsDefined = false;
     }
     
-//     abstract protected function getPrimaryKeyValue();
+    function setPrimaryKeyValue($value) {
+        $this->primaryKeyValue = $value;
+    }
     
 //     a proxy to set strategy context
     function setPager(PaginableStrategyInterface $pagerStrategy) {
@@ -80,47 +82,6 @@ abstract class AbstractModel
     
     function containsThrough($modelName, $through) {
         $this->queryMap->containsThrough($modelName, $through);
-    }
-    
-    function getRow($columnName, $value = null) {
-        $clone = $this->getClone();
-        
-        if (empty($value)) {
-            $value = $columnName;
-            
-            $primaryKeyName = $clone->model->getPrimaryKeyName();
-            $columnName = $primaryKeyName;
-        }
-        
-        $select = new Select($clone->modelName);
-        $selectStatement = "SELECT {$select->getStatement()}";
-        
-        $query = "
-            $selectStatement
-            FROM $clone->tableName
-            WHERE $columnName = :$columnName
-        ";
-            
-        try {
-            $PDOstatement = $clone->connection->prepare($query);
-            $PDOstatement->bindParam(":$columnName", $value);
-            $PDOstatement->execute();
-            
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo $e;
-            throw new PDOException($e);
-        }
-        
-        if (
-            isset($result) &&
-            gettype($result) == 'array' &&
-            count($result)
-        ) {
-            return $result[0];
-        }
-        
-        return null;
     }
     
     function create(array $attributes) {
@@ -205,6 +166,156 @@ abstract class AbstractModel
         }
         
         return $clone;
+    }
+    
+    function getRow() {
+        $clone = $this->getClone();
+        
+        $select = new Select();
+        $selectStatement = "SELECT {$select->getStatement($clone->modelName)}";
+        
+        $primaryKeyName = $clone->model->getPrimaryKeyName();
+        
+        $query = "
+            $selectStatement
+            FROM $clone->tableName
+            WHERE $primaryKeyName = :$primaryKeyName";
+            
+        try {
+            $PDOstatement = $clone->connection->prepare($query);
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
+            $PDOstatement->execute();
+            
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        if (
+            isset($result) &&
+            gettype($result) == 'array' &&
+            count($result)
+        ) {
+            return $result[0];
+        }
+        
+        return null;
+    }
+    
+    function getAll($limit = null, $pageNumber = 1) {
+        $clone = $this->getClone();
+        
+        $select = new Select();
+        
+        $query = "
+            SELECT {$select->getStatement($clone->modelName, ...$clone->queryMap->getInvolvedModelNames())}
+            FROM $clone->tableName";
+        
+        $joinsStatement = "";
+        
+        $joins = $clone->queryMap->getJoins();
+        if (count($joins)) {
+            $joinsStatement .= "
+            INNER JOIN " .
+            implode("
+            INNER JOIN ", $joins);
+        }
+        
+        if (!empty($joinsStatement)) {
+            $query .= "
+                $joinsStatement
+            ";
+        }
+        
+        if (isset($clone->order)) {
+            $query .= "
+                {$clone->getMountedOrderBy()}";
+        }
+        
+        if (isset($limit)) {
+            if (!$clone->strategyContextIsDefined) {
+                throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
+            }
+            
+            $query .= "
+                {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
+            ";
+        }
+        
+        try {
+            echo $query;
+            $PDOstatement = $clone->connection->query($query);
+            
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        return $result;
+    }
+    
+    function get($primaryKeyValue, $modelName, $limit = null, $pageNumber = 1) {
+        $clone = $this->getClone();
+        
+        $queryMap = $clone->queryMap->select($primaryKeyValue, $modelName);
+        
+        $map = $queryMap->getMap();
+        
+        $select = $map['select'];
+        $from = $map['from'];
+        $whereClause = $map['where'];
+        
+        $joinsStatement = "";
+        
+        $query = "
+            SELECT $select
+            FROM $from";
+        
+        $joins = $queryMap->getJoins();
+        if (count($joins)) {
+            $joinsStatement .= "
+            INNER JOIN " .
+            implode("
+            INNER JOIN ", $joins);
+        }
+        
+        if (!empty($joinsStatement)) {
+            $query .= "
+                $joinsStatement
+            ";
+        }
+        
+        $query .= "
+            WHERE $whereClause";
+        
+        if (isset($clone->order)) {
+            $query .= "
+                {$clone->getMountedOrderBy()}";
+        }
+        
+        if (isset($limit)) {
+            if (!$clone->strategyContextIsDefined) {
+                throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
+            }
+            
+            $query .= "
+                {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
+            ";
+        }
+        
+        try {
+            echo $query;
+            $PDOstatement = $clone->connection->query($query);
+            
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        return $result;
     }
     
     function update($primaryKeyValue, array $attributes) {
@@ -389,121 +500,6 @@ abstract class AbstractModel
         $clone->queryMap->join($modelName, $associatedColumn);
         
         return $clone;
-    }
-    
-    function getAll($limit = null, $pageNumber = 1) {
-        $clone = $this->getClone();
-
-        $select = new Select();
-        
-        $query = "
-            SELECT {$select->getStatement($clone->modelName, ...$clone->queryMap->getInvolvedModelNames())}
-            FROM $clone->tableName";
-        
-        $joinsStatement = "";
-        
-        $joins = $clone->queryMap->getJoins();
-        if (count($joins)) {
-            $joinsStatement .= "
-            INNER JOIN " .
-            implode("
-            INNER JOIN ", $joins);
-        }
-        
-        if (!empty($joinsStatement)) {
-            $query .= "
-                $joinsStatement
-            ";
-        }
-        
-        if (isset($clone->order)) {
-            $query .= "
-                {$clone->getMountedOrderBy()}";
-        }
-        
-        if (isset($limit)) {
-            if (!$clone->strategyContextIsDefined) {
-                throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
-            }
-            
-            $query .= "
-                {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
-            ";
-        }
-        
-        try {
-            echo $query;
-            $PDOstatement = $clone->connection->query($query);
-            
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo $e;
-            throw new PDOException($e);
-        }
-        
-        return $result;
-    }
-    
-    function get($primaryKeyValue, $modelName, $limit = null, $pageNumber = 1) {
-        $clone = $this->getClone();
-        
-        $queryMap = $clone->queryMap->select($primaryKeyValue, $modelName);
-        
-        $map = $queryMap->getMap();
-        
-        $select = $map['select'];
-        $from = $map['from'];
-        $whereClause = $map['where'];
-        
-        $joinsStatement = "";
-
-        $query = "
-            SELECT $select
-            FROM $from";
-        
-        $joins = $queryMap->getJoins();
-        if (count($joins)) {
-            $joinsStatement .= "
-            INNER JOIN " . 
-            implode("
-            INNER JOIN ", $joins);
-        }
-        
-        if (!empty($joinsStatement)) {
-            $query .= "
-                $joinsStatement
-            ";
-        }
-        
-        $query .= "
-            WHERE $whereClause";
-        
-        if (isset($clone->order)) {
-            $query .= "
-                {$clone->getMountedOrderBy()}";
-        }
-        
-        if (isset($limit)) {
-            if (!$clone->strategyContextIsDefined) {
-                throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
-            }
-            
-            $query .= "
-                {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
-            ";
-        }
-        
-        try {
-            echo $query;
-            $PDOstatement = $clone->connection->query($query);
-            
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo $e;
-            throw new PDOException($e);
-        }
-        
-        return $result;
     }
     
     function save() {

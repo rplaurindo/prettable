@@ -188,10 +188,11 @@ $model1 = new Model1();
 // ->save()
 // ;
 
+$model1->setPrimaryKeyValue(2);
+print_r($model1->getRow());
+
 // if there isn't a self-incremental primary key
 // print_r($model1->getRow('table1col', 'a value 2'));
-
-// print_r($model1->getRow(2));
 
 // print_r($model1->getAll());
 // print_r($model1->getAll(2));
