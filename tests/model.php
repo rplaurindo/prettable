@@ -201,9 +201,9 @@ $model1 = new Model1();
 // print_r($model1->join('Model3', 'table1_id')->getAll(2));
 // print_r($model1->getAll(2, 2));
 
-// $model1->setPrimaryKeyValue(2);
-// print_r($model1->get('Model2'));
-// print_r($model1->get(2, 'Model2', 2, 3));
+$model1->setPrimaryKeyValue(2);
+print_r($model1->get('Model2'));
+// print_r($model1->get('Model2', 2, 3));
 
 // $model1->setPrimaryKeyValue(10);
 // echo $model1->update(['table1col' => 'a updated value 2'])
@@ -223,9 +223,11 @@ $model1 = new Model1();
 //     ->save()
 // );
 
-echo $model1->delete('id', 44, 45, 46, 47)
-    ->save()
-;
+// $model1->setPrimaryKeyValue(142);
+// print_r(
+//     $model1->delete()
+//     ->save()
+// );
 
 // $model1->setPrimaryKeyValue(142);
 // print_r(

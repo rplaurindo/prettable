@@ -392,24 +392,23 @@ abstract class AbstractModel
         return $clone;
     }
     
-    function delete($columnName, ...$values) {
+    function delete() {
         $clone = $this->getClone();
+        
+        $primaryKeyName = $clone->getPrimaryKeyName();
 
         $statement = "
             DELETE FROM $clone->tableName
-            WHERE $columnName = :$columnName
-        ";
+            WHERE $primaryKeyName = :$primaryKeyName";
         
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
             
-            foreach ($values as $value) {
-                $PDOstatement = $clone->connection->prepare($statement);
-                $PDOstatement->bindParam(":$columnName", $value);
-                $PDOstatement->execute();
-            }
+            $PDOstatement = $clone->connection->prepare($statement);
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
+            $PDOstatement->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;
