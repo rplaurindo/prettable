@@ -163,8 +163,9 @@ $model1 = new Model1();
 // }
 // echo $mode2->save();
 
+// $model1->setPrimaryKeyValue(1);
 // print_r(
-//     $model1->createAssociations('Model2', 1,
+//     $model1->createAssociations('Model2',
 //         [
 //             'table2_id' => 1
 //         ],
@@ -175,21 +176,22 @@ $model1 = new Model1();
 //     ->save()
 // );
 
-// echo $model1
-//     ->create(['table1col' => 'a value'])
-//     ->createAssociations('Model2',
-//         [
-//             'table2_id' => 1
-//         ],
-//         [
-//             'table2_id' => 2
-//         ]
-// )
-// ->save()
-// ;
+// print_r(
+//     $model1
+//         ->create(['table1col' => 'a value'])
+//         ->createAssociations('Model2',
+//             [
+//                 'table2_id' => 1
+//             ],
+//             [
+//                 'table2_id' => 2
+//             ]
+//         )
+//         ->save()
+// );
 
-$model1->setPrimaryKeyValue(2);
-print_r($model1->getRow());
+// $model1->setPrimaryKeyValue(2);
+// print_r($model1->getRow());
 
 // if there isn't a self-incremental primary key
 // print_r($model1->getRow('table1col', 'a value 2'));
@@ -199,15 +201,18 @@ print_r($model1->getRow());
 // print_r($model1->join('Model3', 'table1_id')->getAll(2));
 // print_r($model1->getAll(2, 2));
 
-// print_r($model1->get(2, 'Model2'));
+// $model1->setPrimaryKeyValue(2);
+// print_r($model1->get('Model2'));
 // print_r($model1->get(2, 'Model2', 2, 3));
 
-// echo $model1->update(10, ['table1col' => 'a updated value'])
+// $model1->setPrimaryKeyValue(10);
+// echo $model1->update(['table1col' => 'a updated value 2'])
 //     ->save()
 // ;
 
+// $model1->setPrimaryKeyValue(1);
 // print_r( 
-//     $model1->updateAssociations(1, 'Model2',
+//     $model1->updateAssociations('Model2',
 //         [
 //             'table2_id' => 1
 //         ],
@@ -218,11 +223,12 @@ print_r($model1->getRow());
 //     ->save()
 // );
 
-// echo $model1->delete('id', 44, 45, 46, 47)
-//     ->save()
-// ;
+echo $model1->delete('id', 44, 45, 46, 47)
+    ->save()
+;
 
+// $model1->setPrimaryKeyValue(142);
 // print_r(
-//     $model1->deleteAssociations(1, 'Model2')
+//     $model1->deleteAssociations('Model2')
 //     ->save()
 // );
