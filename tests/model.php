@@ -156,26 +156,27 @@ $model1 = new Model1();
 // for ($i = 1; $i <= 10; $i++) {
 //     $model1 = $model1->create(['table1col' => "a value $i"]);
 // }
-// echo $model1->commit();
+// echo $model1->save();
 
 // for ($i = 1; $i <= 10; $i++) {
 //     $mode2 = $mode2->create(['table2col' => "a value $i"]);
 // }
-// echo $mode2->commit();
+// echo $mode2->save();
 
-// echo $model1->createAssociations('Model2', 1,
-//     [
-//         'table2_id' => 1
-//     ],
-//     [
-//         'table2_id' => 2
-//     ]
-//     )->commit()
-// //     )
-// ;
+// print_r(
+//     $model1->createAssociations('Model2', 1,
+//         [
+//             'table2_id' => 1
+//         ],
+//         [
+//             'table2_id' => 2
+//         ]
+//     )
+//     ->save()
+// );
 
 // echo $model1
-//     ->create(['column1' => 'a value'])
+//     ->create(['table1col' => 'a value'])
 //     ->createAssociations('Model2',
 //         [
 //             'table2_id' => 1
@@ -183,8 +184,8 @@ $model1 = new Model1();
 //         [
 //             'table2_id' => 2
 //         ]
-//         )->commit()
-// //         )
+// )
+// ->save()
 // ;
 
 // if there isn't a self-incremental primary key
@@ -201,31 +202,26 @@ $model1 = new Model1();
 // print_r($model1->get(2, 'Model2', 2, 3));
 
 // echo $model1->update(10, ['table1col' => 'a updated value'])
-//     ->commit()
+//     ->save()
 // ;
 
-// como fazer verificação se há chave nova relacionada? Talvez o melhor caminho seja pegar todas as chaves associadas, guardar em um array e depois usar
-// in_array para chevar, caso não esteja ele deverá ser tratado como uma nova associação, senão basta fazer update nos atributos. Ainda tem o caso dele 
-// estar nas chaves associadas, mas não estar mais nos parâmetros, caso em que deve ser deletado.   
-// echo $model->updateAssociations('Model2', 1,
-//     [
-//         'table2_id' => 1
-//     ],
-//     [
-//         'table2_id' => 3
-//     ]
-//     )->commit()
-// //     )
+// print_r( 
+//     $model1->updateAssociations(1, 'Model2',
+//         [
+//             'table2_id' => 1
+//         ],
+//         [
+//             'table2_id' => 3
+//         ]
+//     )
+//     ->save()
+// );
+
+// echo $model1->delete('id', 44, 45, 46, 47)
+//     ->save()
 // ;
 
-// echo $model->delete('id', 44, 45, 46, 47)
-//     ->commit()
-// ;
-
-// echo $model->deleteAssociations('Model2', 2)
-//     ->commit()
-// ;
-
-// print_r($model->getAssociatedKeys('Model2', 76));
-
-// echo $model->deleteFromAssociation('Model2', 76, 1)->commit();
+// print_r(
+//     $model1->deleteAssociations(1, 'Model2')
+//     ->save()
+// );
