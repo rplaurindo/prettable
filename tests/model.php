@@ -150,20 +150,20 @@ class AssociativeModel implements AssociativeModelInterface {
 }
 
 
-$model = new Model1();
+$model1 = new Model1();
 // $mode2 = new Model2();
 
 // for ($i = 1; $i <= 10; $i++) {
-//     $model = $model->create(['table1col' => "a value $i"]);
+//     $model1 = $model1->create(['table1col' => "a value $i"]);
 // }
-// echo $model->commit();
+// echo $model1->commit();
 
 // for ($i = 1; $i <= 10; $i++) {
 //     $mode2 = $mode2->create(['table2col' => "a value $i"]);
 // }
 // echo $mode2->commit();
 
-// echo $model->createAssociations('Model2', 1,
+// echo $model1->createAssociations('Model2', 1,
 //     [
 //         'table2_id' => 1
 //     ],
@@ -174,7 +174,7 @@ $model = new Model1();
 // //     )
 // ;
 
-// echo $model
+// echo $model1
 //     ->create(['column1' => 'a value'])
 //     ->createAssociations('Model2',
 //         [
@@ -188,19 +188,19 @@ $model = new Model1();
 // ;
 
 // if there isn't a self-incremental primary key
-// print_r($model->getRow('table1col', 'a value 2'));
+// print_r($model1->getRow('table1col', 'a value 2'));
 
-// print_r($model->getRow(2));
+// print_r($model1->getRow(2));
 
-// print_r($model->getAll());
-// print_r($model->getAll(2));
-print_r($model->join('Model3', 'table1_id')->getAll(2));
-// print_r($model->getAll(2, 2));
+// print_r($model1->getAll());
+// print_r($model1->getAll(2));
+// print_r($model1->join('Model3', 'table1_id')->getAll(2));
+// print_r($model1->getAll(2, 2));
 
-// print_r($model->get(2, 'Model2'));
-// print_r($model->get(2, 'Model2', 2, 3));
+// print_r($model1->get(2, 'Model2'));
+// print_r($model1->get(2, 'Model2', 2, 3));
 
-// echo $model->update(49, ['column1' => 'a updated value'])
+// echo $model1->update(10, ['table1col' => 'a updated value'])
 //     ->commit()
 // ;
 

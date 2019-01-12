@@ -208,10 +208,11 @@ abstract class AbstractModel
     function update($primaryKeyValue, array $attributes) {
         $clone = $this->getClone();
         
-        $primaryKeyName = $updateStatement->getPrimaryKeyName();
+        $update = new Update($clone->modelName);
+        
+        $primaryKeyName = $update->getPrimaryKeyName();
 
-        $strategy = new QueryStatementStrategyContext(new Update($clone
-            ->modelName));
+        $strategy = new QueryStatementStrategyContext($update);
         
         try {
             if (!$clone->connection->inTransaction()) {

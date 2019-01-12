@@ -17,7 +17,7 @@ class Update implements QueryStatementStrategyInterface {
     
     function __construct($modelName) {
         QueryMap::checkIfModelIs($modelName, 
-            'PReTTable\IdentifiableModelInterface');
+            'PReTTable\Repository\IdentifiableModelInterface');
         
         $tableName = QueryMap::resolveTableName($modelName);
         $model = Reflection::getDeclarationOf($modelName);
