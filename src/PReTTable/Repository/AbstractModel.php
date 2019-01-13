@@ -95,12 +95,12 @@ abstract class AbstractModel
                 $clone->beginTransaction();
             }
             
-            $statement = $strategy->getStatement($attributes);
-            $PDOstatement = $clone->connection->prepare($statement);
+            $PDOstatement = $clone->connection
+                ->prepare($strategy->getStatement($attributes));
             foreach ($attributes as $columnName => $value) {
 //                 another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type,
 //                 for example. So this block can be moved to a external class.
-                $PDOstatement->bindParam(":$columnName", $value);
+                $PDOstatement->bindValue(":$columnName", $value);
             }
             $PDOstatement->execute();
         } catch (PDOException $e) {
@@ -147,8 +147,8 @@ abstract class AbstractModel
             }
             
             foreach ($rows as $attributes) {
-                $statement = $strategy->getStatement($attributes);
-                $PDOstatement = $clone->connection->prepare($statement);
+                $PDOstatement = $clone->connection
+                    ->prepare($strategy->getStatement($attributes));
                 foreach ($attributes as $columnName => $value) {
                     $PDOstatement->bindValue(":$columnName", $value);
                 }
@@ -331,7 +331,7 @@ abstract class AbstractModel
             $PDOstatement = $clone->connection->prepare($strategy
                 ->getStatement($attributes));
             foreach ($attributes as $columnName => $value) {
-                $PDOstatement->bindParam(":$columnName", $value);
+                $PDOstatement->bindValue(":$columnName", $value);
             }
             $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
             
@@ -376,8 +376,8 @@ abstract class AbstractModel
             $clone->deleteAssociations($modelName);
             
             foreach ($rows as $attributes) {
-                $statement = $strategy->getStatement($attributes);
-                $PDOstatement = $clone->connection->prepare($statement);
+                $PDOstatement = $clone->connection
+                    ->prepare($strategy->getStatement($attributes));
                 foreach ($attributes as $columnName => $value) {
                     $PDOstatement->bindValue(":$columnName", $value);
                 }
@@ -397,7 +397,7 @@ abstract class AbstractModel
         
         $primaryKeyName = $clone->getPrimaryKeyName();
 
-        $statement = "
+        $query = "
             DELETE FROM $clone->tableName
             WHERE $primaryKeyName = :$primaryKeyName";
         
@@ -406,7 +406,7 @@ abstract class AbstractModel
                 $clone->beginTransaction();
             }
             
-            $PDOstatement = $clone->connection->prepare($statement);
+            $PDOstatement = $clone->connection->prepare($query);
             $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
             $PDOstatement->execute();
         } catch (PDOException $e) {
@@ -442,8 +442,8 @@ abstract class AbstractModel
             if (count($relatedKeyValues)) {
                 $relatedForeignKeyName = $associativeModel
                     ::getAssociativeKeys()[$modelName];
-                    
-                    $statement = "
+                
+                $query = "
                     DELETE FROM $associativeTableName
                     WHERE
                         $foreignKeyName = :$foreignKeyName
@@ -451,7 +451,7 @@ abstract class AbstractModel
                 ";
                     
                 foreach ($relatedKeyValues as $relatedKeyValue) {
-                    $PDOstatement = $clone->connection->prepare($statement);
+                    $PDOstatement = $clone->connection->prepare($query);
                     
                     $PDOstatement
                         ->bindParam(":$foreignKeyName", $clone->primaryKeyValue);
@@ -462,12 +462,12 @@ abstract class AbstractModel
                     $PDOstatement->execute();
                 }
             } else {
-                $statement = "
+                $query = "
                     DELETE FROM $associativeTableName
                     WHERE $foreignKeyName = :$foreignKeyName
                 ";
                 
-                $PDOstatement = $clone->connection->prepare($statement);
+                $PDOstatement = $clone->connection->prepare($query);
                 $PDOstatement->bindParam(":$foreignKeyName",
                     $clone->primaryKeyValue);
                 
