@@ -10,8 +10,19 @@ class Select {
     
     function getStatement(...$modelNames) {
         
-        if (count($modelNames) > 1) {
-            return $this->mountCollection(...$modelNames);
+        $count = count($modelNames);
+        
+        if ($count > 2
+            || ($count == 2
+            && gettype($modelNames[0]) == "boolean"
+            && $modelNames[0])
+            ) {
+                
+            if ($count > 2) {
+                return $this->mountCollection(...$modelNames);
+            }
+            
+            return $this->mountCollection($modelNames[1]);
         }
         
         return implode(', ', $this->mountMember($modelNames[0], false));        
