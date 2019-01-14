@@ -41,9 +41,12 @@ class Model1 extends ModelBaseTest {
         $this->setPager(new MySQL());
 
         $this->containsThrough('Model2', 'AssociativeModel');
+        
+        $this->contains('AssociativeModel', 'table1_id');
 
 //         to make join
         $this->contains('Model3', 'table1_id');
+        
     }
 
     static function getTableName() {
@@ -248,8 +251,8 @@ $model4 = new Model4();
 //                 'table2_id' => 2
 //             ]
 //         )
-//         ->save()
-// );
+//         ->save())
+// ;
 
 // $model1->setPrimaryKeyValue(2);
 // print_r($model1->getRow());
@@ -263,18 +266,24 @@ $model4 = new Model4();
 // print_r($model1->getAll(2, 2));
 
 $model1->setPrimaryKeyValue(1);
+// a better logic to "order by" should be made for this case
 print_r($model1->get('Model2'));
+
+// to access a associative table should call contains or isContained too
+// print_r($model1->get('AssociativeModel'));
 
 // print_r($model1->get('Model3'));
 // print_r($model1->get('Model3', 1, 2));
 
 // $model3->setPrimaryKeyValue(2);
-// echo $model3->update(
-//     [
-//         'table3col' => 'a updated value 2',
-//         'table1_id' => 1
-//     ])
-//     ->save()
+// print_r( 
+//     $model3->update(
+//         [
+//             'table3col' => 'a updated value 2',
+//             'table1_id' => 1
+//         ]
+//     )
+//     ->save())
 // ;
 
 // $model1->setPrimaryKeyValue(1);
@@ -287,17 +296,17 @@ print_r($model1->get('Model2'));
 //             'table2_id' => 3
 //         ]
 //     )
-//     ->save()
-// );
+//     ->save())
+// ;
 
 // $model1->setPrimaryKeyValue(142);
 // print_r(
 //     $model1->delete()
-//     ->save()
-// );
+//     ->save())
+// ;
 
 // $model1->setPrimaryKeyValue(142);
 // print_r(
 //     $model1->deleteAssociations('Model2')
-//     ->save()
-// );
+//     ->save())
+// ;
