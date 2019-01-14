@@ -124,23 +124,23 @@ class Model3 extends ModelBaseTest {
 }
 
 class Model4 extends ModelBaseTest {
-    
+
     function __construct() {
         parent::__construct('mydb');
     }
-    
+
     static function getTableName() {
         return 'table4';
     }
-    
+
     static function getPrimaryKeyName() {
         return 'id';
     }
-    
+
     static function isPrimaryKeySelfIncremental() {
         return true;
     }
-    
+
     static function getColumns() {
         return [
             'id',
@@ -148,7 +148,7 @@ class Model4 extends ModelBaseTest {
             'table1_id'
         ];
     }
-    
+
 }
 
 class AssociativeModel implements AssociativeModelInterface {
@@ -183,26 +183,6 @@ $mode2 = new Model2();
 $model3 = new Model3();
 $model4 = new Model4();
 
-for ($i = 1; $i <= 3; $i++) {
-    $model3 = $model3->create(
-        [
-            'table3col' => "a value $i",
-            'table1_id' => $i
-        ]
-    );
-}
-echo $model3->save();
-
-// for ($i = 1; $i <= 3; $i++) {
-//     $model4 = $model4->create(
-//         [
-//             'table4col' => "a value $i"
-//             , 'table1_id' => $i
-//         ]
-//     );
-// }
-// echo $model4->save();
-
 // for ($i = 1; $i <= 3; $i++) {
 //     $model1 = $model1->create(
 //         [
@@ -217,7 +197,34 @@ echo $model3->save();
 // }
 // echo $mode2->save();
 
-// $model1->setPrimaryKeyValue(1);
+// for ($i = 1; $i <= 3; $i++) {
+//     $model3 = $model3->create(
+//         [
+//             'table3col' => "a value $i",
+//             'table1_id' => $i
+//         ]
+//     );
+// }
+// echo $model3->save();
+
+// $model4 = $model4->create(
+//         [
+//             'table4col' => "a value 1"
+//             , 'table1_id' => 2
+//         ]
+// )->save();
+
+// for ($i = 1; $i <= 2; $i++) {
+//     $model4 = $model4->create(
+//         [
+//             'table4col' => "a value $i"
+//             , 'table1_id' => $i
+//         ]
+//     );
+// }
+// echo $model4->save();
+
+// $model1->setPrimaryKeyValue(3);
 // print_r(
 //     $model1->createAssociations('Model2',
 //         [
@@ -227,8 +234,8 @@ echo $model3->save();
 //             'table2_id' => 2
 //         ]
 //     )
-//     ->save()
-// );
+//     ->save())
+// ;
 
 // print_r(
 //     $model1
@@ -255,12 +262,18 @@ echo $model3->save();
 // print_r($model1->join('Model3', 'table1_id')->getAll(2));
 // print_r($model1->getAll(2, 2));
 
-// $model1->setPrimaryKeyValue(2);
-// print_r($model1->get('Model2'));
-// print_r($model1->get('Model2', 2, 3));
+$model1->setPrimaryKeyValue(1);
+print_r($model1->get('Model2'));
 
-// $model1->setPrimaryKeyValue(10);
-// echo $model1->update(['table1col' => 'a updated value 2'])
+// print_r($model1->get('Model3'));
+// print_r($model1->get('Model3', 1, 2));
+
+// $model3->setPrimaryKeyValue(2);
+// echo $model3->update(
+//     [
+//         'table3col' => 'a updated value 2',
+//         'table1_id' => 1
+//     ])
 //     ->save()
 // ;
 

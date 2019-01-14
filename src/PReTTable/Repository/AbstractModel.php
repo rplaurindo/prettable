@@ -267,6 +267,7 @@ abstract class AbstractModel
         
         $query = "
             SELECT $select
+            
             FROM $from";
         
         $joins = $queryMap->getJoins();
@@ -279,8 +280,7 @@ abstract class AbstractModel
         
         if (!empty($joinsStatement)) {
             $query .= "
-                $joinsStatement
-            ";
+                $joinsStatement";
         }
         
         $query .= "
