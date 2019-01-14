@@ -20,6 +20,8 @@ class RelationshipMap {
         self::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface');
         
+        $this->modelName = $modelName;
+        
         $this->setOfThoseContained = new ArrayObject();
         $this->setOfContains = new ArrayObject();
     }
@@ -95,11 +97,24 @@ class RelationshipMap {
     }
     
     function getAssociativeModelNameOf($modelName) {
-        if ($this->setOfThoseContained->offsetExists($modelName)) {
+        if ($this->isItContained($modelName)) {
             $relationshipData = $this->setOfThoseContained->offsetGet($modelName);
             
-            if (array_key_exists('associativeModelName', $relationshipData)) {
+            if ($this->isItContainedThrough($modelName)) {
                 return $relationshipData['associativeModelName'];
+            }
+        }
+        
+        return null;
+    }
+    
+    function getAssociatedColumn($modelName) {
+        if (($this->isItContained($modelName) || $this->doesItContain($modelName)) 
+            && !$this->isItContainedThrough($modelName)) {
+            if ($this->isItContained($modelName)) {
+                return $this->setOfThoseContained->offsetGet($modelName)['associatedColumn'];
+            } else {
+                return $this->setOfContains->offsetGet($modelName)['associatedColumn'];
             }
         }
         

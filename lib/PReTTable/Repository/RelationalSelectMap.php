@@ -46,7 +46,7 @@ class RelationalSelectMap {
         
         $this->modelName = $relationshipMap->getModelName();
         $model = Reflection::getDeclarationOf($this->modelName);
-        $this->tableName = self::resolveTableName($this->modelName);
+        $this->tableName = RelationshipMap::resolveTableName($this->modelName);
         $this->primaryKeyName = $model->getPrimaryKeyName();
         
         $this->joins = new ArrayObject();
@@ -62,7 +62,7 @@ class RelationalSelectMap {
             $modelName = $functionArguments[1];
         }
         
-        self::checkIfModelIs($modelName,
+        RelationshipMap::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
         
@@ -70,29 +70,30 @@ class RelationalSelectMap {
         
         $clone->associatedModelName = $modelName;
         $clone->associatedModel = Reflection::getDeclarationOf($modelName);
-        $clone->associatedTableName = self::resolveTableName($modelName);
+        $clone->associatedTableName = RelationshipMap::resolveTableName($modelName);
         
         $clone->select = new Select();
         $clone->involvedModelNames->append($modelName);
         
-        if ($clone->containsSet->offsetExists($modelName)
-            || $clone->isContainedSet2->offsetExists($modelName)) {
+        if ($clone->relationshipMap->isItContained($modelName)
+            || $clone->relationshipMap->doesItContain($modelName)) {
                 $clone->from = $clone->associatedTableName;
                 
-                if ($clone->containsSet->offsetExists($modelName)) {
-                    if (array_key_exists('associativeModelName',
-                        $clone->containsSet->offsetGet($modelName))
-                        ) {
+                if ($clone->relationshipMap->isItContained($modelName)) {
+                    if ($clone->relationshipMap
+                        ->isItContainedThrough($modelName)) {
                             
                             $clone->associativeModelName = $clone
+                                ->relationshipMap
                                 ->getAssociativeModelNameOf($modelName);
                             
-                            $clone->involvedModelNames->append($clone->associativeModelName);
+                            $clone->involvedModelNames
+                                ->append($clone->associativeModelName);
                             
                             $clone->associativeModel = Reflection
                                 ::getDeclarationOf($clone->associativeModelName);
                             
-                            $clone->associativeTableName = self
+                            $clone->associativeTableName = RelationshipMap
                                 ::resolveTableName($clone->associativeModelName);
                             $clone->from = $clone->associativeTableName;
                             
@@ -100,23 +101,22 @@ class RelationalSelectMap {
                             $clone->join($modelName,
                                 $clone->associatedModel->getPrimaryKeyName());
                             
-                            $associativeColumn = $clone->associativeModel->getAssociativeKeys()[$clone->modelName];
+                            $associativeColumn = $clone->associativeModel
+                                ->getAssociativeKeys()[$clone->modelName];
                             if (isset($primaryKeyValue)) {
                                 $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
                             }
                         } else {
                             $clone->join($clone->modelName, $clone->primaryKeyName);
                             
-                            $associatedColumn = $clone->containsSet
-                                ->offsetGet($modelName)['associatedColumn'];
+                            $associatedColumn = $clone->relationshipMap->getAssociatedColumn($modelName);
                             
                             if (isset($primaryKeyValue)) {
                                 $clone->whereClause = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
                             }
                         }
                 } else {
-                    $associatedColumn = $clone->isContainedSet2
-                        ->offsetGet($modelName)['associatedColumn'];
+                    $associatedColumn = $clone->relationshipMap->getAssociatedColumn($modelName);
                     
                     $clone->join($clone->modelName, $associatedColumn);
                     
@@ -130,15 +130,15 @@ class RelationalSelectMap {
     }
     
     function join($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName,
+        RelationshipMap::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
         
         $clone = $this->getClone();
         
         if (!$clone->joins->offsetExists($modelName)
-            && ($clone->containsSet->offsetExists($modelName)
-                || $clone->isContainedSet2->offsetExists($modelName))
+            && ($clone->relationshipMap->isItContained($modelName)
+                || $clone->relationshipMap->doesItContain($modelName))
             || $modelName == $clone->modelName
             ) {
                 $clone->joins->offsetSet($modelName, $associatedColumn);
@@ -178,11 +178,11 @@ class RelationalSelectMap {
         $joins = [];
         
         foreach ($this->joins as $joinedModelName => $joinedColumnName) {
-            $joinedTableName = self::resolveTableName($joinedModelName);
+            $joinedTableName = RelationshipMap::resolveTableName($joinedModelName);
             
-            if ($this->containsSet->offsetExists($joinedModelName)) {
-                if (array_key_exists('associativeModelName', $this
-                    ->containsSet->offsetGet($joinedModelName))) {
+            if ($this->relationshipMap->isItContained($joinedModelName)) {
+                if ($this->relationshipMap
+                    ->isItContainedThrough($joinedModelName)) {
                         $tableName = $this->associativeTableName;
                         $columnName = $this->associativeModel
                             ->getAssociativeKeys()[$joinedModelName];
@@ -191,12 +191,10 @@ class RelationalSelectMap {
                         $columnName = $this->primaryKeyName;
                     }
             } else {
-                if ($this->isContainedSet2->offsetExists($joinedModelName)) {
+                if ($this->relationshipMap->doesItContain($joinedModelName)) {
                     $tableName = $this->tableName;
-                    $columnName = $this->isContainedSet2
-                        ->offsetGet($joinedModelName)['associatedColumn'];
-                } else if (array_key_exists($this->associatedModelName,
-                    $this->isContainedSet2)) {
+                    $columnName = $this->relationshipMap->getAssociatedColumn($joinedModelName);
+                } else if ($this->relationshipMap->isItContainedThrough($this->associatedModelName)) {
                         $tableName = $this->associatedTableName;
                         $columnName = $this->associatedModel->getPrimaryKeyName();
                     } else if (isset($this->associativeModelName)) {
@@ -205,8 +203,7 @@ class RelationalSelectMap {
                             ->getAssociativeKeys()[$joinedModelName];
                     } else {
                         $tableName = $this->associatedTableName;
-                        $columnName = $this->containsSet->offsetGet($this
-                            ->associatedModelName)['associatedColumn'];
+                        $columnName = $this->relationshipMap->getAssociatedColumn($this->associatedModelName);
                     }
             }
             

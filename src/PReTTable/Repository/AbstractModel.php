@@ -33,6 +33,8 @@ abstract class AbstractModel
     
     private $relationshipMap;
     
+    private $relationalSelectMap;
+    
     private $connection;
     
     private $order;
@@ -53,6 +55,7 @@ abstract class AbstractModel
         Connection::setData($data);
         
         $this->relationshipMap = new RelationshipMap($this->modelName);
+        $this->relationalSelectMap = new RelationalSelectMap($this->relationshipMap);
         
         $this->tableName = $this->model->getTableName();
         
@@ -204,7 +207,7 @@ abstract class AbstractModel
         $select = new Select();
         
         $query = "
-            SELECT {$select->getStatement($clone->modelName, ...$clone->relationshipMap->getInvolvedModelNames())}
+            SELECT {$select->getStatement($clone->modelName, ...$clone->relationalSelectMap->getInvolvedModelNames())}
             FROM $clone->tableName";
         
         $joinsStatement = "";
@@ -254,7 +257,7 @@ abstract class AbstractModel
     function get($modelName, $limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
         
-        $relationshipMap = $clone->relationshipMap
+        $relationshipMap = $clone->relationalSelectMap
             ->select($clone->primaryKeyValue, $modelName);
         
         $map = $relationshipMap->getMap();
@@ -538,7 +541,7 @@ abstract class AbstractModel
     }
     
     private function getMountedOrderBy() {
-        if (count($this->relationshipMap->getInvolvedModelNames())) {
+        if (count($this->relationalSelectMap->getInvolvedModelNames())) {
             $columnStatement = "$this->tableName.$this->order";
         } else {
             $columnStatement = $this->order;
