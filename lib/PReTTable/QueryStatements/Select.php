@@ -8,24 +8,20 @@ use
 
 class Select {
     
-    function getStatement(...$modelNames) {
-        
+    function getStatement($attachTable, ...$modelNames) {
         $count = count($modelNames);
         
-        if ($count > 2
-            || ($count == 2
-            && gettype($modelNames[0]) == "boolean"
-            && $modelNames[0])
-            ) {
-                
-            if ($count > 2) {
-                return $this->mountCollection(...$modelNames);
+        if ((gettype($attachTable) == 'boolean' && $attachTable)
+            || (gettype($attachTable) == 'string' && $count >= 1)) {
+            
+            if (gettype($attachTable) == 'string') {
+                array_push($modelNames, $attachTable);
             }
             
-            return $this->mountCollection($modelNames[1]);
+            return $this->mountCollection(...$modelNames);
         }
         
-        return implode(', ', $this->mountMember($modelNames[0], false));        
+        return implode(', ', $this->mountMember($attachTable, false));        
     }
     
     private function mountCollection(...$modelNames) {
@@ -39,6 +35,7 @@ class Select {
     }
     
     private function mountMember($modelName, $attachTableName) {
+//         echo "$modelName\n\n";
         QueryMap::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
         
         $model = Reflection::getDeclarationOf($modelName);

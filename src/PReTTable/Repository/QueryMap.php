@@ -155,8 +155,11 @@ class QueryMap {
                 if (array_key_exists('associativeModelName',
                         $clone->containsSet->offsetGet($modelName))
                     ) {
+                        
                     $clone->associativeModelName = $clone
                         ->getAssociativeModelNameOf($modelName);
+                    
+                    $clone->involvedModelNames->append($clone->associativeModelName);
                     
                     $clone->associativeModel = Reflection
                         ::getDeclarationOf($clone->associativeModelName);
