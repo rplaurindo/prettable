@@ -5,7 +5,7 @@ require 'autoload.php';
 use 
     PReTTable\Repository\AssociativeModelInterface,
     PReTTable\Repository\IdentifiableModelInterface,
-    PReTTable\Repository\QueryMap
+    PReTTable\Repository\RelationshipMap
 ;
 
 class Model1 implements IdentifiableModelInterface {
@@ -36,7 +36,7 @@ class Model2 implements IdentifiableModelInterface {
     private $queryMap;
     
     function __construct() {
-        $this->queryMap = new QueryMap(self::class);
+        $this->queryMap = new RelationshipMap(self::class);
         
         $this->queryMap->contains('Model1', 'table2_id');
 

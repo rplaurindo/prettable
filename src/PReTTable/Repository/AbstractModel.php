@@ -31,7 +31,7 @@ abstract class AbstractModel
     
     private $host;
     
-    private $queryMap;
+    private $relationshipMap;
     
     private $connection;
     
@@ -52,7 +52,7 @@ abstract class AbstractModel
         
         Connection::setData($data);
         
-        $this->queryMap = new QueryMap($this->modelName);
+        $this->relationshipMap = new RelationshipMap($this->modelName);
         
         $this->tableName = $this->model->getTableName();
         
@@ -73,15 +73,15 @@ abstract class AbstractModel
     }
     
     function contains($modelName, $associatedColumn) {
-        $this->queryMap->contains($modelName, $associatedColumn);
+        $this->relationshipMap->contains($modelName, $associatedColumn);
     }
     
     function isContained($modelName, $associatedColumn) {
-        $this->queryMap->isContained($modelName, $associatedColumn);
+        $this->relationshipMap->isContained($modelName, $associatedColumn);
     }
     
     function containsThrough($modelName, $through) {
-        $this->queryMap->containsThrough($modelName, $through);
+        $this->relationshipMap->containsThrough($modelName, $through);
     }
     
     function create(array $attributes) {
@@ -122,7 +122,7 @@ abstract class AbstractModel
     function createAssociations($modelName, ...$rows) {
         $clone = $this->getClone();
         
-        $associativeModelName = $clone->queryMap
+        $associativeModelName = $clone->relationshipMap
             ->getAssociativeModelNameOf($modelName);
 
         if (!isset($associativeModelName)) {
@@ -204,12 +204,12 @@ abstract class AbstractModel
         $select = new Select();
         
         $query = "
-            SELECT {$select->getStatement($clone->modelName, ...$clone->queryMap->getInvolvedModelNames())}
+            SELECT {$select->getStatement($clone->modelName, ...$clone->relationshipMap->getInvolvedModelNames())}
             FROM $clone->tableName";
         
         $joinsStatement = "";
         
-        $joins = $clone->queryMap->getJoins();
+        $joins = $clone->relationshipMap->getJoins();
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " .
@@ -254,10 +254,10 @@ abstract class AbstractModel
     function get($modelName, $limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
         
-        $queryMap = $clone->queryMap
+        $relationshipMap = $clone->relationshipMap
             ->select($clone->primaryKeyValue, $modelName);
         
-        $map = $queryMap->getMap();
+        $map = $relationshipMap->getMap();
         
         $select = $map['select'];
         $from = $map['from'];
@@ -270,7 +270,7 @@ abstract class AbstractModel
             
             FROM $from";
         
-        $joins = $queryMap->getJoins();
+        $joins = $relationshipMap->getJoins();
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " .
@@ -349,7 +349,7 @@ abstract class AbstractModel
     function updateAssociations($modelName, ...$rows) {
         $clone = $this->getClone();
         
-        $associativeModelName = $clone->queryMap
+        $associativeModelName = $clone->relationshipMap
             ->getAssociativeModelNameOf($modelName);
         
         if (!isset($associativeModelName)) {
@@ -421,7 +421,7 @@ abstract class AbstractModel
     function deleteAssociations($modelName, ...$relatedKeyValues) {
         $clone = $this->getClone();
         
-        $associativeModelName = $clone->queryMap
+        $associativeModelName = $clone->relationshipMap
             ->getAssociativeModelNameOf($modelName);
         
         if (!isset($associativeModelName)) {
@@ -485,7 +485,7 @@ abstract class AbstractModel
     function join($modelName, $associatedColumn) {
         $clone = $this->getClone();
         
-        $clone->queryMap->join($modelName, $associatedColumn);
+        $clone->relationshipMap->join($modelName, $associatedColumn);
         
         return $clone;
     }
@@ -538,7 +538,7 @@ abstract class AbstractModel
     }
     
     private function getMountedOrderBy() {
-        if (count($this->queryMap->getInvolvedModelNames())) {
+        if (count($this->relationshipMap->getInvolvedModelNames())) {
             $columnStatement = "$this->tableName.$this->order";
         } else {
             $columnStatement = $this->order;

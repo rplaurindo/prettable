@@ -3,25 +3,25 @@
 namespace PReTTable\QueryStatements;
 
 use 
-    PReTTable\Repository\QueryMap,
+    PReTTable\Repository\RelationshipMap,
     PReTTable\Reflection;
 
 class Select {
     
-    function getStatement($attachTable, ...$modelNames) {
+    function getStatement($attachTableName, ...$modelNames) {
         $count = count($modelNames);
         
-        if ((gettype($attachTable) == 'boolean' && $attachTable)
-            || (gettype($attachTable) == 'string' && $count >= 1)) {
+        if ((gettype($attachTableName) == 'boolean' && $attachTableName)
+            || (gettype($attachTableName) == 'string' && $count >= 1)) {
             
-            if (gettype($attachTable) == 'string') {
-                array_push($modelNames, $attachTable);
+            if (gettype($attachTableName) == 'string') {
+                array_push($modelNames, $attachTableName);
             }
             
             return $this->mountCollection(...$modelNames);
         }
         
-        return implode(', ', $this->mountMember($attachTable, false));        
+        return implode(', ', $this->mountMember($attachTableName, false));        
     }
     
     private function mountCollection(...$modelNames) {
@@ -35,14 +35,13 @@ class Select {
     }
     
     private function mountMember($modelName, $attachTableName) {
-//         echo "$modelName\n\n";
-        QueryMap::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
+        RelationshipMap::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
         
         $model = Reflection::getDeclarationOf($modelName);
         $columns = $model::getColumns();
         
         if ($attachTableName) {
-            $tableName = QueryMap::resolveTableName($modelName);
+            $tableName = RelationshipMap::resolveTableName($modelName);
         }
         
         $mountedColumns = [];

@@ -3,7 +3,7 @@
 namespace PReTTable\QueryStatements\Strategies\PDO;
 
 use 
-    PReTTable\Repository\QueryMap,
+    PReTTable\Repository\RelationshipMap,
     PReTTable\Reflection,
     PReTTable\QueryStatementStrategyInterface;
 
@@ -16,10 +16,10 @@ class Update implements QueryStatementStrategyInterface {
     private $whereStatement;
     
     function __construct($modelName) {
-        QueryMap::checkIfModelIs($modelName, 
+        RelationshipMap::checkIfModelIs($modelName, 
             'PReTTable\Repository\IdentifiableModelInterface');
         
-        $tableName = QueryMap::resolveTableName($modelName);
+        $tableName = RelationshipMap::resolveTableName($modelName);
         $model = Reflection::getDeclarationOf($modelName);
         
         $this->updateStatement = $tableName;

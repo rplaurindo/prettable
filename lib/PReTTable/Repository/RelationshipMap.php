@@ -9,7 +9,7 @@ use
     PReTTable\QueryStatements\Select;
 
 // a layer to mount a map of queries to read data
-class QueryMap {
+class RelationshipMap {
     
     protected $modelName;
     

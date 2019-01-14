@@ -3,7 +3,7 @@
 namespace PReTTable\QueryStatements\Strategies\PDO;
 
 use 
-    PReTTable\Repository\QueryMap,
+    PReTTable\Repository\RelationshipMap,
     PReTTable\QueryStatementStrategyInterface;
 
 class InsertInto implements QueryStatementStrategyInterface {
@@ -11,9 +11,9 @@ class InsertInto implements QueryStatementStrategyInterface {
     private $tableName;
     
     function __construct($modelName) {
-        QueryMap::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
+        RelationshipMap::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
         
-        $this->tableName = QueryMap::resolveTableName($modelName);
+        $this->tableName = RelationshipMap::resolveTableName($modelName);
     }
     
     function getStatement(array $attributes) {
