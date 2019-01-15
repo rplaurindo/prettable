@@ -205,7 +205,7 @@ abstract class AbstractModel
         $clone = $this->getClone();
         
         $select = new Select();
-//         problema com involvedModelNames
+        
         $query = "
             SELECT {$select->getStatement($clone->modelName, ...$clone->relationalSelectMap->getInvolvedModelNames())}
             FROM $clone->tableName";
@@ -213,7 +213,6 @@ abstract class AbstractModel
         $joinsStatement = "";
         
         $joins = $clone->relationalSelectMap->getJoins();
-        
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " .
@@ -223,13 +222,11 @@ abstract class AbstractModel
         
         if (!empty($joinsStatement)) {
             $query .= "
-                $joinsStatement
-            ";
+                $joinsStatement";
         }
         
         if (isset($clone->order)) {
-            $query .= "
-                {$clone->getMountedOrderBy()}";
+            $query .= "{$clone->getMountedOrderBy()}";
         }
         
         if (isset($limit)) {
@@ -243,7 +240,7 @@ abstract class AbstractModel
         }
         
         try {
-            echo $query;
+            echo "$query\n";
             $PDOstatement = $clone->connection->query($query);
             
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
@@ -490,6 +487,8 @@ abstract class AbstractModel
         $clone = $this->getClone();
         
         $clone->relationalSelectMap->join($modelName, $associatedColumn);
+        
+        $clone->relationalSelectMap->addsInvolvedModelNames($modelName);
         
         return $clone;
     }

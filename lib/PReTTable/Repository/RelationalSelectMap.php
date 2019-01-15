@@ -72,7 +72,7 @@ class RelationalSelectMap {
         $clone->associatedTableName = RelationshipMap::resolveTableName($modelName);
         
         $clone->select = new Select();
-        $clone->involvedModelNames->append($modelName);
+        $clone->addsInvolvedModelNames($modelName);
         
         if ($clone->relationshipMap->isItContained($modelName)
             || $clone->relationshipMap->doesItContain($modelName)) {
@@ -86,8 +86,8 @@ class RelationalSelectMap {
                                 ->relationshipMap
                                 ->getAssociativeModelNameOf($modelName);
                             
-                            $clone->involvedModelNames
-                                ->append($clone->associativeModelName);
+                            $clone->addsInvolvedModelNames($clone
+                                ->associativeModelName);
                             
                             $clone->associativeModel = Reflection
                                 ::getDeclarationOf($clone->associativeModelName);
@@ -144,6 +144,10 @@ class RelationalSelectMap {
             }
             
             return clone $clone;
+    }
+    
+    function addsInvolvedModelNames($modelName) {
+        $this->involvedModelNames->append($modelName);
     }
     
     function getInvolvedModelNames() {
