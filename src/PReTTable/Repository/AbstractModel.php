@@ -212,7 +212,7 @@ abstract class AbstractModel
         
         $joinsStatement = "";
         
-        $joins = $clone->relationshipMap->getJoins();
+        $joins = $clone->relationalSelectMap->getJoins();
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " .
