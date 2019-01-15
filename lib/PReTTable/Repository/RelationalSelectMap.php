@@ -45,9 +45,8 @@ class RelationalSelectMap {
         $this->relationshipMap = $relationshipMap;
         
         $this->modelName = $relationshipMap->getModelName();
-        $model = Reflection::getDeclarationOf($this->modelName);
-        $this->tableName = RelationshipMap::resolveTableName($this->modelName);
-        $this->primaryKeyName = $model->getPrimaryKeyName();
+        $this->tableName = $relationshipMap->getTableName();
+        $this->primaryKeyName = $relationshipMap->getPrimaryKeyName();
         
         $this->joins = new ArrayObject();
         

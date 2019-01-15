@@ -12,6 +12,10 @@ class RelationshipMap {
     
     protected $modelName;
     
+    protected $tableName;
+    
+    protected $primaryKeyName;
+    
     protected $setOfThoseContained;
     
     protected $setOfContains;
@@ -21,6 +25,10 @@ class RelationshipMap {
             __NAMESPACE__ . '\IdentifiableModelInterface');
         
         $this->modelName = $modelName;
+        
+        $model = Reflection::getDeclarationOf($modelName);
+        $this->tableName = self::resolveTableName($modelName);
+        $this->primaryKeyName = $model->getPrimaryKeyName();
         
         $this->setOfThoseContained = new ArrayObject();
         $this->setOfContains = new ArrayObject();
@@ -55,6 +63,14 @@ class RelationshipMap {
     
     function getModelName() {
         return $this->modelName;
+    }
+    
+    function getTableName() {
+        return $this->tableName;
+    }
+    
+    function getPrimaryKeyName() {
+        return $this->primaryKeyName;
     }
     
     function contains($modelName, $associatedColumn) {

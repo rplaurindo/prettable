@@ -488,7 +488,7 @@ abstract class AbstractModel
     function join($modelName, $associatedColumn) {
         $clone = $this->getClone();
         
-        $clone->relationshipMap->join($modelName, $associatedColumn);
+        $clone->relationalSelectMap->join($modelName, $associatedColumn);
         
         return $clone;
     }
