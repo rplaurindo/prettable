@@ -11,35 +11,35 @@ use
 // a layer to mount a map of queries to select data
 class RelationalSelectMap {
     
-    protected $relationshipMap;
+    private $relationshipMap;
     
-    protected $modelName;
+    private $modelName;
     
-    protected $tableName;
+    private $tableName;
     
-    protected $primaryKeyName;
+    private $primaryKeyName;
     
-    protected $associatedModelName;
+    private $associatedModelName;
     
-    protected $associatedModel;
+    private $associatedModel;
     
-    protected $associatedTableName;
+    private $associatedTableName;
     
-    protected $associativeModelName;
+    private $associativeModelName;
     
-    protected $associativeTableName;
+    private $associativeTableName;
     
-    protected $associativeModel;
+    private $associativeModel;
     
-    protected $involvedModelNames;
+    private $involvedModelNames;
     
-    protected $select;
+    private $select;
     
-    protected $from;
+    private $from;
     
-    protected $joins;
+    private $joins;
     
-    protected $whereClause;
+    private $whereClause;
 
     function __construct(RelationshipMap $relationshipMap) {
         $this->relationshipMap = $relationshipMap;
@@ -54,18 +54,13 @@ class RelationalSelectMap {
     }
     
     function select($modelName) {
-        $functionArguments = func_get_args();
-        
-        if (count($functionArguments) == 2) {
-            $primaryKeyValue = $modelName;
-            $modelName = $functionArguments[1];
-        }
-        
         RelationshipMap::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
         
         $clone = $this->getClone();
+        
+        $primaryKeyValue = $clone->relationshipMap->getPrimaryKeyValue();
         
         $clone->associatedModelName = $modelName;
         $clone->associatedModel = Reflection::getDeclarationOf($modelName);

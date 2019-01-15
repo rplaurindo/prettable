@@ -10,15 +10,17 @@ use
 
 class RelationshipMap {
     
-    protected $modelName;
+    private $modelName;
     
-    protected $tableName;
+    private $tableName;
     
-    protected $primaryKeyName;
+    private $primaryKeyName;
     
-    protected $setOfThoseContained;
+    private $primaryKeyValue;
     
-    protected $setOfContains;
+    private $setOfThoseContained;
+    
+    private $setOfContains;
     
     function __construct($modelName) {
         self::checkIfModelIs($modelName,
@@ -29,6 +31,7 @@ class RelationshipMap {
         $model = Reflection::getDeclarationOf($modelName);
         $this->tableName = self::resolveTableName($modelName);
         $this->primaryKeyName = $model->getPrimaryKeyName();
+        $this->primaryKeyValue = null;
         
         $this->setOfThoseContained = new ArrayObject();
         $this->setOfContains = new ArrayObject();
@@ -71,6 +74,14 @@ class RelationshipMap {
     
     function getPrimaryKeyName() {
         return $this->primaryKeyName;
+    }
+    
+    function setPrimaryKeyValue($value) {
+        $this->primaryKeyValue = $value;
+    }
+    
+    function getPrimaryKeyValue() {
+        return $this->primaryKeyValue;
     }
     
     function contains($modelName, $associatedColumn) {

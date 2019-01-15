@@ -21,8 +21,6 @@ abstract class AbstractModel
         IdentifiableModelInterface, 
         WritableModelInterface {
     
-    private $primaryKeyValue;
-    
     private $modelName;
     
     private $model;
@@ -50,8 +48,6 @@ abstract class AbstractModel
         $this->model = Reflection::getDeclarationOf($this->modelName);
         $this->host = $host;
         
-        $this->primaryKeyValue = null;
-        
         Connection::setData($data);
         
         $this->relationshipMap = new RelationshipMap($this->modelName);
@@ -65,7 +61,7 @@ abstract class AbstractModel
     }
     
     function setPrimaryKeyValue($value) {
-        $this->primaryKeyValue = $value;
+        $this->relationshipMap->setPrimaryKeyValue($value);
     }
     
 //     a proxy to set strategy context
@@ -113,10 +109,11 @@ abstract class AbstractModel
         }
         
         if ($clone->model->isPrimaryKeySelfIncremental()) {
-            $clone->primaryKeyValue = $clone->connection->lastInsertId();
+            $clone->relationshipMap
+                ->setPrimaryKeyValue($clone->connection->lastInsertId());
         } else {
-            $clone->primaryKeyValue = $attributes[$clone->model
-                ->getPrimaryKeyName()];
+            $clone->relationshipMap->setPrimaryKeyValue($attributes[$clone
+                ->model->getPrimaryKeyName()]);
         }
         
         return $clone;
@@ -138,7 +135,7 @@ abstract class AbstractModel
             ::getAssociativeKeys()[$clone->modelName];
         
         $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
-                                                    $clone->primaryKeyValue, 
+                                                    $clone->relationshipMap->getPrimaryKeyValue(), 
                                                     ...$rows);
         
         $strategy = new QueryStatementStrategyContext(
@@ -181,7 +178,7 @@ abstract class AbstractModel
             
         try {
             $PDOstatement = $clone->connection->prepare($query);
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipMap->getPrimaryKeyValue());
             $PDOstatement->execute();
             
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
@@ -256,7 +253,7 @@ abstract class AbstractModel
         $clone = $this->getClone();
         
         $relationshipMap = $clone->relationalSelectMap
-            ->select($clone->primaryKeyValue, $modelName);
+            ->select($modelName);
         
         $map = $relationshipMap->getMap();
         
@@ -334,7 +331,7 @@ abstract class AbstractModel
             foreach ($attributes as $columnName => $value) {
                 $PDOstatement->bindValue(":$columnName", $value);
             }
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipMap->getPrimaryKeyValue());
             
             $PDOstatement->execute();
             
@@ -363,7 +360,7 @@ abstract class AbstractModel
             ::getAssociativeKeys()[$clone->modelName];
         
         $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
-                                                    $clone->primaryKeyValue, 
+                                                    $clone->relationshipMap->getPrimaryKeyValue(), 
                                                     ...$rows);
         
         $strategy = new QueryStatementStrategyContext(
@@ -408,7 +405,7 @@ abstract class AbstractModel
             }
             
             $PDOstatement = $clone->connection->prepare($query);
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipMap->getPrimaryKeyValue());
             $PDOstatement->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
@@ -455,7 +452,7 @@ abstract class AbstractModel
                     $PDOstatement = $clone->connection->prepare($query);
                     
                     $PDOstatement
-                        ->bindParam(":$foreignKeyName", $clone->primaryKeyValue);
+                        ->bindParam(":$foreignKeyName", $clone->relationshipMap->getPrimaryKeyValue());
                     
                     $PDOstatement
                         ->bindParam(":$relatedForeignKeyName", $relatedKeyValue);
@@ -470,7 +467,7 @@ abstract class AbstractModel
                 
                 $PDOstatement = $clone->connection->prepare($query);
                 $PDOstatement->bindParam(":$foreignKeyName",
-                    $clone->primaryKeyValue);
+                    $clone->relationshipMap->getPrimaryKeyValue());
                 
                 $PDOstatement->execute();
             }
