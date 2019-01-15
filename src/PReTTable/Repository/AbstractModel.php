@@ -205,7 +205,7 @@ abstract class AbstractModel
         $clone = $this->getClone();
         
         $select = new Select();
-        
+//         problema com involvedModelNames
         $query = "
             SELECT {$select->getStatement($clone->modelName, ...$clone->relationalSelectMap->getInvolvedModelNames())}
             FROM $clone->tableName";
@@ -213,6 +213,7 @@ abstract class AbstractModel
         $joinsStatement = "";
         
         $joins = $clone->relationalSelectMap->getJoins();
+        
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " .
