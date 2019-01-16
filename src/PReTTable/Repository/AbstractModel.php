@@ -29,9 +29,9 @@ abstract class AbstractModel
     
     private $host;
     
-    private $relationshipMap;
+    private $relationshipBuilding;
     
-    private $relationalSelectMap;
+    private $relationalSelectBuilding;
     
     private $connection;
     
@@ -50,8 +50,8 @@ abstract class AbstractModel
         
         Connection::setData($data);
         
-        $this->relationshipMap = new RelationshipMap($this->modelName);
-        $this->relationalSelectMap = new RelationalSelectMap($this->relationshipMap);
+        $this->relationshipBuilding = new RelationshipBuilding($this->modelName);
+        $this->relationalSelectBuilding = new RelationalSelectBuilding($this->relationshipBuilding);
         
         $this->tableName = $this->model->getTableName();
         
@@ -61,7 +61,7 @@ abstract class AbstractModel
     }
     
     function setPrimaryKeyValue($value) {
-        $this->relationshipMap->setPrimaryKeyValue($value);
+        $this->relationshipBuilding->setPrimaryKeyValue($value);
     }
     
 //     a proxy to set strategy context
@@ -72,15 +72,15 @@ abstract class AbstractModel
     }
     
     function contains($modelName, $associatedColumn) {
-        $this->relationshipMap->contains($modelName, $associatedColumn);
+        $this->relationshipBuilding->contains($modelName, $associatedColumn);
     }
     
     function isContained($modelName, $associatedColumn) {
-        $this->relationshipMap->isContained($modelName, $associatedColumn);
+        $this->relationshipBuilding->isContained($modelName, $associatedColumn);
     }
     
     function containsThrough($modelName, $through) {
-        $this->relationshipMap->containsThrough($modelName, $through);
+        $this->relationshipBuilding->containsThrough($modelName, $through);
     }
     
     function create(array $attributes) {
@@ -109,10 +109,10 @@ abstract class AbstractModel
         }
         
         if ($clone->model->isPrimaryKeySelfIncremental()) {
-            $clone->relationshipMap
+            $clone->relationshipBuilding
                 ->setPrimaryKeyValue($clone->connection->lastInsertId());
         } else {
-            $clone->relationshipMap->setPrimaryKeyValue($attributes[$clone
+            $clone->relationshipBuilding->setPrimaryKeyValue($attributes[$clone
                 ->model->getPrimaryKeyName()]);
         }
         
@@ -122,7 +122,7 @@ abstract class AbstractModel
     function createAssociations($modelName, ...$rows) {
         $clone = $this->getClone();
         
-        $associativeModelName = $clone->relationshipMap
+        $associativeModelName = $clone->relationshipBuilding
             ->getAssociativeModelNameOf($modelName);
 
         if (!isset($associativeModelName)) {
@@ -135,7 +135,7 @@ abstract class AbstractModel
             ::getAssociativeKeys()[$clone->modelName];
         
         $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
-                                                    $clone->relationshipMap->getPrimaryKeyValue(), 
+                                                    $clone->relationshipBuilding->getPrimaryKeyValue(), 
                                                     ...$rows);
         
         $strategy = new QueryStatementStrategyContext(
@@ -178,7 +178,7 @@ abstract class AbstractModel
             
         try {
             $PDOstatement = $clone->connection->prepare($query);
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipMap->getPrimaryKeyValue());
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
             $PDOstatement->execute();
             
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
@@ -204,12 +204,12 @@ abstract class AbstractModel
         $select = new Select();
         
         $query = "
-            SELECT {$select->getStatement($clone->modelName, ...$clone->relationalSelectMap->getInvolvedModelNames())}
+            SELECT {$select->getStatement($clone->modelName, ...$clone->relationalSelectBuilding->getInvolvedModelNames())}
             FROM $clone->tableName";
         
         $joinsStatement = "";
         
-        $joins = $clone->relationalSelectMap->getJoins();
+        $joins = $clone->relationalSelectBuilding->getJoins();
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " .
@@ -252,7 +252,7 @@ abstract class AbstractModel
     function get($modelName, $limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
         
-        $relationalSelectMap = $clone->relationalSelectMap->map($modelName);
+        $relationalSelectMap = $clone->relationalSelectBuilding->map($modelName);
         
         $select = $relationalSelectMap->getSelect();
         $from = $relationalSelectMap->getFrom();
@@ -328,7 +328,7 @@ abstract class AbstractModel
             foreach ($attributes as $columnName => $value) {
                 $PDOstatement->bindValue(":$columnName", $value);
             }
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipMap->getPrimaryKeyValue());
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
             
             $PDOstatement->execute();
             
@@ -344,7 +344,7 @@ abstract class AbstractModel
     function updateAssociations($modelName, ...$rows) {
         $clone = $this->getClone();
         
-        $associativeModelName = $clone->relationshipMap
+        $associativeModelName = $clone->relationshipBuilding
             ->getAssociativeModelNameOf($modelName);
         
         if (!isset($associativeModelName)) {
@@ -357,7 +357,7 @@ abstract class AbstractModel
             ::getAssociativeKeys()[$clone->modelName];
         
         $rows = self::attachesAssociativeForeignKey($foreignKeyName, 
-                                                    $clone->relationshipMap->getPrimaryKeyValue(), 
+                                                    $clone->relationshipBuilding->getPrimaryKeyValue(), 
                                                     ...$rows);
         
         $strategy = new QueryStatementStrategyContext(
@@ -402,7 +402,7 @@ abstract class AbstractModel
             }
             
             $PDOstatement = $clone->connection->prepare($query);
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipMap->getPrimaryKeyValue());
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
             $PDOstatement->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
@@ -416,7 +416,7 @@ abstract class AbstractModel
     function deleteAssociations($modelName, ...$relatedKeyValues) {
         $clone = $this->getClone();
         
-        $associativeModelName = $clone->relationshipMap
+        $associativeModelName = $clone->relationshipBuilding
             ->getAssociativeModelNameOf($modelName);
         
         if (!isset($associativeModelName)) {
@@ -449,7 +449,7 @@ abstract class AbstractModel
                     $PDOstatement = $clone->connection->prepare($query);
                     
                     $PDOstatement
-                        ->bindParam(":$foreignKeyName", $clone->relationshipMap->getPrimaryKeyValue());
+                        ->bindParam(":$foreignKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
                     
                     $PDOstatement
                         ->bindParam(":$relatedForeignKeyName", $relatedKeyValue);
@@ -464,7 +464,7 @@ abstract class AbstractModel
                 
                 $PDOstatement = $clone->connection->prepare($query);
                 $PDOstatement->bindParam(":$foreignKeyName",
-                    $clone->relationshipMap->getPrimaryKeyValue());
+                    $clone->relationshipBuilding->getPrimaryKeyValue());
                 
                 $PDOstatement->execute();
             }
@@ -480,9 +480,9 @@ abstract class AbstractModel
     function join($modelName, $associatedColumn) {
         $clone = $this->getClone();
         
-        $clone->relationalSelectMap->join($modelName, $associatedColumn);
+        $clone->relationalSelectBuilding->join($modelName, $associatedColumn);
         
-        $clone->relationalSelectMap->addsInvolvedModelNames($modelName);
+        $clone->relationalSelectBuilding->addsInvolvedModelNames($modelName);
         
         return $clone;
     }
@@ -535,7 +535,7 @@ abstract class AbstractModel
     }
     
     private function getMountedOrderBy() {
-        if (count($this->relationalSelectMap->getInvolvedModelNames())) {
+        if (count($this->relationalSelectBuilding->getInvolvedModelNames())) {
             $columnStatement = "$this->tableName.$this->order";
         } else {
             $columnStatement = $this->order;

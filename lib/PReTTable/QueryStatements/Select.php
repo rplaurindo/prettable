@@ -3,7 +3,7 @@
 namespace PReTTable\QueryStatements;
 
 use 
-    PReTTable\Repository\RelationshipMap,
+    PReTTable\Repository\RelationshipBuilding,
     PReTTable\Reflection;
 
 class Select {
@@ -35,13 +35,13 @@ class Select {
     }
     
     private function mountMember($modelName, $attachTableName) {
-        RelationshipMap::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
+        RelationshipBuilding::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
         
         $model = Reflection::getDeclarationOf($modelName);
         $columns = $model::getColumns();
         
         if ($attachTableName) {
-            $tableName = RelationshipMap::resolveTableName($modelName);
+            $tableName = RelationshipBuilding::resolveTableName($modelName);
         }
         
         $mountedColumns = [];

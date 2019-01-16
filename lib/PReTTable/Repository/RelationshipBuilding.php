@@ -8,7 +8,7 @@ use
     PReTTable\Reflection
 ;
 
-class RelationshipMap {
+class RelationshipBuilding {
     
     private $modelName;
     
