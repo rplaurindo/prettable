@@ -53,6 +53,8 @@ class RelationalSelectMap {
         $this->joins = new ArrayObject();
         
         $this->involvedModelNames = new ArrayObject();
+        
+        $this->select = new Select();
     }
     
     function getSelect() {
@@ -133,7 +135,6 @@ class RelationalSelectMap {
                 }
             }
             
-            $clone->select = new Select();
             $clone->selectStatement = $clone->select
                 ->getStatement(true, ...$clone->getInvolvedModelNames());
             
