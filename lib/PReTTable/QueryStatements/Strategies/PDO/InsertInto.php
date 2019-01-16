@@ -21,7 +21,7 @@ class InsertInto implements QueryStatementStrategyInterface {
             "$this->tableName (" . implode(", ", array_keys($attributes)) . ")";
         
         $values = [];
-        foreach ($attributes as $columnName => $value) {
+        foreach ($attributes as $columnName) {
             array_push($values, ":$columnName");
         }
         

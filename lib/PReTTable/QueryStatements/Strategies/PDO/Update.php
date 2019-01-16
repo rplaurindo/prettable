@@ -29,7 +29,7 @@ class Update implements QueryStatementStrategyInterface {
     
     function getStatement(array $attributes) {
         $settings = [];
-        foreach ($attributes as $columnName => $value) {
+        foreach ($attributes as $columnName) {
             array_push($settings, "$columnName = :$columnName");
         }
         
