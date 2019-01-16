@@ -212,12 +212,19 @@ class RelationalSelectBuilding {
     }
 
     function setOrder($columnName, $by = '') {
-        $clone = $this->getClone();
+        $this->order = $columnName;
+        $this->by = $by;
+    }
 
-        $clone->order = $columnName;
-        $clone->by = $by;
+    private function getMountedOrderBy() {
+        if (count($this->relationalSelectBuilding->getInvolvedModelNames())) {
+            $columnStatement = "$this->tableName.$this->order";
+        } else {
+            $columnStatement = $this->order;
+        }
 
-        return $clone;
+        return "
+            ORDER BY $columnStatement $this->by";
     }
 
     function resolveOrderBy() {

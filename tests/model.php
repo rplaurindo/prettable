@@ -37,15 +37,15 @@ class Model1 extends ModelBaseTest {
     function __construct() {
         parent::__construct('mydb');
 
-        $this->setOrder('id', 'DESC');
-        $this->setPager(new MySQL());
+        $ordered = $this->setOrder('id', 'DESC');
+        $ordered->setPager(new MySQL());
 
-        $this->containsThrough('Model2', 'AssociativeModel');
+        $ordered->containsThrough('Model2', 'AssociativeModel');
 
-        $this->contains('AssociativeModel', 'table1_id');
+        $ordered->contains('AssociativeModel', 'table1_id');
 
 //         to make join
-        $this->contains('Model3', 'table1_id');
+        $ordered->contains('Model3', 'table1_id');
 
     }
 
@@ -253,8 +253,8 @@ $model1 = new Model1();
 //         ->save())
 // ;
 
-$model1->setPrimaryKeyValue(2);
-print_r($model1->getRow());
+// $model1->setPrimaryKeyValue(2);
+// print_r($model1->getRow());
 
 // if there isn't a self-incremental primary key
 // print_r($model1->getRow('table1col', 'a value 2'));
@@ -265,9 +265,9 @@ print_r($model1->getRow());
 // print_r($model1->join('Model3', 'table1_id')->getAll(2));
 // print_r($model1->getAll(2, 2));
 
-// $model1->setPrimaryKeyValue(1);
+$model1->setPrimaryKeyValue(1);
 // a better logic to "order by" should be made for this case
-// print_r($model1->get('Model2'));
+print_r($model1->get('Model2'));
 
 // print_r($model1->get('Model3'));
 // print_r($model1->get('Model3', 1, 2));
