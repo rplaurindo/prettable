@@ -199,8 +199,7 @@ $model4 = new Model4();
 //     $mode2 = $mode2->create(['table2col' => "a value $i"]);
 // }
 // echo $mode2->save();
-
-// for ($i = 1; $i <= 3; $i++) {
+// for ($i = 1; $i <= 2; $i++) {
 //     $model3 = $model3->create(
 //         [
 //             'table3col' => "a value $i",
@@ -227,7 +226,7 @@ $model4 = new Model4();
 // }
 // echo $model4->save();
 
-// $model1->setPrimaryKeyValue(3);
+// $model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->createAssociations('Model2',
 //         [

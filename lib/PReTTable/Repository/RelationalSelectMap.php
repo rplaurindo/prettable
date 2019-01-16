@@ -35,11 +35,13 @@ class RelationalSelectMap {
     
     private $select;
     
-    private $from;
+    private $selectStatement;
+    
+    private $fromStatement;
     
     private $joins;
     
-    private $whereClause;
+    private $whereClauseStatement;
 
     function __construct(RelationshipMap $relationshipMap) {
         $this->relationshipMap = $relationshipMap;
@@ -53,7 +55,19 @@ class RelationalSelectMap {
         $this->involvedModelNames = new ArrayObject();
     }
     
-    function select($modelName) {
+    function getSelect() {
+        return $this->selectStatement;
+    }
+    
+    function getFrom() {
+        return $this->fromStatement;
+    }
+    
+    function getWhereClause() {
+        return $this->whereClauseStatement;
+    }
+    
+    function map($modelName) {
         RelationshipMap::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
@@ -66,12 +80,11 @@ class RelationalSelectMap {
         $clone->associatedModel = Reflection::getDeclarationOf($modelName);
         $clone->associatedTableName = RelationshipMap::resolveTableName($modelName);
         
-        $clone->select = new Select();
         $clone->addsInvolvedModelNames($modelName);
         
         if ($clone->relationshipMap->isItContained($modelName)
             || $clone->relationshipMap->doesItContain($modelName)) {
-                $clone->from = $clone->associatedTableName;
+                $clone->fromStatement = $clone->associatedTableName;
                 
                 if ($clone->relationshipMap->isItContained($modelName)) {
                     if ($clone->relationshipMap
@@ -89,7 +102,7 @@ class RelationalSelectMap {
                             
                             $clone->associativeTableName = RelationshipMap
                                 ::resolveTableName($clone->associativeModelName);
-                            $clone->from = $clone->associativeTableName;
+                            $clone->fromStatement = $clone->associativeTableName;
                             
                             $clone->join($clone->modelName, $clone->primaryKeyName);
                             $clone->join($modelName, $clone->associatedModel
@@ -98,7 +111,7 @@ class RelationalSelectMap {
                             $associativeColumn = $clone->associativeModel
                                 ->getAssociativeKeys()[$clone->modelName];
                             if (isset($primaryKeyValue)) {
-                                $clone->whereClause = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
+                                $clone->whereClauseStatement = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
                             }
                         } else {
                             $clone->join($clone->modelName, $clone->primaryKeyName);
@@ -106,7 +119,7 @@ class RelationalSelectMap {
                             $associatedColumn = $clone->relationshipMap->getAssociatedColumn($modelName);
                             
                             if (isset($primaryKeyValue)) {
-                                $clone->whereClause = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
+                                $clone->whereClauseStatement = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
                             }
                         }
                 } else {
@@ -115,10 +128,14 @@ class RelationalSelectMap {
                     $clone->join($clone->modelName, $associatedColumn);
                     
                     if (isset($primaryKeyValue)) {
-                        $clone->whereClause = "$clone->tableName.$associatedColumn = $primaryKeyValue";
+                        $clone->whereClauseStatement = "$clone->tableName.$associatedColumn = $primaryKeyValue";
                     }
                 }
             }
+            
+            $clone->select = new Select();
+            $clone->selectStatement = $clone->select
+                ->getStatement(true, ...$clone->getInvolvedModelNames());
             
             return $clone;
     }
@@ -187,25 +204,6 @@ class RelationalSelectMap {
         }
         
         return $joins;
-    }
-    
-    function getMap() {
-        $map = [];
-        
-        if (isset($this->select)) {
-            $map['select'] = $this->select
-            ->getStatement(true, ...$this->getInvolvedModelNames());
-        }
-        
-        if (isset($this->from)) {
-            $map['from'] = $this->from;
-        }
-        
-        if (isset($this->whereClause)) {
-            $map['where'] = $this->whereClause;
-        }
-        
-        return $map;
     }
     
     protected function getClone() {

@@ -252,14 +252,11 @@ abstract class AbstractModel
     function get($modelName, $limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
         
-        $relationshipMap = $clone->relationalSelectMap
-            ->select($modelName);
+        $relationalSelectMap = $clone->relationalSelectMap->map($modelName);
         
-        $map = $relationshipMap->getMap();
-        
-        $select = $map['select'];
-        $from = $map['from'];
-        $whereClause = $map['where'];
+        $select = $relationalSelectMap->getSelect();
+        $from = $relationalSelectMap->getFrom();
+        $whereClause = $relationalSelectMap->getWhereClause();
         
         $joinsStatement = "";
         
@@ -268,7 +265,7 @@ abstract class AbstractModel
             
             FROM $from";
         
-        $joins = $relationshipMap->getJoins();
+        $joins = $relationalSelectMap->getJoins();
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " .
