@@ -265,6 +265,7 @@ $model1 = new Model1();
 // print_r($model1->join('Model3', 'table1_id')->getAll(2));
 // print_r($model1->getAll(2, 2));
 
+$model1 = $model1->setOrder('table1_table2.table2_id', 'DESC');
 $model1->setPrimaryKeyValue(1);
 // a better logic to "order by" should be made for this case
 print_r($model1->get('Model2'));
