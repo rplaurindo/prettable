@@ -24,16 +24,6 @@ class Select {
         return implode(', ', $this->mountMember($attachTableName, false));        
     }
     
-    private function mountCollection(...$modelNames) {
-        $mountedColumns = [];
-        
-        foreach($modelNames as $modelName) {
-            $mountedColumns = array_merge($mountedColumns, $this->mountMember($modelName, true));
-        }
-        
-        return implode(', ', $mountedColumns);
-    }
-    
     private function mountMember($modelName, $attachTableName) {
         RelationshipBuilding::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
         
@@ -62,6 +52,16 @@ class Select {
         }
         
         return $mountedColumns;
+    }
+    
+    private function mountCollection(...$modelNames) {
+        $mountedColumns = [];
+        
+        foreach($modelNames as $modelName) {
+            $mountedColumns = array_merge($mountedColumns, $this->mountMember($modelName, true));
+        }
+        
+        return implode(', ', $mountedColumns);
     }
     
 }

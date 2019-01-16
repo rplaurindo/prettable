@@ -44,16 +44,17 @@ abstract class AbstractModel
     private $strategyContextIsDefined;
 
     function __construct($host, array $data) {
-        $this->modelName = get_class($this);
-        $this->model = Reflection::getDeclarationOf($this->modelName);
+        Connection::setData($data);
+        
         $this->host = $host;
         
-        Connection::setData($data);
+        $this->modelName = get_class($this);
         
         $this->relationshipBuilding = new RelationshipBuilding($this->modelName);
         $this->relationalSelectBuilding = new RelationalSelectBuilding($this->relationshipBuilding);
         
-        $this->tableName = $this->model->getTableName();
+        $this->model = $this->relationshipBuilding->getModel();
+        $this->tableName = $this->relationshipBuilding->getTableName();
         
         $this->pagerStrategyContext = new PaginableStrategyContext();
         
@@ -62,13 +63,6 @@ abstract class AbstractModel
     
     function setPrimaryKeyValue($value) {
         $this->relationshipBuilding->setPrimaryKeyValue($value);
-    }
-    
-//     a proxy to set strategy context
-    function setPager(PaginableStrategyInterface $pagerStrategy) {
-        $this->strategyContextIsDefined = true;
-        
-        $this->pagerStrategyContext->setStrategy($pagerStrategy);
     }
     
     function contains($modelName, $associatedColumn) {
@@ -81,6 +75,28 @@ abstract class AbstractModel
     
     function containsThrough($modelName, $through) {
         $this->relationshipBuilding->containsThrough($modelName, $through);
+    }
+    
+    function join($modelName, $associatedColumn) {
+        $clone = $this->getClone();
+        
+        $clone->relationalSelectBuilding->join($modelName, $associatedColumn);
+        
+        $clone->relationalSelectBuilding->addsInvolvedModelNames($modelName);
+        
+        return $clone;
+    }
+    
+    function setOrder($columnName, $by = '') {
+        $this->order = $columnName;
+        $this->by = $by;
+    }
+    
+    //     a proxy to set strategy context
+    function setPager(PaginableStrategyInterface $pagerStrategy) {
+        $this->strategyContextIsDefined = true;
+        
+        $this->pagerStrategyContext->setStrategy($pagerStrategy);
     }
     
     function create(array $attributes) {
@@ -113,7 +129,7 @@ abstract class AbstractModel
                 ->setPrimaryKeyValue($clone->connection->lastInsertId());
         } else {
             $clone->relationshipBuilding->setPrimaryKeyValue($attributes[$clone
-                ->model->getPrimaryKeyName()]);
+                ->relationshipBuilding->getPrimaryKeyName()]);
         }
         
         return $clone;
@@ -169,7 +185,7 @@ abstract class AbstractModel
         $select = new Select();
         $selectStatement = "SELECT {$select->getStatement($clone->modelName)}";
         
-        $primaryKeyName = $clone->model->getPrimaryKeyName();
+        $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
         
         $query = "
             $selectStatement
@@ -314,7 +330,7 @@ abstract class AbstractModel
         
         $update = new Update($clone->modelName);
         
-        $primaryKeyName = $update->getPrimaryKeyName();
+        $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
 
         $strategy = new QueryStatementStrategyContext($update);
         
@@ -390,7 +406,7 @@ abstract class AbstractModel
     function delete() {
         $clone = $this->getClone();
         
-        $primaryKeyName = $clone->getPrimaryKeyName();
+        $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
 
         $query = "
             DELETE FROM $clone->tableName
@@ -477,23 +493,8 @@ abstract class AbstractModel
         return $clone;
     }
     
-    function join($modelName, $associatedColumn) {
-        $clone = $this->getClone();
-        
-        $clone->relationalSelectBuilding->join($modelName, $associatedColumn);
-        
-        $clone->relationalSelectBuilding->addsInvolvedModelNames($modelName);
-        
-        return $clone;
-    }
-    
     function save() {
         return $this->connection->commit();
-    }
-    
-    function setOrder($columnName, $by = '') {
-        $this->order = $columnName;
-        $this->by = $by;
     }
     
     protected function beginTransaction() {

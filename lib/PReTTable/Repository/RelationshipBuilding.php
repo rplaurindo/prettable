@@ -12,6 +12,8 @@ class RelationshipBuilding {
     
     private $modelName;
     
+    private $model;
+    
     private $tableName;
     
     private $primaryKeyName;
@@ -28,9 +30,9 @@ class RelationshipBuilding {
         
         $this->modelName = $modelName;
         
-        $model = Reflection::getDeclarationOf($modelName);
+        $this->model = Reflection::getDeclarationOf($modelName);
         $this->tableName = self::resolveTableName($modelName);
-        $this->primaryKeyName = $model->getPrimaryKeyName();
+        $this->primaryKeyName = $this->model->getPrimaryKeyName();
         $this->primaryKeyValue = null;
         
         $this->setOfThoseContained = new ArrayObject();
@@ -66,6 +68,10 @@ class RelationshipBuilding {
     
     function getModelName() {
         return $this->modelName;
+    }
+    
+    function getModel() {
+        return $this->model;
     }
     
     function getTableName() {

@@ -57,16 +57,30 @@ class RelationalSelectBuilding {
         $this->select = new Select();
     }
     
-    function getSelect() {
-        return $this->selectStatement;
+    function join($modelName, $associatedColumn) {
+        RelationshipBuilding::checkIfModelIs($modelName,
+            __NAMESPACE__ . '\IdentifiableModelInterface',
+            __NAMESPACE__ . '\AssociativeModelInterface');
+        
+        $clone = $this->getClone();
+        
+        if (!$clone->joins->offsetExists($modelName)
+            && ($clone->relationshipBuilding->isItContained($modelName)
+                || $clone->relationshipBuilding->doesItContain($modelName))
+            || $modelName == $clone->modelName
+            ) {
+                $clone->joins->offsetSet($modelName, $associatedColumn);
+            }
+            
+            return clone $clone;
     }
     
-    function getFrom() {
-        return $this->fromStatement;
+    function addsInvolvedModelNames($modelName) {
+        $this->involvedModelNames->append($modelName);
     }
     
-    function getWhereClause() {
-        return $this->whereClauseStatement;
+    function getInvolvedModelNames() {
+        return $this->involvedModelNames->getArrayCopy();
     }
     
     function build($modelName) {
@@ -141,30 +155,16 @@ class RelationalSelectBuilding {
             return $clone;
     }
     
-    function join($modelName, $associatedColumn) {
-        RelationshipBuilding::checkIfModelIs($modelName,
-            __NAMESPACE__ . '\IdentifiableModelInterface',
-            __NAMESPACE__ . '\AssociativeModelInterface');
-        
-        $clone = $this->getClone();
-        
-        if (!$clone->joins->offsetExists($modelName)
-            && ($clone->relationshipBuilding->isItContained($modelName)
-                || $clone->relationshipBuilding->doesItContain($modelName))
-            || $modelName == $clone->modelName
-            ) {
-                $clone->joins->offsetSet($modelName, $associatedColumn);
-            }
-            
-            return clone $clone;
+    function getSelect() {
+        return $this->selectStatement;
     }
     
-    function addsInvolvedModelNames($modelName) {
-        $this->involvedModelNames->append($modelName);
+    function getFrom() {
+        return $this->fromStatement;
     }
     
-    function getInvolvedModelNames() {
-        return $this->involvedModelNames->getArrayCopy();
+    function getWhereClause() {
+        return $this->whereClauseStatement;
     }
     
     function getJoins() {

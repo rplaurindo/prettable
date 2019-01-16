@@ -11,8 +11,6 @@ class Update implements QueryStatementStrategyInterface {
     
     private $updateStatement;
     
-    private $primaryKeyName;
-    
     private $whereStatement;
     
     function __construct($modelName) {
@@ -24,9 +22,9 @@ class Update implements QueryStatementStrategyInterface {
         
         $this->updateStatement = $tableName;
         
-        $this->primaryKeyName = $model::getPrimaryKeyName();
+        $primaryKeyName = $model::getPrimaryKeyName();
         $this->whereStatement = 
-            "$this->primaryKeyName = :$this->primaryKeyName";
+            "$primaryKeyName = :$primaryKeyName";
     }
     
     function getStatement(array $attributes) {
@@ -44,10 +42,6 @@ class Update implements QueryStatementStrategyInterface {
         ";
         
         return $statement;
-    }
-    
-    function getPrimaryKeyName() {
-        return $this->primaryKeyName;
     }
     
 }
