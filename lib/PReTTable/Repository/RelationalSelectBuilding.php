@@ -3,6 +3,7 @@
 namespace PReTTable\Repository;
 
 use
+    Exception,
     ArrayObject,
     PReTTable\Reflection,
     PReTTable\QueryStatements\Select
@@ -33,6 +34,8 @@ class RelationalSelectBuilding {
 
     private $involvedModelNames;
 
+    private $involvedTableNames;
+
     private $select;
 
     private $selectStatement;
@@ -57,6 +60,7 @@ class RelationalSelectBuilding {
         $this->joins = new ArrayObject();
 
         $this->involvedModelNames = new ArrayObject();
+        $this->involvedTableNames = new ArrayObject();
 
         $this->select = new Select();
     }
@@ -81,6 +85,7 @@ class RelationalSelectBuilding {
 
     function addsInvolvedModelNames($modelName) {
         $this->involvedModelNames->append($modelName);
+        $this->involvedTableNames->append(RelationshipBuilding::resolveTableName($modelName));
     }
 
     function getInvolvedModelNames() {
@@ -216,23 +221,26 @@ class RelationalSelectBuilding {
         $this->by = $by;
     }
 
-    private function getMountedOrderBy() {
-        if (count($this->relationalSelectBuilding->getInvolvedModelNames())) {
-            $columnStatement = "$this->tableName.$this->order";
-        } else {
-            $columnStatement = $this->order;
+    function resolveOrderBy() {
+        if (count($this->getInvolvedTableNames())) {
+            $explodedOrder = explode('.', $this->order);
+
+            if (count($explodedOrder) != 2
+                || !in_array($explodedOrder[0], $this->getInvolvedTableNames())) {
+                throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
+            }
         }
 
         return "
-            ORDER BY $columnStatement $this->by";
-    }
-
-    function resolveOrderBy() {
-//         checar se há mais de uma tabela envolvida, caso haja, o split de $clone->order por . deve ter o count == 2 e o índice zero deve ser igual a uma das tabelas com campos envolvidas
+            ORDER BY $this->order $this->by";
     }
 
     protected function getClone() {
         return clone $this;
+    }
+
+    private function getInvolvedTableNames() {
+        return $this->involvedTableNames->getArrayCopy();
     }
 
 }
