@@ -69,7 +69,7 @@ class RelationalSelectBuilding {
         return $this->whereClauseStatement;
     }
     
-    function map($modelName) {
+    function build($modelName) {
         RelationshipBuilding::checkIfModelIs($modelName,
             __NAMESPACE__ . '\IdentifiableModelInterface',
             __NAMESPACE__ . '\AssociativeModelInterface');
