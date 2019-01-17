@@ -2,7 +2,7 @@
 	"name" : "rplaurindo/prettable",
 	"version" : "1.0.0",
 	"homepage" : "https://github.com/rplaurindo/prettable",
-	"description" : "A Repository pattern abstraction (relational queries) for PHP.",
+	"description" : "A Repository pattern abstraction (relational models) for PHP.",
 	"type" : "library",
 	"license" : "MIT",
 	"authors" : [{
