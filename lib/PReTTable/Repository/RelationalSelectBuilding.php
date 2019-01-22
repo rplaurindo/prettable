@@ -74,12 +74,14 @@ class RelationalSelectBuilding {
 
         if (!$clone->joins->offsetExists($modelName)) {
             $clone->joins->offsetSet($modelName, $associatedColumn);
+
+            $clone->addsInvolvedModelNames($modelName);
         }
 
         return clone $clone;
     }
 
-    function addsInvolvedModelNames($modelName) {
+    private function addsInvolvedModelNames($modelName) {
         $this->involvedModelNames->append($modelName);
         $this->involvedTableNames->append(RelationshipBuilding::resolveTableName($modelName));
     }
@@ -101,8 +103,6 @@ class RelationalSelectBuilding {
         $clone->associatedModel = Reflection::getDeclarationOf($modelName);
         $clone->associatedTableName = RelationshipBuilding::resolveTableName($modelName);
 
-        $clone->addsInvolvedModelNames($modelName);
-
         if ($clone->relationshipBuilding->isItContained($modelName)
             || $clone->relationshipBuilding->doesItContain($modelName)) {
                 $clone->fromStatement = $clone->associatedTableName;
@@ -114,9 +114,6 @@ class RelationalSelectBuilding {
                         $clone->associativeModelName = $clone
                             ->relationshipBuilding
                             ->getAssociativeModelNameOf($modelName);
-
-                        $clone->addsInvolvedModelNames($clone
-                            ->associativeModelName);
 
                         $clone->associativeModel = Reflection
                             ::getDeclarationOf($clone->associativeModelName);

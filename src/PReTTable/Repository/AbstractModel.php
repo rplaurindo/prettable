@@ -78,8 +78,6 @@ abstract class AbstractModel
 
         $clone->relationalSelectBuilding->join($modelName, $associatedColumn);
 
-        $clone->relationalSelectBuilding->addsInvolvedModelNames($modelName);
-
         return $clone;
     }
 
