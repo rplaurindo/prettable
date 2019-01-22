@@ -73,9 +73,9 @@ class RelationalSelectBuilding {
         $clone = $this->getClone();
 
         if (!$clone->joins->offsetExists($modelName)
-            && ($clone->relationshipBuilding->isItContained($modelName)
-                || $clone->relationshipBuilding->doesItContain($modelName))
-            || $modelName == $clone->modelName
+//             && ($clone->relationshipBuilding->isItContained($modelName)
+//                 || $clone->relationshipBuilding->doesItContain($modelName))
+//             || $modelName == $clone->modelName
             ) {
                 $clone->joins->offsetSet($modelName, $associatedColumn);
             }
@@ -185,27 +185,33 @@ class RelationalSelectBuilding {
             if ($this->relationshipBuilding->isItContained($joinedModelName)) {
                 if ($this->relationshipBuilding
                     ->isItContainedThrough($joinedModelName)) {
-                        $tableName = $this->associativeTableName;
-                        $columnName = $this->associativeModel
-                            ->getAssociativeKeys()[$joinedModelName];
-                    } else {
-                        $tableName = $this->tableName;
-                        $columnName = $this->primaryKeyName;
-                    }
+                    $tableName = $this->associativeTableName;
+                    $columnName = $this->associativeModel
+                        ->getAssociativeKeys()[$joinedModelName];
+                } else {
+                    $tableName = $this->tableName;
+                    $columnName = $this->primaryKeyName;
+                }
             } else {
                 if ($this->relationshipBuilding->doesItContain($joinedModelName)) {
                     $tableName = $this->tableName;
                     $columnName = $this->relationshipBuilding->getAssociatedColumn($joinedModelName);
-                } else if ($this->relationshipBuilding->doesItContain($this->associatedModelName)) {
-                    $tableName = $this->associatedTableName;
-                    $columnName = $this->associatedModel->getPrimaryKeyName();
+                } else if (isset($this->associatedModelName)) {
+                    if ($this->relationshipBuilding->doesItContain($this->associatedModelName)) {
+                        $tableName = $this->associatedTableName;
+                        $columnName = $this->associatedModel->getPrimaryKeyName();
+                    } else {
+                        $tableName = $this->associatedTableName;
+                        $columnName = $this->relationshipBuilding
+                            ->getAssociatedColumn($this->associatedModelName);
+                    }
                 } else if (isset($this->associativeModelName)) {
                     $tableName = $this->associativeTableName;
                     $columnName = $this->associativeModel
                         ->getAssociativeKeys()[$joinedModelName];
                 } else {
-                    $tableName = $this->associatedTableName;
-                    $columnName = $this->relationshipBuilding->getAssociatedColumn($this->associatedModelName);
+                    $tableName = $this->tableName;
+                    $columnName = $this->primaryKeyName;
                 }
             }
 
