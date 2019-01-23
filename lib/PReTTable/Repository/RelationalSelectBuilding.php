@@ -74,13 +74,12 @@ class RelationalSelectBuilding {
 
         if (!$clone->joins->offsetExists($modelName)) {
             $clone->joins->offsetSet($modelName, $associatedColumn);
-            $clone->addsInvolved($modelName);
         }
 
         return clone $clone;
     }
 
-    private function addsInvolved($modelName) {
+    function addsInvolved($modelName) {
         $this->involvedModelNames->append($modelName);
         $this->involvedTableNames->append(RelationshipBuilding::resolveTableName($modelName));
     }
