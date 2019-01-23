@@ -32,31 +32,21 @@ class Select {
         RelationshipBuilding::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
 
         $model = Reflection::getDeclarationOf($modelName);
-        $columns = $model::getColumns();
+        $columnNames = $model::getColumns();
 
         if ($attachTableName) {
             $tableName = RelationshipBuilding::resolveTableName($modelName);
         }
 
         if ($removePrimaryKeyName) {
-            $columns = array_diff($columns, [$model->getPrimaryKeyName()]);
+            $columnNames = array_diff($columnNames, [$model->getPrimaryKeyName()]);
         }
 
         $mountedColumns = [];
 
-        foreach($columns as $k => $v) {
-            if (is_string($k)) {
-                $columnName = $k;
-                $alias = $v;
-                if ($attachTableName) {
-                    array_push($mountedColumns, "$tableName.$columnName as $tableName.$alias");
-                } else {
-                    array_push($mountedColumns, "$columnName as $alias");
-                }
-            } else {
-                $columnName = $v;
-                array_push($mountedColumns, ($attachTableName ? "$tableName.$columnName" : $columnName));
-            }
+        foreach($columnNames as $columnName) {
+            $columnName = $columnName;
+            array_push($mountedColumns, ($attachTableName ? "$tableName.$columnName" : $columnName));
         }
 
         return $mountedColumns;
