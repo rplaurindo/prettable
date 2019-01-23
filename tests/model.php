@@ -251,12 +251,11 @@ $model1 = new Model1();
 
 $model1->setPrimaryKeyValue(1);
 
-// print_r($model1->getAll());
-// print_r($model1->getAll(2));
-
 $model1 = $model1->setOrder('table3.table1_id', 'DESC');
 print_r($model1->join('Model3', 'table1_id')->getAll());
 
+// print_r($model1->getAll());
+// print_r($model1->getAll(2));
 // print_r($model1->getAll(2, 2));
 
 
