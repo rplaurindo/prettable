@@ -254,8 +254,8 @@ $model1->setPrimaryKeyValue(1);
 // print_r($model1->getAll());
 // print_r($model1->getAll(2));
 
-// $model1 = $model1->setOrder('table3.table1_id', 'DESC');
-// print_r($model1->join('Model3', 'table1_id')->getAll());
+$model1 = $model1->setOrder('table3.table1_id', 'DESC');
+print_r($model1->join('Model3', 'table1_id')->getAll());
 
 // print_r($model1->getAll(2, 2));
 
@@ -264,8 +264,8 @@ $model1->setPrimaryKeyValue(1);
 // $model1 = $model1->setOrder('table1_table2.table2_id', 'DESC');
 // print_r($model1->get('Model2'));
 
-$model1 = $model1->setOrder('table4.table1_id', 'DESC');
-print_r($model1->get('Model4'));
+// $model1 = $model1->setOrder('table4.table1_id', 'DESC');
+// print_r($model1->get('Model4'));
 
 
 
