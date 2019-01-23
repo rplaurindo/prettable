@@ -179,13 +179,14 @@ abstract class AbstractModel
     function getRow() {
         $clone = $this->getClone();
 
-        $select = new Select();
-        $selectStatement = "SELECT {$select->getStatement($clone->modelName)}";
+        $select = new Select($clone->modelName);
+        $selectStatement = "SELECT {$select->getStatement()}";
 
         $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
 
         $query = "
             $selectStatement
+
             FROM $clone->tableName
             WHERE $primaryKeyName = :$primaryKeyName";
 
@@ -214,10 +215,11 @@ abstract class AbstractModel
     function getAll($limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
 
-        $select = new Select();
+        $select = new Select($clone->modelName);
 
         $query = "
-            SELECT {$select->getStatement($clone->modelName, ...$clone->relationalSelectBuilding->getInvolvedModelNames())}
+            SELECT {$select->getStatement(...$clone->relationalSelectBuilding->getInvolvedModelNames())}
+
             FROM $clone->tableName";
 
         $joinsStatement = "";
@@ -252,7 +254,7 @@ abstract class AbstractModel
         }
 
         try {
-            echo "$query\n";
+            echo "$query\n\n";
             $PDOstatement = $clone->connection->query($query);
 
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);

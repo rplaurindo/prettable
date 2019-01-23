@@ -3,29 +3,36 @@
 namespace PReTTable\QueryStatements;
 
 use
-    PReTTable\Repository\RelationshipBuilding,
-    PReTTable\Reflection
+    PReTTable\Reflection,
+    PReTTable\Repository\RelationshipBuilding
 ;
 
 class Select {
 
-    function getStatement($attachTableName, ...$modelNames) {
-        $count = count($modelNames);
+    private $modelName;
 
-        if ((gettype($attachTableName) == 'boolean' && $attachTableName)
-            || (gettype($attachTableName) == 'string' && $count >= 1)) {
+    function __construct($modelName = null) {
+        $this->modelName = $modelName;
+    }
 
-            if (gettype($attachTableName) == 'string') {
-                array_push($modelNames, $attachTableName);
-            }
+    function setModelName($modelName) {
+        $this->modelName = $modelName;
+    }
 
+    function unsetModelName() {
+        $this->modelName = null;
+    }
+
+    function getStatement(...$modelNames) {
+
+        if (count($modelNames)) {
             return $this->mountCollection(...$modelNames);
         }
 
-        return implode(', ', $this->mountMember($attachTableName, false));
+        return implode(', ', $this->mountMember($this->modelName, false));
     }
 
-    private function mountMember($modelName, $attachTableName) {
+    private function mountMember($modelName, $attachTableName, $removePrimaryKeyName = false) {
         RelationshipBuilding::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
 
         $model = Reflection::getDeclarationOf($modelName);
@@ -33,6 +40,10 @@ class Select {
 
         if ($attachTableName) {
             $tableName = RelationshipBuilding::resolveTableName($modelName);
+        }
+
+        if ($removePrimaryKeyName) {
+            $columns = array_diff($columns, [$model->getPrimaryKeyName()]);
         }
 
         $mountedColumns = [];
@@ -58,8 +69,27 @@ class Select {
     private function mountCollection(...$modelNames) {
         $mountedColumns = [];
 
+        if (is_subclass_of($this->modelName,
+            'PReTTable\Repository\AssociativeModelInterface')
+            ) {
+            $associativeModel = Reflection::getDeclarationOf($this->modelName);
+            $associatedModelNames = array_intersect(array_keys($associativeModel
+                ->getAssociativeKeys()), $modelNames);
+
+            foreach($associatedModelNames as $modelName) {
+                $mountedColumns = array_merge($mountedColumns, $this
+                    ->mountMember($modelName, true, true));
+            }
+
+            $modelNames = array_diff($modelNames, $associatedModelNames);
+        } else {
+            $mountedColumns = array_merge($mountedColumns, $this
+                ->mountMember($this->modelName, true, true));
+        }
+
         foreach($modelNames as $modelName) {
-            $mountedColumns = array_merge($mountedColumns, $this->mountMember($modelName, true));
+            $mountedColumns = array_merge($mountedColumns, $this
+                ->mountMember($modelName, true));
         }
 
         return implode(', ', $mountedColumns);

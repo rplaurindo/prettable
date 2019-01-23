@@ -42,7 +42,7 @@ class Model1 extends ModelBaseTest {
 
         $ordered->containsThrough('Model2', 'AssociativeModel');
 
-        $ordered->contains('AssociativeModel', 'table1_id');
+//         $ordered->contains('AssociativeModel', 'table1_id');
     }
 
     static function getTableName() {
@@ -256,6 +256,7 @@ $model1 = new Model1();
 // print_r($model1->getRow('table1col', 'a value 2'));
 
 $model1->setPrimaryKeyValue(1);
+
 // print_r($model1->getAll());
 // print_r($model1->getAll(2));
 
@@ -264,15 +265,12 @@ print_r($model1->join('Model3', 'table1_id')->getAll());
 
 // print_r($model1->getAll(2, 2));
 
+
+// a better logic to "order by" should be made for this case
 // $model1 = $model1->setOrder('table1_table2.table2_id', 'DESC');
-// $model1->setPrimaryKeyValue(1);
-// // a better logic to "order by" should be made for this case
 // print_r($model1->get('Model2'));
 
-// print_r($model1->get('Model3'));
-// print_r($model1->get('Model3', 1, 2));
-
-// to access a associative table should call contains or isContained too
+// to access a associative table should call contains or isContained too. Mudar para que isso não seja mais necessário
 // print_r($model1->get('AssociativeModel'));
 
 // $model3->setPrimaryKeyValue(2);
