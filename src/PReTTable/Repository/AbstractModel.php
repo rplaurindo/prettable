@@ -194,6 +194,7 @@ abstract class AbstractModel
             WHERE $primaryKeyName = :$primaryKeyName";
 
         try {
+            echo "$query\n\n";
             $PDOstatement = $clone->connection->prepare($query);
             $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
             $PDOstatement->execute();
