@@ -19,10 +19,6 @@ class Select {
         $this->modelName = $modelName;
     }
 
-    function unsetModelName() {
-        $this->modelName = null;
-    }
-
     function getStatement(...$modelNames) {
 
         if (count($modelNames)) {
@@ -83,6 +79,9 @@ class Select {
 
             $modelNames = array_diff($modelNames, $associatedModelNames);
         } else {
+
+            $modelNames = array_diff($modelNames, [$this->modelName]);
+
             $mountedColumns = array_merge($mountedColumns, $this
                 ->mountMember($this->modelName, true, true));
         }

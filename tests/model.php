@@ -42,7 +42,7 @@ class Model1 extends ModelBaseTest {
 
         $ordered->containsThrough('Model2', 'AssociativeModel');
 
-//         $ordered->contains('AssociativeModel', 'table1_id');
+        $ordered->contains('Model4', 'table1_id');
     }
 
     static function getTableName() {
@@ -195,6 +195,7 @@ $model1 = new Model1();
 //     $mode2 = $mode2->create(['table2col' => "a value $i"]);
 // }
 // echo $mode2->save();
+
 // for ($i = 1; $i <= 2; $i++) {
 //     $model3 = $model3->create(
 //         [
@@ -205,18 +206,11 @@ $model1 = new Model1();
 // }
 // echo $model3->save();
 
-// $model4 = $model4->create(
-//         [
-//             'table4col' => "a value 1"
-//             , 'table1_id' => 2
-//         ]
-// )->save();
-
 // for ($i = 1; $i <= 2; $i++) {
 //     $model4 = $model4->create(
 //         [
 //             'table4col' => "a value $i"
-//             , 'table1_id' => $i
+//             , 'table1_id' => 1
 //         ]
 //     );
 // }
@@ -270,8 +264,10 @@ print_r($model1->join('Model3', 'table1_id')->getAll());
 // $model1 = $model1->setOrder('table1_table2.table2_id', 'DESC');
 // print_r($model1->get('Model2'));
 
-// to access a associative table should call contains or isContained too. Mudar para que isso não seja mais necessário
-// print_r($model1->get('AssociativeModel'));
+// $model1 = $model1->setOrder('table4.table1_id', 'DESC');
+// print_r($model1->get('Model4'));
+
+
 
 // $model3->setPrimaryKeyValue(2);
 // print_r(
