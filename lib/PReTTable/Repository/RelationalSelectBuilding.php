@@ -116,8 +116,6 @@ class RelationalSelectBuilding {
                             ->relationshipBuilding
                             ->getAssociativeModelNameOf($modelName);
 
-                        $clone->select->setModelName($clone->associativeModelName);
-
                         $clone->addsInvolved($clone->associativeModelName);
 
                         $clone->associativeModel = Reflection
