@@ -329,6 +329,51 @@ abstract class AbstractModel
         return $result;
     }
 
+    function getParent($modelName) {
+        $clone = $this->getClone();
+
+        $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName);
+
+        $select = $relationalSelectBuilding->getSelect();
+        $from = $relationalSelectBuilding->getFrom();
+        $whereClause = $relationalSelectBuilding->getWhereClause();
+
+        $joinsStatement = "";
+
+        $query = "
+            SELECT $select
+
+            FROM $from";
+
+        $joins = $relationalSelectBuilding->getJoins();
+        if (count($joins)) {
+            $joinsStatement .= "
+            INNER JOIN " .
+            implode("
+            INNER JOIN ", $joins);
+        }
+
+        if (!empty($joinsStatement)) {
+            $query .= "
+                $joinsStatement";
+        }
+
+        $query .= "
+            WHERE $whereClause";
+
+        try {
+            echo "$query\n\n";
+            $PDOstatement = $clone->connection->query($query);
+
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+
+        return $result;
+    }
+
     function update(array $attributes) {
         $clone = $this->getClone();
 

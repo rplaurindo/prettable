@@ -126,6 +126,8 @@ class Model4 extends ModelBaseTest {
 
     function __construct() {
         parent::__construct('mydb');
+
+        $this->isContained('Model1', 'table1_id');
     }
 
     static function getTableName() {
@@ -177,10 +179,10 @@ class AssociativeModel implements AssociativeModelInterface {
 }
 
 
-$model1 = new Model1();
+// $model1 = new Model1();
 // $mode2 = new Model2();
 // $model3 = new Model3();
-// $model4 = new Model4();
+$model4 = new Model4();
 
 // for ($i = 1; $i <= 3; $i++) {
 //     $model1 = $model1->create(
@@ -216,6 +218,9 @@ $model1 = new Model1();
 // }
 // echo $model4->save();
 
+$model4->setPrimaryKeyValue(1);
+print_r($model4->getParent('Model1'));
+
 // $model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->createAssociations('Model2',
@@ -249,10 +254,10 @@ $model1 = new Model1();
 // if there isn't a self-incremental primary key
 // print_r($model1->getRow('table1col', 'a value 2'));
 
-$model1->setPrimaryKeyValue(1);
+// $model1->setPrimaryKeyValue(1);
 
-$model1 = $model1->setOrder('table3.table1_id', 'DESC');
-print_r($model1->join('Model3', 'table1_id')->getAll());
+// $model1 = $model1->setOrder('table3.table1_id', 'DESC');
+// print_r($model1->join('Model3', 'table1_id')->getAll());
 
 // print_r($model1->getAll());
 // print_r($model1->getAll(2));
