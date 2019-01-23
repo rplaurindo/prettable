@@ -100,7 +100,7 @@ class RelationalSelectBuilding {
         $clone->associatedModelName = $modelName;
         $clone->associatedModel = Reflection::getDeclarationOf($modelName);
         $clone->associatedTableName = RelationshipBuilding::resolveTableName($modelName);
-        $clone->addsInvolved($clone->associatedModelName);
+//         $clone->addsInvolved($clone->associatedModelName);
 
         if ($clone->relationshipBuilding->isItContained($modelName)
             || $clone->relationshipBuilding->doesItContain($modelName)) {
@@ -108,6 +108,8 @@ class RelationalSelectBuilding {
                 $clone->fromStatement = $clone->associatedTableName;
 
                 if ($clone->relationshipBuilding->isItContained($modelName)) {
+
+                    $clone->select->setModelName($clone->associatedModelName);
 
                     if ($clone->relationshipBuilding
                         ->isItContainedThrough($modelName)) {
@@ -144,8 +146,8 @@ class RelationalSelectBuilding {
                         }
                     }
 
-                    $clone->selectStatement = $clone->select->getStatement(...$clone
-                        ->getInvolvedModelNames());
+                    $clone->selectStatement = $clone->select
+                        ->getStatement(true, ...$clone->getInvolvedModelNames());
                 } else {
                     $associatedColumn = $clone->relationshipBuilding->getAssociatedColumn($modelName);
 

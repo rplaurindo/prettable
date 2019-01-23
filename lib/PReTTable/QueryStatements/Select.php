@@ -19,7 +19,7 @@ class Select {
         $this->modelName = $modelName;
     }
 
-    function getStatement($attachTableName, ...$modelNames) {
+    function getStatement($attachTableName = false, ...$modelNames) {
 
         if ((gettype($attachTableName) == 'boolean' && $attachTableName)
             || (gettype($attachTableName) == 'string')
@@ -62,7 +62,10 @@ class Select {
     private function mountCollection(...$modelNames) {
         $mountedColumns = [];
 
-        if (!count($modelNames)) {
+        if (count($modelNames)) {
+            $mountedColumns = array_merge($mountedColumns, $this
+                ->mountMember($this->modelName, true, true));
+        } else {
             $mountedColumns = array_merge($mountedColumns, $this
                 ->mountMember($this->modelName, true));
         }
