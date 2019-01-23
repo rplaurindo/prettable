@@ -3,10 +3,10 @@
 require 'autoload.php';
 
 use
-    PReTTable\Repository\AbstractModel,
-    PReTTable\Repository\AssociativeModelInterface,
     PReTTable\PaginableStrategyInterface,
-    PReTTable\Helpers\Pagination
+    PReTTable\Helpers\Pagination,
+    PReTTable\Repository\AbstractModel,
+    PReTTable\Repository\AssociativeModelInterface
 ;
 
 class MySQL implements PaginableStrategyInterface {
@@ -179,7 +179,7 @@ class AssociativeModel implements AssociativeModelInterface {
 }
 
 
-// $model1 = new Model1();
+$model1 = new Model1();
 // $mode2 = new Model2();
 // $model3 = new Model3();
 $model4 = new Model4();
@@ -218,9 +218,6 @@ $model4 = new Model4();
 // }
 // echo $model4->save();
 
-$model4->setPrimaryKeyValue(1);
-print_r($model4->getParent('Model1'));
-
 // $model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->createAssociations('Model2',
@@ -254,7 +251,8 @@ print_r($model4->getParent('Model1'));
 // if there isn't a self-incremental primary key
 // print_r($model1->getRow('table1col', 'a value 2'));
 
-// $model1->setPrimaryKeyValue(1);
+
+$model1->setPrimaryKeyValue(1);
 
 // $model1 = $model1->setOrder('table3.table1_id', 'DESC');
 // print_r($model1->join('Model3', 'table1_id')->getAll());
@@ -265,13 +263,14 @@ print_r($model4->getParent('Model1'));
 
 
 // a better logic to "order by" should be made for this case
-// $model1 = $model1->setOrder('table1_table2.table2_id', 'DESC');
-// print_r($model1->get('Model2'));
+$model1 = $model1->setOrder('table1_table2.table2_id', 'DESC');
+print_r($model1->get('Model2'));
 
 // $model1 = $model1->setOrder('table4.table1_id', 'DESC');
 // print_r($model1->get('Model4'));
 
-
+// $model4->setPrimaryKeyValue(1);
+// print_r($model4->getParent('Model1'));
 
 // $model3->setPrimaryKeyValue(2);
 // print_r(

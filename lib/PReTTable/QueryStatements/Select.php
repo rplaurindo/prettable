@@ -32,10 +32,10 @@ class Select {
             return $this->mountCollection(...$modelNames);
         }
 
-        return implode(', ', $this->mountMember($this->modelName, false));
+        return implode(', ', $this->mountMember($this->modelName));
     }
 
-    private function mountMember($modelName, $attachTableName, $removePrimaryKeyName = false) {
+    private function mountMember($modelName, $attachTableName = false, $removePrimaryKeyName = false) {
         RelationshipBuilding::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
 
         $model = Reflection::getDeclarationOf($modelName);

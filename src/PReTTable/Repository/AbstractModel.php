@@ -371,7 +371,15 @@ abstract class AbstractModel
             throw new PDOException($e);
         }
 
-        return $result;
+        if (
+            isset($result) &&
+            gettype($result) == 'array' &&
+            count($result)
+            ) {
+            return $result[0];
+        }
+
+        return null;
     }
 
     function update(array $attributes) {
