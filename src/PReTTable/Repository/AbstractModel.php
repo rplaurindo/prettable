@@ -114,6 +114,7 @@ abstract class AbstractModel
 //                 for example. So this block can be moved to a external class.
                 $PDOstatement->bindValue(":$columnName", $value);
             }
+
             $PDOstatement->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
