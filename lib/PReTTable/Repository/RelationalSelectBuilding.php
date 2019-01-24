@@ -145,6 +145,7 @@ class RelationalSelectBuilding {
                         $clone->whereClauseStatement = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
                     }
                 }
+
             } else {
                 $associatedColumn = $clone->relationshipBuilding
                     ->getAssociatedColumn($modelName);
