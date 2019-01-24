@@ -32,7 +32,8 @@ class Select {
     }
 
     private function mountMember($modelName, $attachTableName = false, $removePrimaryKeyName = false) {
-        RelationshipBuilding::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
+        RelationshipBuilding
+            ::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
 
         $model = Reflection::getDeclarationOf($modelName);
         $columnNames = $model::getColumns();
@@ -42,7 +43,8 @@ class Select {
         }
 
         if ($removePrimaryKeyName) {
-            $columnNames = array_diff($columnNames, [$model->getPrimaryKeyName()]);
+            $columnNames = array_diff($columnNames,
+                [$model->getPrimaryKeyName()]);
         }
 
         $mountedColumns = [];

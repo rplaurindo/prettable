@@ -11,7 +11,8 @@ class InsertInto implements QueryStatementStrategyInterface {
     private $tableName;
 
     function __construct($modelName) {
-        RelationshipBuilding::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
+        RelationshipBuilding
+            ::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
 
         $this->tableName = RelationshipBuilding::resolveTableName($modelName);
     }
