@@ -81,7 +81,8 @@ class RelationalSelectBuilding {
 
     function addsInvolved($modelName) {
         $this->involvedModelNames->append($modelName);
-        $this->involvedTableNames->append(RelationshipBuilding::resolveTableName($modelName));
+        $this->involvedTableNames
+            ->append(RelationshipBuilding::resolveTableName($modelName));
     }
 
     function getInvolvedModelNames() {
@@ -132,6 +133,7 @@ class RelationalSelectBuilding {
 
                     $associativeColumn = $clone->associativeModel
                         ->getAssociativeKeys()[$clone->modelName];
+
                     if (isset($primaryKeyValue)) {
                         $clone->whereClauseStatement = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
                     }
@@ -180,7 +182,8 @@ class RelationalSelectBuilding {
         $joins = [];
 
         foreach ($this->joins as $joinedModelName => $joinedColumnName) {
-            $joinedTableName = RelationshipBuilding::resolveTableName($joinedModelName);
+            $joinedTableName = RelationshipBuilding
+                ::resolveTableName($joinedModelName);
 
             if ($this->relationshipBuilding->isItContained($joinedModelName)) {
                 if ($this->relationshipBuilding
@@ -193,17 +196,21 @@ class RelationalSelectBuilding {
                     $columnName = $this->primaryKeyName;
                 }
             } else {
-                if ($this->relationshipBuilding->doesItContain($joinedModelName)) {
+                if ($this->relationshipBuilding
+                    ->doesItContain($joinedModelName)) {
                     $tableName = $this->tableName;
-                    $columnName = $this->relationshipBuilding->getAssociatedColumn($joinedModelName);
+                    $columnName = $this->relationshipBuilding
+                        ->getAssociatedColumn($joinedModelName);
                 } else if (isset($this->associativeModelName)) {
                     $tableName = $this->associativeTableName;
                     $columnName = $this->associativeModel
                         ->getAssociativeKeys()[$joinedModelName];
                 } else if (isset($this->associatedModelName)) {
-                    if ($this->relationshipBuilding->doesItContain($this->associatedModelName)) {
+                    if ($this->relationshipBuilding
+                        ->doesItContain($this->associatedModelName)) {
                         $tableName = $this->associatedTableName;
-                        $columnName = $this->associatedModel->getPrimaryKeyName();
+                        $columnName = $this->associatedModel
+                            ->getPrimaryKeyName();
                     } else {
                         $tableName = $this->associatedTableName;
                         $columnName = $this->relationshipBuilding
@@ -232,7 +239,8 @@ class RelationalSelectBuilding {
             $explodedOrder = explode('.', $this->order);
 
             if (count($explodedOrder) != 2
-                || !in_array($explodedOrder[0], $this->getInvolvedTableNames())) {
+                || !in_array($explodedOrder[0], $this->getInvolvedTableNames())
+                ) {
                 throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
             }
         }
