@@ -62,7 +62,7 @@ class RelationalSelectBuilding {
         $this->involvedModelNames = new ArrayObject();
         $this->involvedTableNames = new ArrayObject();
 
-        $this->select = new Select($this->modelName);
+//         $this->select = new Select($this->modelName);
     }
 
     function join($modelName, $associatedColumn) {
@@ -95,73 +95,72 @@ class RelationalSelectBuilding {
 
         $clone = $this->getClone();
 
-        $primaryKeyValue = $clone->relationshipBuilding->getPrimaryKeyValue();
-
-        $clone->associatedModelName = $modelName;
-        $clone->associatedModel = Reflection::getDeclarationOf($modelName);
-        $clone->associatedTableName = RelationshipBuilding::resolveTableName($modelName);
-
         if ($clone->relationshipBuilding->isItContained($modelName)
             || $clone->relationshipBuilding->doesItContain($modelName)) {
 
-                $clone->fromStatement = $clone->associatedTableName;
+            $primaryKeyValue = $clone->relationshipBuilding
+                ->getPrimaryKeyValue();
+            $clone->associatedModelName = $modelName;
+            $clone->associatedModel = Reflection::getDeclarationOf($modelName);
+            $clone->associatedTableName = RelationshipBuilding
+                ::resolveTableName($modelName);
 
-                if ($clone->relationshipBuilding->isItContained($modelName)) {
+            $clone->select = new Select($clone->associatedModelName);
+            $clone->fromStatement = $clone->associatedTableName;
 
-                    $clone->select->setModelName($clone->associatedModelName);
+            if ($clone->relationshipBuilding->isItContained($modelName)) {
 
-                    if ($clone->relationshipBuilding
-                        ->isItContainedThrough($modelName)) {
+                if ($clone->relationshipBuilding
+                    ->isItContainedThrough($modelName)) {
 
-                        $clone->associativeModelName = $clone
-                            ->relationshipBuilding
-                            ->getAssociativeModelNameOf($modelName);
+                    $clone->associativeModelName = $clone
+                        ->relationshipBuilding
+                        ->getAssociativeModelNameOf($modelName);
 
-                        $clone->addsInvolved($clone->associativeModelName);
+                    $clone->addsInvolved($clone->associativeModelName);
 
-                        $clone->associativeModel = Reflection
-                            ::getDeclarationOf($clone->associativeModelName);
+                    $clone->associativeModel = Reflection
+                        ::getDeclarationOf($clone->associativeModelName);
 
-                        $clone->associativeTableName = RelationshipBuilding
-                            ::resolveTableName($clone->associativeModelName);
-                        $clone->fromStatement = $clone->associativeTableName;
+                    $clone->associativeTableName = RelationshipBuilding
+                        ::resolveTableName($clone->associativeModelName);
+                    $clone->fromStatement = $clone->associativeTableName;
 
-                        $clone->join($clone->modelName, $clone->primaryKeyName);
-                        $clone->join($modelName, $clone->associatedModel
-                            ->getPrimaryKeyName());
+                    $clone->join($clone->modelName, $clone->primaryKeyName);
+                    $clone->join($modelName, $clone->associatedModel
+                        ->getPrimaryKeyName());
 
-                        $associativeColumn = $clone->associativeModel
-                            ->getAssociativeKeys()[$clone->modelName];
-                        if (isset($primaryKeyValue)) {
-                            $clone->whereClauseStatement = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
-                        }
-                    } else {
-                        $clone->join($clone->modelName, $clone->primaryKeyName);
-
-                        $associatedColumn = $clone->relationshipBuilding->getAssociatedColumn($modelName);
-
-                        if (isset($primaryKeyValue)) {
-                            $clone->whereClauseStatement = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
-                        }
+                    $associativeColumn = $clone->associativeModel
+                        ->getAssociativeKeys()[$clone->modelName];
+                    if (isset($primaryKeyValue)) {
+                        $clone->whereClauseStatement = "$clone->associativeTableName.$associativeColumn = $primaryKeyValue";
                     }
-
-                    $clone->selectStatement = $clone->select
-                        ->getStatement(true, ...$clone->getInvolvedModelNames());
                 } else {
-                    $associatedColumn = $clone->relationshipBuilding->getAssociatedColumn($modelName);
+                    $clone->join($clone->modelName, $clone->primaryKeyName);
 
-                    $clone->join($clone->modelName, $associatedColumn);
+                    $associatedColumn = $clone->relationshipBuilding
+                        ->getAssociatedColumn($modelName);
 
                     if (isset($primaryKeyValue)) {
-                        $clone->whereClauseStatement = "$clone->tableName.$clone->primaryKeyName = $primaryKeyValue";
+                        $clone->whereClauseStatement = "$clone->associatedTableName.$associatedColumn = $primaryKeyValue";
                     }
+                }
+            } else {
+                $associatedColumn = $clone->relationshipBuilding
+                    ->getAssociatedColumn($modelName);
 
-                    $clone->select->setModelName($clone->associatedModelName);
-                    $clone->selectStatement = $clone->select->getStatement(true);
+                $clone->join($clone->modelName, $associatedColumn);
+
+                if (isset($primaryKeyValue)) {
+                    $clone->whereClauseStatement = "$clone->tableName.$clone->primaryKeyName = $primaryKeyValue";
                 }
             }
 
-            return $clone;
+            $clone->selectStatement = $clone->select
+                ->getStatement(true, ...$clone->getInvolvedModelNames());
+        }
+
+        return $clone;
     }
 
     function getSelect() {

@@ -11,11 +11,7 @@ class Select {
 
     private $modelName;
 
-    function __construct($modelName = null) {
-        $this->modelName = $modelName;
-    }
-
-    function setModelName($modelName) {
+    function __construct($modelName) {
         $this->modelName = $modelName;
     }
 
