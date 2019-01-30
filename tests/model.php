@@ -37,7 +37,7 @@ class Model1 extends ModelBaseTest {
     function __construct() {
         parent::__construct('mydb');
 
-        $ordered = $this->setOrder('id', 'DESC');
+        $ordered = $this->setOrderBy('id', 'DESC');
         $ordered->setPager(new MySQL());
 
         $ordered->containsThrough('Model2', 'AssociativeModel');
@@ -254,7 +254,7 @@ $model4 = new Model4();
 
 $model1->setPrimaryKeyValue(1);
 
-$model1 = $model1->setOrder('table3.table1_id', 'DESC');
+$model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
 print_r($model1->join('Model3', 'table1_id')->getAll());
 
 // print_r($model1->getAll());
@@ -263,11 +263,11 @@ print_r($model1->join('Model3', 'table1_id')->getAll());
 
 
 // a better logic to "order by" should be made for this case
-// $model1 = $model1->setOrder('table1_table2.table2_id', 'DESC');
+// $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
 // print_r($model1->get('Model2'));
 
 // erro
-// $model1 = $model1->setOrder('table4.table1_id', 'DESC');
+// $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->get('Model4'));
 
 // $model4->setPrimaryKeyValue(1);

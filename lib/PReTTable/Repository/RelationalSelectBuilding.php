@@ -46,9 +46,9 @@ class RelationalSelectBuilding {
 
     private $whereClauseStatement;
 
-    private $order;
+    private $orderBy;
 
-    private $by;
+    private $orderOfOrderBy;
 
     function __construct(RelationshipBuilding $relationshipBuilding) {
         $this->relationshipBuilding = $relationshipBuilding;
@@ -61,8 +61,6 @@ class RelationalSelectBuilding {
 
         $this->involvedModelNames = new ArrayObject();
         $this->involvedTableNames = new ArrayObject();
-
-//         $this->select = new Select($this->modelName);
     }
 
     function join($modelName, $associatedColumn) {
@@ -229,14 +227,14 @@ class RelationalSelectBuilding {
         return $joins;
     }
 
-    function setOrder($columnName, $by = '') {
-        $this->order = $columnName;
-        $this->by = $by;
+    function setOrderBy($columnName, $order = '') {
+        $this->orderBy = $columnName;
+        $this->orderOfOrderBy = $order;
     }
 
     function resolveOrderBy() {
         if (count($this->getInvolvedTableNames())) {
-            $explodedOrder = explode('.', $this->order);
+            $explodedOrder = explode('.', $this->orderBy);
 
             if (count($explodedOrder) != 2
                 || !in_array($explodedOrder[0], $this->getInvolvedTableNames())
@@ -246,7 +244,7 @@ class RelationalSelectBuilding {
         }
 
         return "
-            ORDER BY $this->order $this->by";
+            ORDER BY $this->orderBy $this->orderOfOrderBy";
     }
 
     protected function getClone() {

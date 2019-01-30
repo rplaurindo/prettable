@@ -83,10 +83,10 @@ abstract class AbstractModel
         return $clone;
     }
 
-    function setOrder($columnName, $by = '') {
+    function setOrderBy($columnName, $order = '') {
         $clone = $this->getClone();
 
-        $clone->relationalSelectBuilding->setOrder($columnName, $by);
+        $clone->relationalSelectBuilding->setOrderBy($columnName, $order);
 
         return $clone;
     }
