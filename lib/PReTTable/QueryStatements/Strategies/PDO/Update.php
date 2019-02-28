@@ -2,46 +2,38 @@
 
 namespace PReTTable\QueryStatements\Strategies\PDO;
 
-use 
-    PReTTable\Repository\RelationshipBuilding,
-    PReTTable\Reflection,
-    PReTTable\QueryStatementStrategyInterface;
+use
+    PReTTable\QueryStatementStrategyInterface
+;
 
 class Update implements QueryStatementStrategyInterface {
-    
-    private $updateStatement;
-    
-    private $whereStatement;
-    
-    function __construct($modelName) {
-        RelationshipBuilding::checkIfModelIs($modelName, 
-            'PReTTable\Repository\IdentifiableModelInterface');
-        
-        $tableName = RelationshipBuilding::resolveTableName($modelName);
-        $model = Reflection::getDeclarationOf($modelName);
-        
-        $this->updateStatement = $tableName;
-        
-        $primaryKeyName = $model::getPrimaryKeyName();
-        $this->whereStatement = 
-            "$primaryKeyName = :$primaryKeyName";
+
+    private $tableName;
+
+    private $primaryKeyName;
+
+    function __construct($tableName, $primaryKeyName) {
+        $this->tableName = $tableName;
+        $this->primaryKeyName = $primaryKeyName;
     }
-    
+
     function getStatement(array $attributes) {
+        $whereStatement = "$this->primaryKeyName = :$this->primaryKeyName";
+
         $settings = [];
         foreach (array_keys($attributes) as $columnName) {
             array_push($settings, "$columnName = :$columnName");
         }
-        
+
         $settingsStatement = implode(', ', $settings);
-        
+
         $statement = "
-            UPDATE $this->updateStatement
+            UPDATE $this->tableName
             SET $settingsStatement
-            WHERE $this->whereStatement
+            WHERE $whereStatement
         ";
-        
+
         return $statement;
     }
-    
+
 }

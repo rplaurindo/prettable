@@ -19,7 +19,8 @@ use
 abstract class AbstractModel
     implements
         IdentifiableModelInterface,
-        WritableModelInterface {
+        WritableModelInterface
+{
 
     private $modelName;
 
@@ -102,7 +103,7 @@ abstract class AbstractModel
         $clone = $this->getClone();
 
         $strategy = new QueryStatementStrategyContext(
-            new InsertInto($clone->modelName));
+            new InsertInto($clone->tableName));
 
         try {
             if (!$clone->connection->inTransaction()) {
@@ -149,13 +150,14 @@ abstract class AbstractModel
             ::getDeclarationOf($associativeModelName);
         $foreignKeyName = $associativeModel
             ::getAssociativeKeys()[$clone->modelName];
+        $associativeTableName = RelationshipBuilding::resolveTableName($associativeModelName);
 
         $rows = self::attachesAssociativeForeignKey($foreignKeyName,
                                                     $clone->relationshipBuilding->getPrimaryKeyValue(),
                                                     ...$rows);
 
         $strategy = new QueryStatementStrategyContext(
-            new InsertInto($associativeModelName));
+            new InsertInto($associativeTableName));
 
         try {
             if (!$clone->connection->inTransaction()) {
@@ -388,9 +390,9 @@ abstract class AbstractModel
     function update(array $attributes) {
         $clone = $this->getClone();
 
-        $update = new Update($clone->modelName);
-
         $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
+
+        $update = new Update($clone->tableName, $primaryKeyName);
 
         $strategy = new QueryStatementStrategyContext($update);
 
@@ -431,13 +433,14 @@ abstract class AbstractModel
             ::getDeclarationOf($associativeModelName);
         $foreignKeyName = $associativeModel
             ::getAssociativeKeys()[$clone->modelName];
+        $associativeTableName = RelationshipBuilding::resolveTableName($associativeModelName);
 
         $rows = self::attachesAssociativeForeignKey($foreignKeyName,
                                                     $clone->relationshipBuilding->getPrimaryKeyValue(),
                                                     ...$rows);
 
         $strategy = new QueryStatementStrategyContext(
-            new InsertInto($associativeModelName));
+            new InsertInto($associativeTableName));
 
         try {
             if (!$clone->connection->inTransaction()) {
