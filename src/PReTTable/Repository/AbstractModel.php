@@ -184,7 +184,7 @@ abstract class AbstractModel
     function getRow() {
         $clone = $this->getClone();
 
-        $select = new Select($clone->modelName);
+        $select = new Select($clone->tableName);
         $selectStatement = "SELECT {$select->getStatement()}";
 
         $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
@@ -221,7 +221,7 @@ abstract class AbstractModel
     function getAll($limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
 
-        $select = new Select($clone->modelName);
+        $select = new Select($clone->tableName);
 
         $query = "
             SELECT {$select->getStatement(...$clone->relationalSelectBuilding->getInvolvedModelNames())}
