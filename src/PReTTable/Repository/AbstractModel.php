@@ -7,13 +7,15 @@ use
     PDO,
     PDOException,
     PReTTable\Connection,
-    PReTTable\Reflection,
+    PReTTable\IdentifiableModelInterface,
+    PReTTable\WritableModelInterface,
     PReTTable\PaginableStrategyInterface,
     PReTTable\PaginableStrategyContext,
     PReTTable\QueryStatementStrategyContext,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
-    PReTTable\QueryStatements\Select
+    PReTTable\QueryStatements\Select,
+    PReTTable\Reflection
 ;
 
 abstract class AbstractModel

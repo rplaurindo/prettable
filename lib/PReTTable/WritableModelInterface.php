@@ -1,11 +1,9 @@
 <?php
 
-namespace PReTTable\Repository;
-
-use PReTTable\ModelInterface;
+namespace PReTTable;
 
 interface WritableModelInterface extends ModelInterface {
-    
+
     static function isPrimaryKeySelfIncremental();
-    
+
 }

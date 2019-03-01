@@ -1,11 +1,9 @@
 <?php
 
-namespace PReTTable\Repository;
-
-use PReTTable\ModelInterface;
+namespace PReTTable;
 
 interface IdentifiableModelInterface extends ModelInterface {
-    
+
     static function getPrimaryKeyName();
-    
+
 }
