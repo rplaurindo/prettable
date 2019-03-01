@@ -148,10 +148,11 @@ abstract class AbstractModel
 
         $associativeModel = Reflection
             ::getDeclarationOf($associativeModelName);
+
+        $associativeTableName = $associativeModel::getTableName();
+
         $foreignKeyName = $associativeModel
             ::getAssociativeKeys()[$clone->modelName];
-        $associativeTableName = RelationshipBuilding::resolveTableName($associativeModelName);
-
         $rows = self::attachesAssociativeForeignKey($foreignKeyName,
                                                     $clone->relationshipBuilding->getPrimaryKeyValue(),
                                                     ...$rows);
@@ -422,46 +423,9 @@ abstract class AbstractModel
     function updateAssociations($modelName, ...$rows) {
         $clone = $this->getClone();
 
-        $associativeModelName = $clone->relationshipBuilding
-            ->getAssociativeModelNameOf($modelName);
+        $clone = $clone->deleteAssociations($modelName);
 
-        if (!isset($associativeModelName)) {
-            throw new Exception("There's no such relationship between $clone->modelName and $modelName.");
-        }
-
-        $associativeModel = Reflection
-            ::getDeclarationOf($associativeModelName);
-        $foreignKeyName = $associativeModel
-            ::getAssociativeKeys()[$clone->modelName];
-        $associativeTableName = RelationshipBuilding::resolveTableName($associativeModelName);
-
-        $rows = self::attachesAssociativeForeignKey($foreignKeyName,
-                                                    $clone->relationshipBuilding->getPrimaryKeyValue(),
-                                                    ...$rows);
-
-        $strategy = new QueryStatementStrategyContext(
-            new InsertInto($associativeTableName));
-
-        try {
-            if (!$clone->connection->inTransaction()) {
-                $clone->beginTransaction();
-            }
-
-            $clone->deleteAssociations($modelName);
-
-            foreach ($rows as $attributes) {
-                $PDOstatement = $clone->connection
-                    ->prepare($strategy->getStatement($attributes));
-                foreach ($attributes as $columnName => $value) {
-                    $PDOstatement->bindValue(":$columnName", $value);
-                }
-                $PDOstatement->execute();
-            }
-        } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
-        }
+        $clone = $clone->createAssociations($modelName, ...$rows);
 
         return $clone;
     }
@@ -504,7 +468,9 @@ abstract class AbstractModel
 
         $associativeModel = Reflection
             ::getDeclarationOf($associativeModelName);
+
         $associativeTableName = $associativeModel::getTableName();
+
         $foreignKeyName = $associativeModel
             ::getAssociativeKeys()[$clone->modelName];
 
