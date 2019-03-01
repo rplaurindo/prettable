@@ -36,6 +36,7 @@ class Select {
             ::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
 
         $model = Reflection::getDeclarationOf($modelName);
+
         $columnNames = $model::getColumns();
 
         if ($attachTableName) {
