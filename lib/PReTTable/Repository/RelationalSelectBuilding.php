@@ -64,7 +64,7 @@ class RelationalSelectBuilding {
     }
 
     function join($modelName, $associatedColumn) {
-        RelationshipBuilding::checkIfModelIs($modelName,
+        RelationshipBuilding::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 
@@ -88,7 +88,7 @@ class RelationalSelectBuilding {
     }
 
     function build($modelName) {
-        RelationshipBuilding::checkIfModelIs($modelName,
+        RelationshipBuilding::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 

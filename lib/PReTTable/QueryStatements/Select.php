@@ -33,7 +33,7 @@ class Select {
 
     private function mountMember($modelName, $attachTableName = false, $removePrimaryKeyName = false) {
         RelationshipBuilding
-            ::checkIfModelIs($modelName, 'PReTTable\ModelInterface');
+            ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
 
         $model = Reflection::getDeclarationOf($modelName);
 

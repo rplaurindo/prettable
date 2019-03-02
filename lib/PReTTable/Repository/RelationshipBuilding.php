@@ -25,7 +25,7 @@ class RelationshipBuilding {
     private $setOfContains;
 
     function __construct($modelName) {
-        self::checkIfModelIs($modelName,
+        self::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface');
 
         $this->modelName = $modelName;
@@ -50,17 +50,17 @@ class RelationshipBuilding {
         return $tableName;
     }
 
-    static function checkIfModelIs($modelName, ...$classes) {
+    static function checkIfClassIsA($modelName, ...$classList) {
         $count = 0;
 
-        foreach ($classes as $class) {
+        foreach ($classList as $class) {
             if (is_subclass_of($modelName, $class)) {
                 $count++;
             }
         }
 
         if (!$count) {
-            $classesAsText = implode(" or ", $classes);
+            $classesAsText = implode(" or ", $classList);
             throw new Exception("The model must be a $classesAsText");
         }
 
@@ -91,7 +91,7 @@ class RelationshipBuilding {
     }
 
     function contains($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName,
+        self::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 
@@ -104,7 +104,7 @@ class RelationshipBuilding {
     }
 
     function containsThrough($modelName, $through) {
-        self::checkIfModelIs($modelName,
+        self::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 
@@ -118,7 +118,7 @@ class RelationshipBuilding {
     }
 
     function isContained($modelName, $associatedColumn) {
-        self::checkIfModelIs($modelName,
+        self::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface');
 
         $this->setOfContains
