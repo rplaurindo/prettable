@@ -1,11 +1,9 @@
 <?php
 
-namespace PReTTable\Repository;
-
-use PReTTable\ModelInterface;
+namespace PReTTable;
 
 interface AssociativeModelInterface extends ModelInterface {
-    
+
     static function getAssociativeKeys();
-    
+
 }

@@ -93,7 +93,7 @@ class RelationshipBuilding {
     function contains($modelName, $associatedColumn) {
         self::checkIfModelIs($modelName,
             'PReTTable\IdentifiableModelInterface',
-            __NAMESPACE__ . '\AssociativeModelInterface');
+            'PReTTable\AssociativeModelInterface');
 
         $this->setOfThoseContained
             ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
@@ -106,7 +106,7 @@ class RelationshipBuilding {
     function containsThrough($modelName, $through) {
         self::checkIfModelIs($modelName,
             'PReTTable\IdentifiableModelInterface',
-            __NAMESPACE__ . '\AssociativeModelInterface');
+            'PReTTable\AssociativeModelInterface');
 
         $this->setOfThoseContained->offsetSet($modelName, ['associativeModelName' => $through]);
     }

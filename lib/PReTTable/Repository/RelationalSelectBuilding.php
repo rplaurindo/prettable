@@ -66,7 +66,7 @@ class RelationalSelectBuilding {
     function join($modelName, $associatedColumn) {
         RelationshipBuilding::checkIfModelIs($modelName,
             'PReTTable\IdentifiableModelInterface',
-            __NAMESPACE__ . '\AssociativeModelInterface');
+            'PReTTable\AssociativeModelInterface');
 
         $clone = $this->getClone();
 
@@ -90,7 +90,7 @@ class RelationalSelectBuilding {
     function build($modelName) {
         RelationshipBuilding::checkIfModelIs($modelName,
             'PReTTable\IdentifiableModelInterface',
-            __NAMESPACE__ . '\AssociativeModelInterface');
+            'PReTTable\AssociativeModelInterface');
 
         $clone = $this->getClone();
 
