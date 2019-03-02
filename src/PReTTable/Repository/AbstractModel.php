@@ -154,7 +154,7 @@ abstract class AbstractModel
         $associativeTableName = $associativeModel::getTableName();
 
         $foreignKeyName = $associativeModel
-            ::getAssociativeKeys()[$clone->modelName];
+            ::getAssociativeColumnNames()[$clone->modelName];
         $rows = self::attachesAssociativeForeignKey($foreignKeyName,
                                                     $clone->relationshipBuilding->getPrimaryKeyValue(),
                                                     ...$rows);
@@ -474,7 +474,7 @@ abstract class AbstractModel
         $associativeTableName = $associativeModel::getTableName();
 
         $foreignKeyName = $associativeModel
-            ::getAssociativeKeys()[$clone->modelName];
+            ::getAssociativeColumnNames()[$clone->modelName];
 
         try {
             if (!$clone->connection->inTransaction()) {
@@ -483,7 +483,7 @@ abstract class AbstractModel
 
             if (count($relatedKeyValues)) {
                 $relatedForeignKeyName = $associativeModel
-                    ::getAssociativeKeys()[$modelName];
+                    ::getAssociativeColumnNames()[$modelName];
 
                 $query = "
                     DELETE FROM $associativeTableName

@@ -37,7 +37,7 @@ class Select {
 
         $model = Reflection::getDeclarationOf($modelName);
 
-        $columnNames = $model::getColumns();
+        $columnNames = $model::getColumnNames();
 
         if ($attachTableName) {
             $tableName = RelationshipBuilding::resolveTableName($modelName);

@@ -6,7 +6,7 @@ use
     PReTTable\PaginableStrategyInterface,
     PReTTable\Helpers\Pagination,
     PReTTable\Repository\AbstractModel,
-    PReTTable\Repository\AssociativeModelInterface
+    PReTTable\AssociativeModelInterface
 ;
 
 class MySQL implements PaginableStrategyInterface {
@@ -58,7 +58,7 @@ class Model1 extends ModelBaseTest {
 //         return false;
     }
 
-    static function getColumns() {
+    static function getColumnNames() {
         return [
             'id',
             'table1col'
@@ -85,7 +85,7 @@ class Model2 extends ModelBaseTest {
         return true;
     }
 
-    static function getColumns() {
+    static function getColumnNames() {
         return [
             'id',
             'table2col'
@@ -112,7 +112,7 @@ class Model3 extends ModelBaseTest {
         return true;
     }
 
-    static function getColumns() {
+    static function getColumnNames() {
         return [
             'id',
             'table3col',
@@ -142,7 +142,7 @@ class Model4 extends ModelBaseTest {
         return true;
     }
 
-    static function getColumns() {
+    static function getColumnNames() {
         return [
             'id',
             'table4col',
@@ -162,14 +162,14 @@ class AssociativeModel implements AssociativeModelInterface {
         return 'table1_table2';
     }
 
-    static function getColumns() {
+    static function getColumnNames() {
         return [
             'table1_id',
             'table2_id'
         ];
     }
 
-    static function getAssociativeKeys() {
+    static function getAssociativeColumnNames() {
         return [
             'Model1' => 'table1_id',
             'Model2' => 'table2_id'
@@ -254,8 +254,8 @@ $model4 = new Model4();
 
 $model1->setPrimaryKeyValue(1);
 
-$model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
-print_r($model1->join('Model3', 'table1_id')->getAll());
+// $model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
+// print_r($model1->join('Model3', 'table1_id')->getAll());
 
 // print_r($model1->getAll());
 // print_r($model1->getAll(2));
@@ -285,17 +285,17 @@ print_r($model1->join('Model3', 'table1_id')->getAll());
 // ;
 
 // $model1->setPrimaryKeyValue(1);
-// print_r(
-//     $model1->updateAssociations('Model2',
-//         [
-//             'table2_id' => 1
-//         ],
-//         [
-//             'table2_id' => 3
-//         ]
-//     )
-//     ->save())
-// ;
+print_r(
+    $model1->updateAssociations('Model2',
+        [
+            'table2_id' => 1
+        ],
+        [
+            'table2_id' => 2
+        ]
+    )
+    ->save())
+;
 
 // $model1->setPrimaryKeyValue(149);
 // print_r(
