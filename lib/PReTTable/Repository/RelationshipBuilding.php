@@ -3,8 +3,8 @@
 namespace PReTTable\Repository;
 
 use
-    Exception,
     ArrayObject,
+    PReTTable\InheritanceRelationship,
     PReTTable\Reflection
 ;
 
@@ -25,7 +25,7 @@ class RelationshipBuilding {
     private $setOfContains;
 
     function __construct($modelName) {
-        self::checkIfClassIsA($modelName,
+        InheritanceRelationship::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface');
 
         $this->modelName = $modelName;
@@ -48,22 +48,6 @@ class RelationshipBuilding {
         }
 
         return $tableName;
-    }
-
-    static function checkIfClassIsA($modelName, ...$classList) {
-        $count = 0;
-
-        foreach ($classList as $class) {
-            if (is_subclass_of($modelName, $class)) {
-                $count++;
-            }
-        }
-
-        if (!$count) {
-            $classesAsText = implode(" or ", $classList);
-            throw new Exception("The input class must be a $classesAsText");
-        }
-
     }
 
     function getModelName() {
@@ -91,7 +75,7 @@ class RelationshipBuilding {
     }
 
     function contains($modelName, $associatedColumn) {
-        self::checkIfClassIsA($modelName,
+        InheritanceRelationship::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 
@@ -104,7 +88,7 @@ class RelationshipBuilding {
     }
 
     function containsThrough($modelName, $through) {
-        self::checkIfClassIsA($modelName,
+        InheritanceRelationship::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 
@@ -118,7 +102,7 @@ class RelationshipBuilding {
     }
 
     function isContained($modelName, $associatedColumn) {
-        self::checkIfClassIsA($modelName,
+        InheritanceRelationship::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface');
 
         $this->setOfContains

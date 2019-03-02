@@ -5,8 +5,9 @@ namespace PReTTable\Repository;
 use
     Exception,
     ArrayObject,
-    PReTTable\Reflection,
-    PReTTable\QueryStatements\Select
+    PReTTable\InheritanceRelationship,
+    PReTTable\QueryStatements\Select,
+    PReTTable\Reflection
 ;
 
 // a layer to mount a map of queries to select data
@@ -88,7 +89,7 @@ class RelationalSelectBuilding {
     }
 
     function build($modelName) {
-        RelationshipBuilding::checkIfClassIsA($modelName,
+        InheritanceRelationship::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 

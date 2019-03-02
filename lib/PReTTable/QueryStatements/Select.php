@@ -4,6 +4,7 @@ namespace PReTTable\QueryStatements;
 
 use
     PReTTable\Reflection,
+    PReTTable\InheritanceRelationship,
     PReTTable\Repository\RelationshipBuilding
 ;
 
@@ -32,7 +33,7 @@ class Select {
     }
 
     private function mountMember($modelName, $attachTableName = false, $removePrimaryKeyName = false) {
-        RelationshipBuilding
+        InheritanceRelationship
             ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
 
         $model = Reflection::getDeclarationOf($modelName);
