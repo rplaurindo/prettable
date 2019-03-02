@@ -61,7 +61,7 @@ class RelationshipBuilding {
 
         if (!$count) {
             $classesAsText = implode(" or ", $classList);
-            throw new Exception("The model must be a $classesAsText");
+            throw new Exception("The input class must be a $classesAsText");
         }
 
     }
