@@ -234,18 +234,23 @@ class RelationalSelectBuilding {
     }
 
     function resolveOrderBy() {
-        if (count($this->getInvolvedTableNames())) {
-            $explodedOrder = explode('.', $this->orderBy);
+        if (isset($this->orderBy)) {
 
-            if (count($explodedOrder) != 2
-                || !in_array($explodedOrder[0], $this->getInvolvedTableNames())
-                ) {
-                throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
+            if (count($this->getInvolvedTableNames())) {
+                $explodedOrderByStatement = explode('.', $this->orderBy);
+
+                if (count($explodedOrderByStatement) != 2
+                    || !in_array($explodedOrderByStatement[0], $this->getInvolvedTableNames())
+                    ) {
+                        throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
+                    }
             }
+
+            return "
+                ORDER BY $this->orderBy $this->orderOfOrderBy";
         }
 
-        return "
-            ORDER BY $this->orderBy $this->orderOfOrderBy";
+        return null;
     }
 
     protected function getClone() {

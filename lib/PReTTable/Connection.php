@@ -2,7 +2,10 @@
 
 namespace PReTTable;
 
-use PDO, PDOException;
+use
+    PDO,
+    PDOException
+;
 
 class Connection {
 
@@ -15,7 +18,7 @@ class Connection {
     function __construct() {
         $this->environment = getenv('PReTTable_CONNECTION_ENV');
 
-        if (empty($this->environment)) {
+        if (isset($this->environment)) {
             $this->environment = 'development';
         }
     }

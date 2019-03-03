@@ -24,19 +24,19 @@ abstract class AbstractModel
         WritableModelInterface
 {
 
+    protected $connection;
+
+    private $host;
+
     private $modelName;
 
     private $model;
 
     private $tableName;
 
-    private $host;
-
     private $relationshipBuilding;
 
     private $relationalSelectBuilding;
-
-    private $connection;
 
     private $pagerStrategyContext;
 
@@ -192,15 +192,15 @@ abstract class AbstractModel
 
         $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
 
-        $query = "
+        $queryStatement = "
             $selectStatement
 
             FROM $clone->tableName
             WHERE $primaryKeyName = :$primaryKeyName";
 
         try {
-            echo "$query\n\n";
-            $PDOstatement = $clone->connection->prepare($query);
+            echo "$queryStatement\n\n";
+            $PDOstatement = $clone->connection->prepare($queryStatement);
             $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
             $PDOstatement->execute();
 
@@ -226,7 +226,7 @@ abstract class AbstractModel
 
         $select = new Select($clone->tableName);
 
-        $query = "
+        $queryStatement = "
             SELECT {$select->getStatement(...$clone->relationalSelectBuilding->getInvolvedModelNames())}
 
             FROM $clone->tableName";
@@ -242,14 +242,14 @@ abstract class AbstractModel
         }
 
         if (!empty($joinsStatement)) {
-            $query .= "
+            $queryStatement .= "
                 $joinsStatement";
         }
 
-        $orderBy = $clone->relationalSelectBuilding->resolveOrderBy();
+        $orderByStatement = $clone->relationalSelectBuilding->resolveOrderBy();
 
-        if (isset($orderBy)) {
-            $query .= $orderBy;
+        if (isset($orderByStatement)) {
+            $queryStatement .= $orderByStatement;
         }
 
         if (isset($limit)) {
@@ -257,14 +257,14 @@ abstract class AbstractModel
                 throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
             }
 
-            $query .= "
+            $queryStatement .= "
                 {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
             ";
         }
 
         try {
-            echo "$query\n\n";
-            $PDOstatement = $clone->connection->query($query);
+            echo "$queryStatement\n\n";
+            $PDOstatement = $clone->connection->query($queryStatement);
 
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -286,7 +286,7 @@ abstract class AbstractModel
 
         $joinsStatement = "";
 
-        $query = "
+        $queryStatement = "
             SELECT $select
 
             FROM $from";
@@ -300,18 +300,18 @@ abstract class AbstractModel
         }
 
         if (!empty($joinsStatement)) {
-            $query .= "
+            $queryStatement .= "
                 $joinsStatement";
         }
 
-        $query .= "
+        $queryStatement .= "
             WHERE $whereClause";
 
-        $orderBy = $clone->relationalSelectBuilding->resolveOrderBy();
+        $orderByStatement = $clone->relationalSelectBuilding->resolveOrderBy();
 
-        if (isset($orderBy)) {
-            $query .= "
-                $orderBy";
+        if (isset($orderByStatement)) {
+            $queryStatement .= "
+                $orderByStatement";
         }
 
         if (isset($limit)) {
@@ -319,14 +319,14 @@ abstract class AbstractModel
                 throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
             }
 
-            $query .= "
+            $queryStatement .= "
                 {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
             ";
         }
 
         try {
-            echo "$query\n\n";
-            $PDOstatement = $clone->connection->query($query);
+            echo "$queryStatement\n\n";
+            $PDOstatement = $clone->connection->query($queryStatement);
 
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -348,7 +348,7 @@ abstract class AbstractModel
 
         $joinsStatement = "";
 
-        $query = "
+        $queryStatement = "
             SELECT $select
 
             FROM $from";
@@ -362,16 +362,16 @@ abstract class AbstractModel
         }
 
         if (!empty($joinsStatement)) {
-            $query .= "
+            $queryStatement .= "
                 $joinsStatement";
         }
 
-        $query .= "
+        $queryStatement .= "
             WHERE $whereClause";
 
         try {
-            echo "$query\n\n";
-            $PDOstatement = $clone->connection->query($query);
+            echo "$queryStatement\n\n";
+            $PDOstatement = $clone->connection->query($queryStatement);
 
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -437,7 +437,7 @@ abstract class AbstractModel
 
         $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
 
-        $query = "
+        $queryStatement = "
             DELETE FROM $clone->tableName
             WHERE $primaryKeyName = :$primaryKeyName";
 
@@ -446,7 +446,7 @@ abstract class AbstractModel
                 $clone->beginTransaction();
             }
 
-            $PDOstatement = $clone->connection->prepare($query);
+            $PDOstatement = $clone->connection->prepare($queryStatement);
             $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
             $PDOstatement->execute();
         } catch (PDOException $e) {
@@ -485,7 +485,7 @@ abstract class AbstractModel
                 $relatedForeignKeyName = $associativeModel
                     ::getAssociativeColumnNames()[$modelName];
 
-                $query = "
+                $queryStatement = "
                     DELETE FROM $associativeTableName
                     WHERE
                         $foreignKeyName = :$foreignKeyName
@@ -493,7 +493,7 @@ abstract class AbstractModel
                 ";
 
                 foreach ($relatedKeyValues as $relatedKeyValue) {
-                    $PDOstatement = $clone->connection->prepare($query);
+                    $PDOstatement = $clone->connection->prepare($queryStatement);
 
                     $PDOstatement
                         ->bindParam(":$foreignKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
@@ -504,12 +504,12 @@ abstract class AbstractModel
                     $PDOstatement->execute();
                 }
             } else {
-                $query = "
+                $queryStatement = "
                     DELETE FROM $associativeTableName
                     WHERE $foreignKeyName = :$foreignKeyName
                 ";
 
-                $PDOstatement = $clone->connection->prepare($query);
+                $PDOstatement = $clone->connection->prepare($queryStatement);
                 $PDOstatement->bindParam(":$foreignKeyName",
                     $clone->relationshipBuilding->getPrimaryKeyValue());
 
