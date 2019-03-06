@@ -157,7 +157,7 @@ abstract class AbstractModel
         $associativeModel = Reflection
             ::getDeclarationOf($associativeModelName);
 
-        $associativeTableName = $associativeModel::getTableName();
+        $associativeTableName = $associativeModel->getTableName();
 
         $foreignKeyName = $associativeModel
             ::getAssociativeColumnNames()[$clone->modelName];
@@ -477,7 +477,7 @@ abstract class AbstractModel
         $associativeModel = Reflection
             ::getDeclarationOf($associativeModelName);
 
-        $associativeTableName = $associativeModel::getTableName();
+        $associativeTableName = $associativeModel->getTableName();
 
         $foreignKeyName = $associativeModel
             ::getAssociativeColumnNames()[$clone->modelName];

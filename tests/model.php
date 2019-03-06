@@ -25,9 +25,12 @@ abstract class ModelBaseTest extends AbstractModel {
 
     function __construct($databaseSchema) {
         $data = include 'database.php';
-        parent::__construct($data);
-        $host = 'localhost';
-        $this->establishConnection($databaseSchema, $host);
+
+        putenv('_ENV=development');
+        $environment = getenv('_ENV');
+        parent::__construct($environment, $data);
+
+        $this->establishConnection($databaseSchema, 'localhost');
     }
 
 }
