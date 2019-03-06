@@ -2,64 +2,53 @@
 
 namespace PReTTable;
 
-use
-    PDO,
-    PDOException
-;
-
-class Connection {
-
-    private $environment;
-
-    private $connection;
+class Connection implements ConnectionStrategyInterface {
 
     private static $data;
 
-    function __construct() {
-        $this->environment = getenv('PReTTable_CONNECTION_ENV');
+    protected $environment;
 
-        if (isset($this->environment)) {
-            $this->environment = 'development';
-        }
-    }
+    protected $host;
 
-    function establishConnection($databaseSchema, $host = null) {
-        $clone = $this->getClone();
+    protected $adapter;
 
-        $data = self::$data[$host][$databaseSchema][$clone->environment];
+    protected $username;
 
-        $adapter = $data['adapter'];
+    protected $password;
 
-        $username = null;
-        if (array_key_exists('username', $data)) {
-            $username = $data['username'];
+    function __construct($environment = null) {
+        if (!isset($environment)) {
+            $environment = 'development';
         }
 
-        $password = null;
-        if (array_key_exists('password', $data)) {
-            $password = $data['password'];
-        }
-
-        $dsn = "$adapter:=$host;dbname=$databaseSchema";
-
-        try {
-            $connection = new PDO($dsn, $username, $password);
-            $connection
-                ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            echo $e;
-
-            throw new PDOException($e);
-        }
-
-        return $connection;
+        $this->environment = $environment;
+        $this->username = null;
+        $this->password = null;
     }
 
     static function setData(array $data) {
         self::$data = $data;
     }
 
-    private function getClone() {
+    function establishConnection($schemaName, $host = null) {
+        if (isset($host)) {
+            $this->host = $host;
+        }
+
+        $environmentData = self::$data[$this->host][$schemaName][$this->environment];
+
+        $this->adapter = $environmentData['adapter'];
+
+        if (array_key_exists('username', $environmentData)) {
+            $this->username = $environmentData['username'];
+        }
+
+        if (array_key_exists('password', $environmentData)) {
+            $this->password = $environmentData['password'];
+        }
+    }
+
+    protected function getClone() {
         return clone $this;
     }
 

@@ -6,7 +6,8 @@ use
     Exception,
     PDO,
     PDOException,
-    PReTTable\Connection,
+    PReTTable\ConnectionContext,
+    PReTTable\Connections\PDOConnection,
     PReTTable\IdentifiableModelInterface,
     PReTTable\WritableModelInterface,
     PReTTable\PaginableStrategyInterface,
@@ -26,6 +27,8 @@ abstract class AbstractModel
 
     protected $connection;
 
+    private $connectionContext;
+
     private $modelName;
 
     private $model;
@@ -40,8 +43,15 @@ abstract class AbstractModel
 
     private $strategyContextIsDefined;
 
-    function __construct(array $data) {
-        Connection::setData($data);
+    function __construct($environment = null, array $data) {
+        PDOConnection::setData($data);
+
+        if (gettype($environment) == 'array') {
+            $data = $environment;
+            $environment = null;
+        }
+
+        $this->connectionContext = new ConnectionContext(new PDOConnection($environment));
 
         $this->modelName = get_class($this);
 
@@ -532,14 +542,13 @@ abstract class AbstractModel
         $this->connection->exec('ROLLBACK');
     }
 
-    protected function establishConnection($databaseSchema, $host = null) {
-        if (!isset($databaseSchema)) {
+    protected function establishConnection($schemaName, $host = null) {
+        if (!isset($schemaName)) {
             throw new Exception('A database schema should be passed.');
         }
 
-        $connection = new Connection();
-        $this->connection = $connection
-            ->establishConnection($databaseSchema, $host);
+        $this->connection = $this->connectionContext
+            ->establishConnection($schemaName, $host);
     }
 
 //     to comply the Prototype pattern
