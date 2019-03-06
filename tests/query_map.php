@@ -2,83 +2,83 @@
 
 require 'autoload.php';
 
-use 
+use
     PReTTable\Repository\AssociativeModelInterface,
-    PReTTable\Repository\IdentifiableModelInterface,
+    PReTTable\IdentifiableModelInterface,
     PReTTable\Repository\RelationshipBuilding
 ;
 
 class Model1 implements IdentifiableModelInterface {
-    
+
     function __construct() {
-        
+
     }
-    
+
     static function getTableName() {
         return 'table1';
     }
-    
+
     static function getPrimaryKeyName() {
         return 'ID_table1';
     }
-    
+
     static function getColumns() {
         return [
             'ID_table1',
             'column2' => 'column2Alias'
         ];
     }
-    
+
 }
 
 class Model2 implements IdentifiableModelInterface {
-    
+
     private $queryMap;
-    
+
     function __construct() {
         $this->queryMap = new RelationshipBuilding(self::class);
-        
+
         $this->queryMap->contains('Model1', 'table2_id');
 
 //         $this->queryMap->isContained('Model1', 'table1_id');
 
 //         $this->queryMap->containsThrough('Model1', 'AssociativeModel');
 
-        
+
 //         $this->queryMap->contains('AssociativeModel', 'table2_id');
 
 //         $this->queryMap->isContained('AssociativeModel', 'associative_table_id');
 
-        
+
 //         to make join (add it with anyone above)
         $this->queryMap->contains('Model3', 'table2_column');
         $this->queryMap->contains('Model4', 'table2_column');
 
 //         $this->queryMap->isContained('Model3', 'table3_id');
 //         $this->queryMap->isContained('Model4', 'table4_id');
-        
-        
+
+
 //         self referencing
 //         $this->queryMap->contains('Model2', 'table2_id');
 //         $this->queryMap->isContained('Model2', 'table2_id');
     }
-    
+
     static function getTableName() {
         return 'table2';
     }
-    
+
     static function getPrimaryKeyName() {
         return 'ID_table2';
     }
-    
+
     static function getColumns() {
         return [
             'ID_table2' => 'idAlias',
             'column1' => 'column1Alias'
         ];
     }
-    
-//     dar a oportunidade de passar um id para cá para montar a clausula where
+
+//     dar a oportunidade de passar um id para cï¿½ para montar a clausula where
     function read($tableName, $id = null) {
         return $this->queryMap->select($tableName, $id);
     }
@@ -86,27 +86,27 @@ class Model2 implements IdentifiableModelInterface {
     function join($modelName, $relatedColumn) {
         return $this->queryMap->join($modelName, $relatedColumn);
     }
-    
+
     function getAll() {
         return $this->queryMap->getAll();
     }
-    
+
     function getRow($columnName, $value = '') {
         return $this->queryMap->getRow($columnName, $value);
     }
-    
+
 }
 
 class Model3 implements IdentifiableModelInterface {
-    
+
     static function getTableName() {
         return 'table3';
     }
-    
+
     static function getPrimaryKeyName() {
         return 'id';
     }
-    
+
     static function getColumns() {
         return [
             'id',
@@ -117,50 +117,50 @@ class Model3 implements IdentifiableModelInterface {
 }
 
 class Model4 implements IdentifiableModelInterface {
-    
+
     static function getTableName() {
         return 'table4';
     }
-    
+
     static function getPrimaryKeyName() {
         return 'id';
     }
-    
+
     static function getColumns() {
         return [
             'id',
             'column1'
         ];
     }
-    
+
 }
 
 class Model5 {
-    
+
 }
 
 // class AssociativeModel implements IdentifiableModelInterface, AssociativeModelInterface {
 class AssociativeModel implements AssociativeModelInterface {
-    
+
     static function getTableName() {
         return 'associative_table';
     }
-    
+
 //     static function getPrimaryKeyName() {
 //         return 'id';
 //     }
-    
+
     static function getColumns() {
         return array_values(self::$association);
     }
-    
+
     static function getAssociativeKeys() {
         return [
             'Model1' => 'table1_id',
             'Model2' => 'table2_id'
-        ]; 
+        ];
     }
-    
+
 }
 
 $model2 = new Model2();
@@ -192,25 +192,25 @@ $model2 = new Model2();
 
 // print_r($model2
 //     ->read('Model1')
-    
+
 //     ->join('Model3', 'table2_id')
 //     ->join('Model4', 'table2_id')
-    
+
 // //     ->join('Model3', Model3::getPrimaryKey())
 // //     ->join('Model4', Model4::getPrimaryKey())
-    
+
 //     ->getMap()
 // );
 
 // print_r($model2
 //     ->read('AssociativeModel')
-    
+
 //     ->join('Model3', 'table2_id')
 //     ->join('Model4', 'table2_id')
-    
+
 // //     ->join('Model3', Model3::getPrimaryKey())
 // //     ->join('Model4', Model4::getPrimaryKey())
-    
+
 //     ->getMap()
 // );
 
