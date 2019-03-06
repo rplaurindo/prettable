@@ -23,11 +23,11 @@ class MySQL implements PaginableStrategyInterface {
 
 abstract class ModelBaseTest extends AbstractModel {
 
-    function __construct($databaseSchema, $host = null) {
+    function __construct($databaseSchema) {
         $data = include 'database.php';
+        parent::__construct($data);
         $host = 'localhost';
-        parent::__construct($host, $data);
-        $this->establishConnection($databaseSchema);
+        $this->establishConnection($databaseSchema, $host);
     }
 
 }
@@ -291,7 +291,7 @@ print_r(
             'table2_id' => 1
         ],
         [
-            'table2_id' => 2
+            'table2_id' => 3
         ]
     )
     ->save())

@@ -26,8 +26,6 @@ abstract class AbstractModel
 
     protected $connection;
 
-    private $host;
-
     private $modelName;
 
     private $model;
@@ -42,10 +40,8 @@ abstract class AbstractModel
 
     private $strategyContextIsDefined;
 
-    function __construct($host, array $data) {
+    function __construct(array $data) {
         Connection::setData($data);
-
-        $this->host = $host;
 
         $this->modelName = get_class($this);
 
@@ -541,13 +537,9 @@ abstract class AbstractModel
             throw new Exception('A database schema should be passed.');
         }
 
-        if (isset($host)) {
-            $this->host = $host;
-        }
-
         $connection = new Connection();
         $this->connection = $connection
-            ->establishConnection($this->host, $databaseSchema);
+            ->establishConnection($databaseSchema, $host);
     }
 
 //     to comply the Prototype pattern

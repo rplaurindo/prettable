@@ -23,10 +23,10 @@ class Connection {
         }
     }
 
-    function establishConnection($host, $database) {
+    function establishConnection($databaseSchema, $host = null) {
         $clone = $this->getClone();
 
-        $data = self::$data[$host][$database][$clone->environment];
+        $data = self::$data[$host][$databaseSchema][$clone->environment];
 
         $adapter = $data['adapter'];
 
@@ -40,11 +40,11 @@ class Connection {
             $password = $data['password'];
         }
 
-        $dsn = "$adapter:=$host;dbname=$database";
+        $dsn = "$adapter:=$host;dbname=$databaseSchema";
 
         try {
-            $clone->connection = new PDO($dsn, $username, $password);
-            $clone->connection
+            $connection = new PDO($dsn, $username, $password);
+            $connection
                 ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             echo $e;
@@ -52,7 +52,7 @@ class Connection {
             throw new PDOException($e);
         }
 
-        return $clone->connection;
+        return $connection;
     }
 
     static function setData(array $data) {
