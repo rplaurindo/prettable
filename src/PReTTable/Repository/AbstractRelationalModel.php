@@ -6,10 +6,9 @@ use
     Exception,
     PDO,
     PDOException,
+    PReTTable\AbstractModel,
     PReTTable\ConnectionContext,
     PReTTable\Connections\PDOConnection,
-    PReTTable\IdentifiableModelInterface,
-    PReTTable\WritableModelInterface,
     PReTTable\PaginableStrategyInterface,
     PReTTable\PaginableStrategyContext,
     PReTTable\QueryStatementStrategyContext,
@@ -19,17 +18,7 @@ use
     PReTTable\Reflection
 ;
 
-abstract class AbstractModel
-    implements
-        IdentifiableModelInterface,
-        WritableModelInterface
-{
-
-    protected $connection;
-
-    private $connectionContext;
-
-    private $modelName;
+abstract class AbstractRelationalModel extends AbstractModel {
 
     private $model;
 
@@ -43,17 +32,12 @@ abstract class AbstractModel
 
     private $strategyContextIsDefined;
 
-    function __construct($environment = null, array $data) {
-        PDOConnection::setData($data);
+    function __construct($environment = null, array $connectionData) {
+        parent::__construct($environment, $connectionData);
+        
+        PDOConnection::setData($this->connectionData);
 
-        if (gettype($environment) == 'array') {
-            $data = $environment;
-            $environment = null;
-        }
-
-        $this->connectionContext = new ConnectionContext(new PDOConnection($environment));
-
-        $this->modelName = get_class($this);
+        $this->connectionContext = new ConnectionContext(new PDOConnection($this->environment));
 
         $this->relationshipBuilding = new RelationshipBuilding($this->modelName);
         $this->relationalSelectBuilding = new RelationalSelectBuilding($this->relationshipBuilding);
@@ -64,10 +48,6 @@ abstract class AbstractModel
         $this->pagerStrategyContext = new PaginableStrategyContext();
 
         $this->strategyContextIsDefined = false;
-    }
-
-    function setPrimaryKeyValue($value) {
-        $this->relationshipBuilding->setPrimaryKeyValue($value);
     }
 
     function contains($modelName, $associatedColumn) {
@@ -88,14 +68,6 @@ abstract class AbstractModel
         $clone->relationalSelectBuilding->join($modelName, $associatedColumn);
 
         $clone->relationalSelectBuilding->addsInvolved($modelName);
-
-        return $clone;
-    }
-
-    function setOrderBy($columnName, $order = '') {
-        $clone = $this->getClone();
-
-        $clone->relationalSelectBuilding->setOrderBy($columnName, $order);
 
         return $clone;
     }
@@ -162,7 +134,7 @@ abstract class AbstractModel
         $foreignKeyName = $associativeModel
             ::getAssociativeColumnNames()[$clone->modelName];
         $rows = self::attachesAssociativeForeignKey($foreignKeyName,
-                                                    $clone->relationshipBuilding->getPrimaryKeyValue(),
+                                                    $clone->primaryKeyValue,
                                                     ...$rows);
 
         $strategy = new QueryStatementStrategyContext(
@@ -207,7 +179,7 @@ abstract class AbstractModel
         try {
             echo "$queryStatement\n\n";
             $PDOstatement = $clone->connection->prepare($queryStatement);
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
             $PDOstatement->execute();
 
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
@@ -415,7 +387,7 @@ abstract class AbstractModel
             foreach ($attributes as $columnName => $value) {
                 $PDOstatement->bindValue(":$columnName", $value);
             }
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
 
             $PDOstatement->execute();
 
@@ -453,7 +425,7 @@ abstract class AbstractModel
             }
 
             $PDOstatement = $clone->connection->prepare($queryStatement);
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
             $PDOstatement->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
@@ -502,7 +474,7 @@ abstract class AbstractModel
                     $PDOstatement = $clone->connection->prepare($queryStatement);
 
                     $PDOstatement
-                        ->bindParam(":$foreignKeyName", $clone->relationshipBuilding->getPrimaryKeyValue());
+                        ->bindParam(":$foreignKeyName", $clone->primaryKeyValue);
 
                     $PDOstatement
                         ->bindParam(":$relatedForeignKeyName", $relatedKeyValue);
@@ -517,7 +489,7 @@ abstract class AbstractModel
 
                 $PDOstatement = $clone->connection->prepare($queryStatement);
                 $PDOstatement->bindParam(":$foreignKeyName",
-                    $clone->relationshipBuilding->getPrimaryKeyValue());
+                    $clone->primaryKeyValue);
 
                 $PDOstatement->execute();
             }
@@ -541,30 +513,36 @@ abstract class AbstractModel
     protected function rollBack() {
         $this->connection->exec('ROLLBACK');
     }
-
-    protected function establishConnection($schemaName, $host = null) {
-        if (!isset($schemaName)) {
-            throw new Exception('A database schema should be passed.');
-        }
-
-        $this->connection = $this->connectionContext
-            ->establishConnection($schemaName, $host);
-    }
-
-//     to comply the Prototype pattern
-    protected function getClone() {
-        return clone $this;
-    }
-
+    
     private static function attachesAssociativeForeignKey($foreignKeyName,
-                                                          $value,
-                                                          ...$rows) {
-        foreach ($rows as $index => $attributes) {
-            $attributes[$foreignKeyName] = $value;
-            $rows[$index] = $attributes;
+        $value,
+        ...$rows) {
+            foreach ($rows as $index => $attributes) {
+                $attributes[$foreignKeyName] = $value;
+                $rows[$index] = $attributes;
+            }
+            
+            return $rows;
+    }
+    
+    private function resolveOrderBy() {
+        if (isset($this->orderBy)) {
+            
+            if (count($this->getInvolvedTableNames())) {
+                $explodedOrderByStatement = explode('.', $this->orderBy);
+                
+                if (count($explodedOrderByStatement) != 2
+                    || !in_array($explodedOrderByStatement[0], $this->getInvolvedTableNames())
+                    ) {
+                        throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
+                    }
+            }
+            
+            return "
+                ORDER BY $this->orderBy $this->orderOfOrderBy";
         }
-
-        return $rows;
+        
+        return null;
     }
 
 }

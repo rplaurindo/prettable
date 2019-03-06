@@ -18,8 +18,6 @@ class RelationshipBuilding {
 
     private $primaryKeyName;
 
-    private $primaryKeyValue;
-
     private $setOfThoseContained;
 
     private $setOfContains;
@@ -33,7 +31,6 @@ class RelationshipBuilding {
         $this->model = Reflection::getDeclarationOf($modelName);
         $this->tableName = self::resolveTableName($modelName);
         $this->primaryKeyName = $this->model->getPrimaryKeyName();
-        $this->primaryKeyValue = null;
 
         $this->setOfThoseContained = new ArrayObject();
         $this->setOfContains = new ArrayObject();
@@ -64,14 +61,6 @@ class RelationshipBuilding {
 
     function getPrimaryKeyName() {
         return $this->primaryKeyName;
-    }
-
-    function setPrimaryKeyValue($value) {
-        $this->primaryKeyValue = $value;
-    }
-
-    function getPrimaryKeyValue() {
-        return $this->primaryKeyValue;
     }
 
     function contains($modelName, $associatedColumn) {

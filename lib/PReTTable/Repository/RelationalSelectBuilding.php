@@ -3,7 +3,6 @@
 namespace PReTTable\Repository;
 
 use
-    Exception,
     ArrayObject,
     PReTTable\InheritanceRelationship,
     PReTTable\QueryStatements\Select,
@@ -46,10 +45,6 @@ class RelationalSelectBuilding {
     private $joins;
 
     private $whereClauseStatement;
-
-    private $orderBy;
-
-    private $orderOfOrderBy;
 
     function __construct(RelationshipBuilding $relationshipBuilding) {
         $this->relationshipBuilding = $relationshipBuilding;
@@ -226,31 +221,6 @@ class RelationalSelectBuilding {
         }
 
         return $joins;
-    }
-
-    function setOrderBy($columnName, $order = '') {
-        $this->orderBy = $columnName;
-        $this->orderOfOrderBy = $order;
-    }
-
-    function resolveOrderBy() {
-        if (isset($this->orderBy)) {
-
-            if (count($this->getInvolvedTableNames())) {
-                $explodedOrderByStatement = explode('.', $this->orderBy);
-
-                if (count($explodedOrderByStatement) != 2
-                    || !in_array($explodedOrderByStatement[0], $this->getInvolvedTableNames())
-                    ) {
-                        throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
-                    }
-            }
-
-            return "
-                ORDER BY $this->orderBy $this->orderOfOrderBy";
-        }
-
-        return null;
     }
 
     protected function getClone() {
