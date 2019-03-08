@@ -1,12 +1,11 @@
 <?php
 
-namespace PReTTable\Repository;
+namespace PReTTable\Repository\PDO;
 
 use
     Exception,
     PDO,
     PDOException,
-    PReTTable\AbstractModel,
     PReTTable\ConnectionContext,
     PReTTable\Connections\PDOConnection,
     PReTTable\PaginableStrategyInterface,
@@ -15,10 +14,12 @@ use
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
     PReTTable\QueryStatements\Select,
-    PReTTable\Reflection
+    PReTTable\Reflection,
+    PReTTable\Repository\RelationshipBuilding,
+    PReTTable\Repository\RelationalSelectBuilding
 ;
 
-abstract class AbstractRelationalModel extends AbstractModel {
+abstract class AbstractModel extends \PReTTable\AbstractModel {
 
     private $model;
 
@@ -34,7 +35,7 @@ abstract class AbstractRelationalModel extends AbstractModel {
 
     function __construct($environment = null, array $connectionData) {
         parent::__construct($environment, $connectionData);
-        
+
         PDOConnection::setData($this->connectionData);
 
         $this->connectionContext = new ConnectionContext(new PDOConnection($this->environment));
@@ -513,7 +514,7 @@ abstract class AbstractRelationalModel extends AbstractModel {
     protected function rollBack() {
         $this->connection->exec('ROLLBACK');
     }
-    
+
     private static function attachesAssociativeForeignKey($foreignKeyName,
         $value,
         ...$rows) {
@@ -521,27 +522,27 @@ abstract class AbstractRelationalModel extends AbstractModel {
                 $attributes[$foreignKeyName] = $value;
                 $rows[$index] = $attributes;
             }
-            
+
             return $rows;
     }
-    
+
     private function resolveOrderBy() {
         if (isset($this->orderBy)) {
-            
+
             if (count($this->getInvolvedTableNames())) {
                 $explodedOrderByStatement = explode('.', $this->orderBy);
-                
+
                 if (count($explodedOrderByStatement) != 2
                     || !in_array($explodedOrderByStatement[0], $this->getInvolvedTableNames())
                     ) {
                         throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
                     }
             }
-            
+
             return "
                 ORDER BY $this->orderBy $this->orderOfOrderBy";
         }
-        
+
         return null;
     }
 

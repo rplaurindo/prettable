@@ -5,7 +5,7 @@ require 'autoload.php';
 use
     PReTTable\PaginableStrategyInterface,
     PReTTable\Helpers\Pagination,
-    PReTTable\Repository\AbstractRelationalModel,
+    PReTTable\Repository\PDO\AbstractModel,
     PReTTable\AssociativeModelInterface
 ;
 
@@ -21,7 +21,7 @@ class MySQL implements PaginableStrategyInterface {
 
 }
 
-abstract class ModelBaseTest extends AbstractRelationalModel {
+abstract class ModelBaseTest extends AbstractModel {
 
     function __construct($databaseSchema) {
         $data = include 'database.php';

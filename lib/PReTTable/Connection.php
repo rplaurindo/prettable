@@ -48,8 +48,4 @@ class Connection implements ConnectionStrategyInterface {
         }
     }
 
-    protected function getClone() {
-        return clone $this;
-    }
-
 }
