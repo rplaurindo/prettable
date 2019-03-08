@@ -6,78 +6,20 @@ use
     Exception,
     PDO,
     PDOException,
-    PReTTable\ConnectionContext,
-    PReTTable\Connections\PDOConnection,
-    PReTTable\PaginableStrategyInterface,
-    PReTTable\PaginableStrategyContext,
     PReTTable\QueryStatementStrategyContext,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
     PReTTable\QueryStatements\Select,
-    PReTTable\Reflection,
-    PReTTable\Repository\RelationshipBuilding,
-    PReTTable\Repository\RelationalSelectBuilding
+    PReTTable\Reflection
 ;
 
-abstract class AbstractModel extends \PReTTable\AbstractModel {
-
-    private $model;
-
-    private $tableName;
-
-    private $relationshipBuilding;
-
-    private $relationalSelectBuilding;
-
-    private $pagerStrategyContext;
-
-    private $strategyContextIsDefined;
+abstract class AbstractModel extends AbstractReadableModel 
+    implements
+        \PReTTable\WritableModelInterface
+{
 
     function __construct($environment = null, array $connectionData) {
         parent::__construct($environment, $connectionData);
-
-        PDOConnection::setData($this->connectionData);
-
-        $this->connectionContext = new ConnectionContext(new PDOConnection($this->environment));
-
-        $this->relationshipBuilding = new RelationshipBuilding($this->modelName);
-        $this->relationalSelectBuilding = new RelationalSelectBuilding($this->relationshipBuilding);
-
-        $this->model = $this->relationshipBuilding->getModel();
-        $this->tableName = $this->relationshipBuilding->getTableName();
-
-        $this->pagerStrategyContext = new PaginableStrategyContext();
-
-        $this->strategyContextIsDefined = false;
-    }
-
-    function contains($modelName, $associatedColumn) {
-        $this->relationshipBuilding->contains($modelName, $associatedColumn);
-    }
-
-    function isContained($modelName, $associatedColumn) {
-        $this->relationshipBuilding->isContained($modelName, $associatedColumn);
-    }
-
-    function containsThrough($modelName, $through) {
-        $this->relationshipBuilding->containsThrough($modelName, $through);
-    }
-
-    function join($modelName, $associatedColumn) {
-        $clone = $this->getClone();
-
-        $clone->relationalSelectBuilding->join($modelName, $associatedColumn);
-
-        $clone->relationalSelectBuilding->addsInvolved($modelName);
-
-        return $clone;
-    }
-
-    //     a proxy to set strategy context
-    function setPager(PaginableStrategyInterface $pagerStrategy) {
-        $this->strategyContextIsDefined = true;
-
-        $this->pagerStrategyContext->setStrategy($pagerStrategy);
     }
 
     function create(array $attributes) {
@@ -107,11 +49,9 @@ abstract class AbstractModel extends \PReTTable\AbstractModel {
         }
 
         if ($clone->model->isPrimaryKeySelfIncremental()) {
-            $clone->relationshipBuilding
-                ->setPrimaryKeyValue($clone->connection->lastInsertId());
+            $clone->setPrimaryKeyValue($clone->connection->lastInsertId());
         } else {
-            $clone->relationshipBuilding->setPrimaryKeyValue($attributes[$clone
-                ->relationshipBuilding->getPrimaryKeyName()]);
+            $clone->setPrimaryKeyValue($attributes[$clone->getPrimaryKeyName()]);
         }
 
         return $clone;
@@ -169,7 +109,7 @@ abstract class AbstractModel extends \PReTTable\AbstractModel {
         $select = new Select($clone->tableName);
         $selectStatement = "SELECT {$select->getStatement()}";
 
-        $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
+        $primaryKeyName = $clone->getPrimaryKeyName();
 
         $queryStatement = "
             $selectStatement
@@ -225,7 +165,7 @@ abstract class AbstractModel extends \PReTTable\AbstractModel {
                 $joinsStatement";
         }
 
-        $orderByStatement = $clone->relationalSelectBuilding->resolveOrderBy();
+        $orderByStatement = $clone->resolveOrderBy();
 
         if (isset($orderByStatement)) {
             $queryStatement .= $orderByStatement;
@@ -286,7 +226,7 @@ abstract class AbstractModel extends \PReTTable\AbstractModel {
         $queryStatement .= "
             WHERE $whereClause";
 
-        $orderByStatement = $clone->relationalSelectBuilding->resolveOrderBy();
+        $orderByStatement = $clone->resolveOrderBy();
 
         if (isset($orderByStatement)) {
             $queryStatement .= "
@@ -372,7 +312,7 @@ abstract class AbstractModel extends \PReTTable\AbstractModel {
     function update(array $attributes) {
         $clone = $this->getClone();
 
-        $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
+        $primaryKeyName = $clone->getPrimaryKeyName();
 
         $update = new Update($clone->tableName, $primaryKeyName);
 
@@ -414,7 +354,7 @@ abstract class AbstractModel extends \PReTTable\AbstractModel {
     function delete() {
         $clone = $this->getClone();
 
-        $primaryKeyName = $clone->relationshipBuilding->getPrimaryKeyName();
+        $primaryKeyName = $clone->getPrimaryKeyName();
 
         $queryStatement = "
             DELETE FROM $clone->tableName
