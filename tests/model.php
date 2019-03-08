@@ -5,7 +5,7 @@ require 'autoload.php';
 use
     PReTTable\PaginableStrategyInterface,
     PReTTable\Helpers\Pagination,
-    PReTTable\Repository\PDO\AbstractModel,
+    PReTTable\Repository\PDO,
     PReTTable\AssociativeModelInterface
 ;
 
@@ -21,7 +21,7 @@ class MySQL implements PaginableStrategyInterface {
 
 }
 
-abstract class ModelBaseTest extends AbstractModel {
+abstract class AbstractModel extends PDO\AbstractModel {
 
     function __construct($databaseSchema) {
         $data = include 'database.php';
@@ -35,7 +35,7 @@ abstract class ModelBaseTest extends AbstractModel {
 
 }
 
-class Model1 extends ModelBaseTest {
+class Model1 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
@@ -70,7 +70,7 @@ class Model1 extends ModelBaseTest {
 
 }
 
-class Model2 extends ModelBaseTest {
+class Model2 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
@@ -97,7 +97,7 @@ class Model2 extends ModelBaseTest {
 
 }
 
-class Model3 extends ModelBaseTest {
+class Model3 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
@@ -125,7 +125,7 @@ class Model3 extends ModelBaseTest {
 
 }
 
-class Model4 extends ModelBaseTest {
+class Model4 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
