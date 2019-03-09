@@ -3,14 +3,12 @@
 namespace PReTTable;
 
 use
-    Exception,
-    PReTTable,
-    PReTTable\PaginableStrategyContext
+    Exception
 ;
 
 abstract class AbstractModel
     implements
-        PReTTable\IdentifiableModelInterface
+        \PReTTable\IdentifiableModelInterface
 {
 
     protected $connection;
@@ -46,6 +44,8 @@ abstract class AbstractModel
         
         $this->pagerStrategyContext = new PaginableStrategyContext();
         $this->strategyContextIsDefined = false;
+        
+        echo "\nAbstractModel::_construct\n";
     }
 
     function setPrimaryKeyValue($value) {
@@ -53,6 +53,7 @@ abstract class AbstractModel
     }
 
     function setOrderBy($columnName, $order = '') {
+        echo "\nsetOrderBy\n";
         $clone = $this->getClone();
         
         $clone->orderBy = $columnName;
@@ -61,9 +62,13 @@ abstract class AbstractModel
         return $clone;
     }
     
-    //     a proxy to set strategy context
-    function setPager(PaginableStrategyInterface $pagerStrategy) {
+//     a proxy to set strategy context
+    protected function setPager(PaginableStrategyInterface $pagerStrategy) {
+        echo "\nsetPager\n";
+        
         $this->strategyContextIsDefined = true;
+        
+        echo "\n$this->strategyContextIsDefined\n";
         
         $this->pagerStrategyContext->setStrategy($pagerStrategy);
     }

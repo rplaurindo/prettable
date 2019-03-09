@@ -18,6 +18,7 @@ abstract class AbstractModel extends PReTTable\AbstractModel {
     protected $relationalSelectBuilding;
 
     function __construct($environment = null, array $connectionData) {
+        echo "\nRepository\AbstractModel::__construct\n";
         parent::__construct($environment, $connectionData);
         
         $this->relationshipBuilding = new RelationshipBuilding($this->modelName);
@@ -25,18 +26,6 @@ abstract class AbstractModel extends PReTTable\AbstractModel {
         
         $this->model = $this->relationshipBuilding->getModel();
         $this->tableName = $this->relationshipBuilding->getTableName();
-    }
-    
-    function contains($modelName, $associatedColumn) {
-        $this->relationshipBuilding->contains($modelName, $associatedColumn);
-    }
-    
-    function isContained($modelName, $associatedColumn) {
-        $this->relationshipBuilding->isContained($modelName, $associatedColumn);
-    }
-    
-    function containsThrough($modelName, $through) {
-        $this->relationshipBuilding->containsThrough($modelName, $through);
     }
     
     function join($modelName, $associatedColumn) {
@@ -49,7 +38,19 @@ abstract class AbstractModel extends PReTTable\AbstractModel {
         return $clone;
     }
     
-    function getOrderBy() {
+    protected function contains($modelName, $associatedColumn) {
+        $this->relationshipBuilding->contains($modelName, $associatedColumn);
+    }
+    
+    protected function isContained($modelName, $associatedColumn) {
+        $this->relationshipBuilding->isContained($modelName, $associatedColumn);
+    }
+    
+    protected function containsThrough($modelName, $through) {
+        $this->relationshipBuilding->containsThrough($modelName, $through);
+    }
+    
+    protected function getOrderBy() {
         if (isset($this->orderBy)) {
             
             if (count($this->relationalSelectBuilding->getInvolvedTableNames())) {

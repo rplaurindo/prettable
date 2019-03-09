@@ -15,6 +15,7 @@ use
 abstract class AbstractReadableModel extends Repository\AbstractModel {
     
     function __construct($environment = null, array $connectionData) {
+        echo "\nRepository\PDO\AbstractReadableModel::_construct\n";
         parent::__construct($environment, $connectionData);
         
         PDOConnection::setData($this->connectionData);
@@ -60,6 +61,7 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
     }
     
     function getAll($limit = null, $pageNumber = 1) {
+        echo "\ngetAll\n";
         $clone = $this->getClone();
         
         $select = new Select($clone->modelName);
@@ -91,13 +93,14 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
         }
         
         if (isset($limit)) {
-            if (!$clone->strategyContextIsDefined) {
-                throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
-            }
+            echo "\n'$clone->strategyContextIsDefined'\n\n";
+//             if (!$clone->strategyContextIsDefined) {
+//                 throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
+//             }
             
-            $queryStatement .= "
-                {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
-            ";
+//             $queryStatement .= "
+//                 {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
+//             ";
         }
         
         try {
@@ -116,7 +119,7 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
     function get($modelName, $limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
         
-        $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName);
+        $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName, $clone->primaryKeyValue);
         
         $select = $relationalSelectBuilding->getSelect();
         $from = $relationalSelectBuilding->getFrom();
@@ -178,7 +181,7 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
     function getParent($modelName) {
         $clone = $this->getClone();
         
-        $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName);
+        $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName, $clone->primaryKeyValue);
         
         $select = $relationalSelectBuilding->getSelect();
         $from = $relationalSelectBuilding->getFrom();

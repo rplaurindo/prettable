@@ -4,12 +4,10 @@ namespace PReTTable\Repository\PDO;
 
 use
     Exception,
-    PDO,
     PDOException,
     PReTTable\QueryStatementStrategyContext,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
-    PReTTable\QueryStatements\Select,
     PReTTable\Reflection
 ;
 

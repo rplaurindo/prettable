@@ -183,11 +183,12 @@ class AssociativeModel implements AssociativeModelInterface {
 
 
 $model1 = new Model1();
+
 // $mode2 = new Model2();
 // $model3 = new Model3();
-$model4 = new Model4();
+// $model4 = new Model4();
 
-// for ($i = 1; $i <= 3; $i++) {
+// for ($i = 1; $i <= 1; $i++) {
 //     $model1 = $model1->create(
 //         [
 //             'table1col' => "a value $i"
@@ -231,8 +232,8 @@ $model4 = new Model4();
 //             'table2_id' => 2
 //         ]
 //     )
-//     ->save())
-// ;
+//     ->save()
+// );
 
 // print_r(
 //     $model1
@@ -245,36 +246,8 @@ $model4 = new Model4();
 //                 'table2_id' => 2
 //             ]
 //         )
-//         ->save())
-// ;
-
-// $model1->setPrimaryKeyValue(2);
-// print_r($model1->getRow());
-
-// if there isn't a self-incremental primary key
-// print_r($model1->getRow('table1col', 'a value 2'));
-
-
-$model1->setPrimaryKeyValue(1);
-
-// $model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
-// print_r($model1->join('Model3', 'table1_id')->getAll());
-
-// print_r($model1->getAll());
-// print_r($model1->getAll(2));
-// print_r($model1->getAll(2, 2));
-
-
-// a better logic to "order by" should be made for this case
-// $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
-// print_r($model1->get('Model2'));
-
-// erro
-// $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
-// print_r($model1->get('Model4'));
-
-// $model4->setPrimaryKeyValue(1);
-// print_r($model4->getParent('Model1'));
+//         ->save()
+// );
 
 // $model3->setPrimaryKeyValue(2);
 // print_r(
@@ -288,20 +261,52 @@ $model1->setPrimaryKeyValue(1);
 // ;
 
 // $model1->setPrimaryKeyValue(1);
-print_r(
-    $model1->updateAssociations('Model2',
-        [
-            'table2_id' => 1
-        ],
-        [
-            'table2_id' => 2
-        ]
-    )
-    ->save())
-;
+// print_r(
+//     $model1->updateAssociations('Model2',
+//         [
+//             'table2_id' => 1
+//         ],
+//         [
+//             'table2_id' => 3
+//         ]
+//     )
+//     ->save())
+// ;
 
-// $model1->setPrimaryKeyValue(149);
+// $model1->setPrimaryKeyValue(150);
 // print_r(
 //     $model1->delete()
 //     ->save())
 // ;
+
+// $model1->setPrimaryKeyValue(1);
+// print_r(
+//     $model1->deleteAssociations('Model2')
+//     ->save())
+// ;
+
+
+$model1->setPrimaryKeyValue(2);
+
+// print_r($model1->getRow());
+
+
+// $model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
+// print_r($model1->join('Model3', 'table1_id')->getAll());
+
+// print_r($model1->getAll());
+
+// print_r($model1->getAll(2));
+// print_r($model1->getAll(2, 2));
+
+
+// a better logic to "order by" should be made for this case
+$model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
+print_r($model1->get('Model2'));
+
+// erro
+// $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
+// print_r($model1->get('Model4'));
+
+// $model4->setPrimaryKeyValue(1);
+// print_r($model4->getParent('Model1'));
