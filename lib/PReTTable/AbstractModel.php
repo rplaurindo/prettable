@@ -26,10 +26,6 @@ abstract class AbstractModel
     protected $environment;
     
     protected $connectionData;
-    
-    protected $pagerStrategyContext;
-    
-    protected $strategyContextIsDefined;
 
     function __construct($environment = null, array $connectionData) {
         if (gettype($environment) == 'array') {
@@ -41,9 +37,6 @@ abstract class AbstractModel
         $this->connectionData = $connectionData;
         
         $this->modelName = get_class($this);
-        
-        $this->pagerStrategyContext = new PaginableStrategyContext();
-        $this->strategyContextIsDefined = false;
         
         echo "\nAbstractModel::_construct\n";
     }
@@ -60,17 +53,6 @@ abstract class AbstractModel
         $clone->orderOfOrderBy = $order;
         
         return $clone;
-    }
-    
-//     a proxy to set strategy context
-    protected function setPager(PaginableStrategyInterface $pagerStrategy) {
-        echo "\nsetPager\n";
-        
-        $this->strategyContextIsDefined = true;
-        
-        echo "\n$this->strategyContextIsDefined\n";
-        
-        $this->pagerStrategyContext->setStrategy($pagerStrategy);
     }
 
     protected function establishConnection($schemaName, $host = null) {

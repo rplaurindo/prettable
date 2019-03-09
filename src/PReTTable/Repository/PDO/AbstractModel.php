@@ -16,10 +16,6 @@ abstract class AbstractModel extends AbstractReadableModel
         \PReTTable\WritableModelInterface
 {
 
-    function __construct($environment = null, array $connectionData) {
-        parent::__construct($environment, $connectionData);
-    }
-
     function create(array $attributes) {
         $clone = $this->getClone();
 
