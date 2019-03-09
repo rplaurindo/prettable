@@ -25,7 +25,7 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
     function getRow() {
         $clone = $this->getClone();
         
-        $select = new Select($clone->tableName);
+        $select = new Select($clone->modelName);
         $selectStatement = "SELECT {$select->getStatement()}";
         
         $primaryKeyName = $clone->getPrimaryKeyName();
@@ -36,33 +36,33 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
             FROM $clone->tableName
             WHERE $primaryKeyName = :$primaryKeyName";
             
-            try {
-                echo "$queryStatement\n\n";
-                $PDOstatement = $clone->connection->prepare($queryStatement);
-                $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
-                $PDOstatement->execute();
-                
-                $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
-            } catch (PDOException $e) {
-                echo $e;
-                throw new PDOException($e);
-            }
+        try {
+            echo "$queryStatement\n\n";
+            $PDOstatement = $clone->connection->prepare($queryStatement);
+            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
+            $PDOstatement->execute();
             
-            if (
-                isset($result) &&
-                gettype($result) == 'array' &&
-                count($result)
-                ) {
-                    return $result[0];
-                }
+            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo $e;
+            throw new PDOException($e);
+        }
+        
+        if (
+            isset($result) &&
+            gettype($result) == 'array' &&
+            count($result)
+            ) {
+            return $result[0];
+        }
                 
-                return null;
+        return null;
     }
     
     function getAll($limit = null, $pageNumber = 1) {
         $clone = $this->getClone();
         
-        $select = new Select($clone->tableName);
+        $select = new Select($clone->modelName);
         
         $queryStatement = "
             SELECT {$select->getStatement(...$clone->relationalSelectBuilding->getInvolvedModelNames())}
@@ -84,7 +84,7 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
                 $joinsStatement";
         }
         
-        $orderByStatement = $clone->resolveOrderBy();
+        $orderByStatement = $clone->getOrderBy();
         
         if (isset($orderByStatement)) {
             $queryStatement .= $orderByStatement;
@@ -145,7 +145,7 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
         $queryStatement .= "
             WHERE $whereClause";
         
-        $orderByStatement = $clone->resolveOrderBy();
+        $orderByStatement = $clone->getOrderBy();
         
         if (isset($orderByStatement)) {
             $queryStatement .= "
@@ -222,10 +222,10 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
             gettype($result) == 'array' &&
             count($result)
             ) {
-                return $result[0];
-            }
-            
-            return null;
+            return $result[0];
+        }
+        
+        return null;
     }
 
 }

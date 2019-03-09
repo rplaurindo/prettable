@@ -52,18 +52,18 @@ abstract class AbstractModel extends PReTTable\AbstractModel {
     function getOrderBy() {
         if (isset($this->orderBy)) {
             
-            if (count($this->getInvolvedTableNames())) {
+            if (count($this->relationalSelectBuilding->getInvolvedTableNames())) {
                 $explodedOrderByStatement = explode('.', $this->orderBy);
                 
                 if (count($explodedOrderByStatement) != 2
-                    || !in_array($explodedOrderByStatement[0], $this->getInvolvedTableNames())
+                    || !in_array($explodedOrderByStatement[0], $this->relationalSelectBuilding->getInvolvedTableNames())
                     ) {
                         throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
                     }
             }
             
             return "
-                ORDER BY $this->orderBy $this->orderOfOrderBy";
+            ORDER BY $this->orderBy $this->orderOfOrderBy";
         }
         
         return null;

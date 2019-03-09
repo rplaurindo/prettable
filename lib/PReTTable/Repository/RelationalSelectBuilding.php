@@ -60,7 +60,7 @@ class RelationalSelectBuilding {
     }
 
     function join($modelName, $associatedColumn) {
-        RelationshipBuilding::checkIfClassIsA($modelName,
+       InheritanceRelationship::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 
@@ -81,6 +81,10 @@ class RelationalSelectBuilding {
 
     function getInvolvedModelNames() {
         return $this->involvedModelNames->getArrayCopy();
+    }
+    
+    function getInvolvedTableNames() {
+        return $this->involvedTableNames->getArrayCopy();
     }
 
     function build($modelName) {
@@ -225,10 +229,6 @@ class RelationalSelectBuilding {
 
     protected function getClone() {
         return clone $this;
-    }
-
-    private function getInvolvedTableNames() {
-        return $this->involvedTableNames->getArrayCopy();
     }
 
 }
