@@ -6,7 +6,7 @@ use
     PReTTable\QueryStatements
 ;
 
-class Pagination implements QueryStatements\SelectPaginationDecoratorInterface {
+class Pagination extends QueryStatements\AbstractSelectPaginationDecorator {
 
     function __construct() {
         
