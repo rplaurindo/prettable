@@ -5,7 +5,7 @@ require 'autoload.php';
 use
     PReTTable\Repository\PDO,
     PReTTable\AssociativeModelInterface,
-    QueryStatements\Decorators\Select\Pagination\MySQL
+    QueryStatements\Decorators\Select\Pagination
 ;
 
 abstract class AbstractModel extends PDO\AbstractModel {
@@ -22,7 +22,18 @@ abstract class AbstractModel extends PDO\AbstractModel {
 
 }
 
-class Model1 extends AbstractModel {
+abstract class MySQL extends AbstractModel {
+    
+    function getAll($limit = null, $pageNumber = 1) {
+        $select = parent::getAll();
+        $queryStatementObject = new Pagination\MySQL($select, $limit, $pageNumber);
+        
+        return $queryStatementObject->getRersult();
+    }
+    
+}
+
+class Model1 extends MySQL {
 
     function __construct() {
         parent::__construct('mydb');
@@ -52,13 +63,6 @@ class Model1 extends AbstractModel {
             'id',
             'table1col'
         ];
-    }
-    
-    function getAll($limit = null, $pageNumber = 1) {
-        $select = parent::getAll();
-        $queryStatementObject = new MySQL($select, $limit, $pageNumber);
-        
-        return $queryStatementObject->getRersult();
     }
 
 }
