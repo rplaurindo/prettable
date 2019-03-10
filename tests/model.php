@@ -8,7 +8,7 @@ use
     QueryStatements\Decorators\Select\Pagination
 ;
 
-// ver o namespace para AbstractModel e MySQLModel
+// ver o namespace para AbstractModel e MySQLModel acho que deve ficar em um namespace Models
 abstract class AbstractModel extends PDO\AbstractModel {
 
     function __construct($databaseSchema) {
@@ -23,7 +23,7 @@ abstract class AbstractModel extends PDO\AbstractModel {
 
 }
 
-abstract class MySQLModel extends AbstractModel {
+abstract class AbstractMySQLModel extends AbstractModel {
     
     function getAll($limit = null, $pageNumber = 1) {
         $select = parent::getAll();
@@ -34,7 +34,7 @@ abstract class MySQLModel extends AbstractModel {
     
 }
 
-class Model1 extends MySQLModel {
+class Model1 extends AbstractMySQLModel {
 
     function __construct() {
         parent::__construct('mydb');
