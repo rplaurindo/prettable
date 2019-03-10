@@ -9,7 +9,7 @@ use
     PReTTable\ConnectionContext,
     PReTTable\Connections\PDOConnection,
     PReTTable\QueryStatements\Select,
-    PReTTable\QueryStatements\PDO\SelectComponent,
+    PReTTable\QueryStatements\SelectComponent,
     PReTTable\Repository
 ;
 

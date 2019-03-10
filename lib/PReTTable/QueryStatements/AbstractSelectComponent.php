@@ -14,6 +14,10 @@ abstract class AbstractSelectComponent {
     
     abstract function getStatement();
     
+    function setConnection($connection) {
+        $this->_connection = $connection;
+    }
+    
     function getConnection() {
         $clone = $this->getClone();
         
