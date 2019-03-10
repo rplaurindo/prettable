@@ -60,9 +60,9 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
         return null;
     }
     
-//     retornar um objeto decorado o qual possuirá um método de execução e assim, recursivamente, decorar a query e executar. Assim, como uma pizza, teremos 
-//     os ingredientes padrão para a query e os aditivos (paginação) podem ser adicionados estrategicamente (cada DBMS tem sua forma de paginar, diferente de 
-//     um ORDER BY que é padrão). 
+//     retornar um objeto que possui o método addDecorator, o qual deverá retornar um objeto que possui um método de execução e assim, recursivamente, 
+//     decorar a query e executar. Assim, como uma pizza, teremos os ingredientes padrão para a query e os aditivos (paginação) podem ser adicionados 
+//     estrategicamente (cada DBMS tem sua forma de paginar, diferente de um ORDER BY que é padrão). 
     function getAll($limit = null, $pageNumber = 1) {
         echo "\ngetAll\n";
         $clone = $this->getClone();
