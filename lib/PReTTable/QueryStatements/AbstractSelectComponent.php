@@ -23,5 +23,5 @@ abstract class AbstractSelectComponent {
     private function getClone() {
         return clone $this;
     }
-
+    
 }

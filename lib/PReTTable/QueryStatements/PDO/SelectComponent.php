@@ -3,7 +3,8 @@
 namespace PReTTable\QueryStatements\PDO;
 
 use 
-    PDO
+    PDO,
+    PReTTable\QueryStatements\AbstractSelectComponent
 ;
 
 class SelectComponent extends AbstractSelectComponent {
