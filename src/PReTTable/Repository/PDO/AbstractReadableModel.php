@@ -9,6 +9,7 @@ use
     PReTTable\ConnectionContext,
     PReTTable\Connections\PDOConnection,
     PReTTable\QueryStatements\Select,
+    PReTTable\QueryStatements\SelectComponent,
     PReTTable\Repository
 ;
 
@@ -95,28 +96,9 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
             $queryStatement .= $orderByStatement;
         }
         
-        if (isset($limit)) {
-            echo "\n'$clone->strategyContextIsDefined'\n\n";
-//             if (!$clone->strategyContextIsDefined) {
-//                 throw new Exception('PReTTable\PaginableStrategyInterface wasn\'t defined.');
-//             }
-            
-//             $queryStatement .= "
-//                 {$clone->pagerStrategyContext->getStatement($limit, $pageNumber)}
-//             ";
-        }
-        
-        try {
-            echo "$queryStatement\n\n";
-            $PDOstatement = $clone->connection->query($queryStatement);
-            
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo $e;
-            throw new PDOException($e);
-        }
-        
-        return $result;
+//         $component = new SelectComponent();
+//         $component->setStatement($queryStatement);
+//         return $component;
     }
     
     function get($modelName, $limit = null, $pageNumber = 1) {
@@ -170,8 +152,8 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
         
         try {
             echo "$queryStatement\n\n";
-            $PDOstatement = $clone->connection->query($queryStatement);
             
+            $PDOstatement = $clone->connection->query($queryStatement);
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;

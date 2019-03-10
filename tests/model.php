@@ -3,23 +3,10 @@
 require 'autoload.php';
 
 use
-    PReTTable\PaginableStrategyInterface,
-    PReTTable\Helpers\Pagination,
     PReTTable\Repository\PDO,
-    PReTTable\AssociativeModelInterface
+    PReTTable\AssociativeModelInterface,
+    QueryStatements\Decorators\Select\Pagination\MySQL
 ;
-
-class MySQL implements PaginableStrategyInterface {
-
-    function getStatement($limit, $pageNumber = 1) {
-        $offset = Pagination::calculatesOffset($limit, $pageNumber);
-
-        return "
-            LIMIT $limit
-            OFFSET $offset";
-    }
-
-}
 
 abstract class AbstractModel extends PDO\AbstractModel {
 
@@ -41,7 +28,6 @@ class Model1 extends AbstractModel {
         parent::__construct('mydb');
 
         $ordered = $this->setOrderBy('id', 'DESC');
-        $ordered->setPager(new MySQL());
 
         $ordered->containsThrough('Model2', 'AssociativeModel');
 
@@ -66,6 +52,11 @@ class Model1 extends AbstractModel {
             'id',
             'table1col'
         ];
+    }
+    
+    function getAll($limit = null, $pageNumber = 1) {
+        $component = parent::getAll($limit, $pageNumber);
+        $MySQLPager = new MySQL($component);
     }
 
 }
@@ -183,7 +174,6 @@ class AssociativeModel implements AssociativeModelInterface {
 
 
 $model1 = new Model1();
-
 // $mode2 = new Model2();
 // $model3 = new Model3();
 // $model4 = new Model4();
@@ -295,16 +285,14 @@ $model1->setPrimaryKeyValue(2);
 // print_r($model1->join('Model3', 'table1_id')->getAll());
 
 // print_r($model1->getAll());
-
-// print_r($model1->getAll(2));
+// erro
+print_r($model1->getAll(2));
 // print_r($model1->getAll(2, 2));
 
 
-// a better logic to "order by" should be made for this case
-$model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
-print_r($model1->get('Model2'));
+// $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
+// print_r($model1->get('Model2'));
 
-// erro
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->get('Model4'));
 
