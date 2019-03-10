@@ -7,19 +7,25 @@ use
     PReTTable\QueryStatements\AbstractSelectComponent,
     PReTTable\QueryStatements\PDO\AbstractSelectPaginationDecorator
 ;
+use PDO;
 
 class MySQL extends AbstractSelectPaginationDecorator {
 
-    function __construct(AbstractSelectComponent $component) {
+    function __construct(AbstractSelectComponent $component, $limit, $pageNumber = 1) {
         parent::__construct($component);
+        
+        $this->limit = $limit;
+        $this->pageNumber = $pageNumber;
     }
     
-    function getStatement($limit, $pageNumber = 1) {
-        $offset = Pagination::calculatesOffset($limit, $pageNumber);
+    function getStatement() {
+        $offset = Pagination::calculatesOffset($this->limit, $this->pageNumber);
         
         return "
-            LIMIT $limit
+            LIMIT $this->limit
+            
             OFFSET $offset";
     }
+
     
 }

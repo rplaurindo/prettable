@@ -55,8 +55,10 @@ class Model1 extends AbstractModel {
     }
     
     function getAll($limit = null, $pageNumber = 1) {
-        $component = parent::getAll($limit, $pageNumber);
-        $MySQLPager = new MySQL($component);
+        $select = parent::getAll();
+        $queryStatementObject = new MySQL($select, $limit, $pageNumber);
+        
+        return $queryStatementObject->getRersult();
     }
 
 }

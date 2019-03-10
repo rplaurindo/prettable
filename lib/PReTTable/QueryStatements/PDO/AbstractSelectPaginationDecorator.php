@@ -4,38 +4,35 @@ namespace PReTTable\QueryStatements\PDO;
 
 use 
     PDO,
-    PDOException,
-    PReTTable\QueryStatements\AbstractSelectComponent
+    PDOException
 ;
 
 abstract class AbstractSelectPaginationDecorator extends AbstractSelectComponent {
     
-    private $_component;
+    protected $limit;
     
-    private $_connection;
+    protected $pageNumber;
+    
+    private $_component;
 
     function __construct(AbstractSelectComponent $component) {
         $this->_component = $component;
     }
-    
-    function getStatement($limit, $pageNumber = 1) {
-        $statement = parent::getStatement();
+
+    function mountStatement() {
+        $statement = $this->getStatement();
         
-        return "$statement
-            {$this->_component->getStatement()}";
+        return "{$this->_component->getStatement()}
+            $statement";
     }
     
-    function setConnection(PDO $connection) {
-        $this->_connection = $connection;
-    }
-    
-    function execute() {
-        $queryStatement = $this->_component->getStatement();
+    function getRersult() {
+        $queryStatement = $this->mountStatement();
         
         try {
             echo "$queryStatement\n\n";
             
-            $PDOstatement = $this->_connection->query($queryStatement);
+            $PDOstatement = $this->_component->getConnection()->query($queryStatement);
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;

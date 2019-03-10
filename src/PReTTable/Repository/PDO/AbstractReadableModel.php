@@ -9,14 +9,13 @@ use
     PReTTable\ConnectionContext,
     PReTTable\Connections\PDOConnection,
     PReTTable\QueryStatements\Select,
-    PReTTable\QueryStatements\SelectComponent,
+    PReTTable\QueryStatements\PDO\SelectComponent,
     PReTTable\Repository
 ;
 
 abstract class AbstractReadableModel extends Repository\AbstractModel {
     
     function __construct($environment = null, array $connectionData) {
-        echo "\nRepository\PDO\AbstractReadableModel::_construct\n";
         parent::__construct($environment, $connectionData);
         
         PDOConnection::setData($this->connectionData);
@@ -64,20 +63,17 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
 //     retornar um objeto que possui o método addDecorator, o qual deverá retornar um objeto que possui um método de execução e assim, recursivamente, 
 //     decorar a query e executar. Assim, como uma pizza, teremos os ingredientes padrão para a query e os aditivos (paginação) podem ser adicionados 
 //     estrategicamente (cada DBMS tem sua forma de paginar, diferente de um ORDER BY que é padrão). 
-    function getAll($limit = null, $pageNumber = 1) {
-        echo "\ngetAll\n";
-        $clone = $this->getClone();
-        
-        $select = new Select($clone->modelName);
+    function getAll() {
+        $select = new Select($this->modelName);
         
         $queryStatement = "
-            SELECT {$select->getStatement(...$clone->relationalSelectBuilding->getInvolvedModelNames())}
+            SELECT {$select->getStatement(...$this->relationalSelectBuilding->getInvolvedModelNames())}
             
-            FROM $clone->tableName";
+            FROM $this->tableName";
         
         $joinsStatement = "";
         
-        $joins = $clone->relationalSelectBuilding->getJoins();
+        $joins = $this->relationalSelectBuilding->getJoins();
         if (count($joins)) {
             $joinsStatement .= "
             INNER JOIN " .
@@ -90,15 +86,16 @@ abstract class AbstractReadableModel extends Repository\AbstractModel {
                 $joinsStatement";
         }
         
-        $orderByStatement = $clone->getOrderBy();
+        $orderByStatement = $this->getOrderBy();
         
         if (isset($orderByStatement)) {
             $queryStatement .= $orderByStatement;
         }
         
-//         $component = new SelectComponent();
-//         $component->setStatement($queryStatement);
-//         return $component;
+        $component = new SelectComponent($queryStatement);
+        $component->setConnection($this->connection);
+        
+        return $component;
     }
     
     function get($modelName, $limit = null, $pageNumber = 1) {

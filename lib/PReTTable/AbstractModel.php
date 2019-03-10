@@ -37,8 +37,6 @@ abstract class AbstractModel
         $this->connectionData = $connectionData;
         
         $this->modelName = get_class($this);
-        
-        echo "\nAbstractModel::_construct\n";
     }
 
     function setPrimaryKeyValue($value) {
@@ -46,7 +44,6 @@ abstract class AbstractModel
     }
 
     function setOrderBy($columnName, $order = '') {
-        echo "\nsetOrderBy\n";
         $clone = $this->getClone();
         
         $clone->orderBy = $columnName;
