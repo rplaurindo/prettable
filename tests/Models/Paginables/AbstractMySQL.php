@@ -1,8 +1,9 @@
 <?php
 
-namespace Models;
+namespace Models\Paginables;
 
 use
+    Models\AbstractModel,
     QueryStatements\Decorators\Select\Pagination
 ;
 
