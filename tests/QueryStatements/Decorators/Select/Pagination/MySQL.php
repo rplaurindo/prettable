@@ -4,13 +4,13 @@ namespace QueryStatements\Decorators\Select\Pagination;
 
 use
     PReTTable\Helpers\Pagination,
-    PReTTable\QueryStatements\AbstractQueryComponent,
+    PReTTable\QueryStatements,
     PReTTable\QueryStatements\Select\PDO\AbstractPaginationDecorator
 ;
 
 class MySQL extends AbstractPaginationDecorator {
 
-    function __construct(AbstractQueryComponent $component, $limit, $pageNumber = 1) {
+    function __construct(QueryStatements\AbstractComponent $component, $limit, $pageNumber = 1) {
         parent::__construct($component);
         
         $this->limit = $limit;
@@ -26,5 +26,4 @@ class MySQL extends AbstractPaginationDecorator {
             OFFSET $offset";
     }
 
-    
 }

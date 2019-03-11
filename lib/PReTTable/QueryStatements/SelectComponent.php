@@ -2,7 +2,7 @@
 
 namespace PReTTable\QueryStatements;
 
-class SelectComponent extends AbstractQueryComponent {
+class SelectComponent extends AbstractComponent {
 
     function __construct($statement) {
         parent::__construct($statement);
