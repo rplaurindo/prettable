@@ -2,11 +2,11 @@
 
 namespace PReTTable\QueryStatements;
 
-abstract class AbstractSelectDecorator extends AbstractSelectComponent {
+abstract class AbstractQueryDecorator extends AbstractQueryComponent {
     
     protected $_component;
 
-    function __construct(AbstractSelectComponent $component) {
+    function __construct(AbstractQueryComponent $component) {
         $this->_component = $component;
     }
 

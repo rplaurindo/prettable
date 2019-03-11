@@ -2,7 +2,7 @@
 
 namespace PReTTable\QueryStatements;
 
-abstract class AbstractSelectComponent {
+abstract class AbstractQueryComponent {
     
     protected $_statement;
     
