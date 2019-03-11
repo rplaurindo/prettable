@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\PDO;
+namespace PReTTable\QueryStatements\Select\PDO;
 
 use 
     PDO,
@@ -9,7 +9,7 @@ use
     PReTTable\QueryStatements\AbstractSelectDecorator
 ;
 
-abstract class AbstractSelectPaginationDecorator extends AbstractSelectDecorator {
+abstract class AbstractPaginationDecorator extends AbstractSelectDecorator {
     
     protected $limit;
     

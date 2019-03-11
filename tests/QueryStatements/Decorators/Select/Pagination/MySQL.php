@@ -5,10 +5,10 @@ namespace QueryStatements\Decorators\Select\Pagination;
 use
     PReTTable\Helpers\Pagination,
     PReTTable\QueryStatements\AbstractSelectComponent,
-    PReTTable\QueryStatements\PDO\AbstractSelectPaginationDecorator
+    PReTTable\QueryStatements\Select\PDO\AbstractPaginationDecorator
 ;
 
-class MySQL extends AbstractSelectPaginationDecorator {
+class MySQL extends AbstractPaginationDecorator {
 
     function __construct(AbstractSelectComponent $component, $limit, $pageNumber = 1) {
         parent::__construct($component);
