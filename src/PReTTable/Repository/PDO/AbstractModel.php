@@ -9,10 +9,10 @@ use
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
     PReTTable\Reflection,
-    PReTTable\OnlyReading
+    PReTTable\Repository\PDO\Readonly
 ;
 
-abstract class AbstractModel extends OnlyReading\Repository\PDO\AbstractModel 
+abstract class AbstractModel extends Readonly\AbstractModel 
     implements
         \PReTTable\WritableModelInterface
 {

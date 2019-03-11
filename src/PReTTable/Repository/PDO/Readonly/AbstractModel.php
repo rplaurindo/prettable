@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\OnlyReading\Repository\PDO;
+namespace PReTTable\Repository\PDO\Readonly;
 
 use
     Exception,
