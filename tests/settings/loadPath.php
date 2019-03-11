@@ -13,5 +13,3 @@ $setIncludePath([$rootPath, 'lib']);
 $setIncludePath([$rootPath, 'src']);
 
 $setIncludePath([$rootPath, 'tests']);
-
-$setIncludePath([$rootPath, 'tests', 'settings']);

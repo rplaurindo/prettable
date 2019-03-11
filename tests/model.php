@@ -3,38 +3,11 @@
 require 'autoload.php';
 
 use
-    PReTTable\Repository\PDO,
     PReTTable\AssociativeModelInterface,
-    QueryStatements\Decorators\Select\Pagination
+    Models\AbstractMySQL
 ;
 
-// ver o namespace para AbstractModel e MySQLModel acho que deve ficar em um namespace Models
-abstract class AbstractModel extends PDO\AbstractModel {
-
-    function __construct($databaseSchema) {
-        $data = include 'database.php';
-
-        putenv('_ENV=development');
-        $environment = getenv('_ENV');
-        parent::__construct($environment, $data);
-
-        $this->establishConnection($databaseSchema, 'localhost');
-    }
-
-}
-
-abstract class AbstractMySQLModel extends AbstractModel {
-    
-    function getAll($limit = null, $pageNumber = 1) {
-        $select = parent::getAll();
-        $queryStatementObject = new Pagination\MySQL($select, $limit, $pageNumber);
-        
-        return $queryStatementObject->getRersult();
-    }
-    
-}
-
-class Model1 extends AbstractMySQLModel {
+class Model1 extends AbstractMySQL {
 
     function __construct() {
         parent::__construct('mydb');
@@ -68,7 +41,7 @@ class Model1 extends AbstractMySQLModel {
 
 }
 
-class Model2 extends AbstractModel {
+class Model2 extends AbstractMySQL {
 
     function __construct() {
         parent::__construct('mydb');
@@ -95,7 +68,7 @@ class Model2 extends AbstractModel {
 
 }
 
-class Model3 extends AbstractModel {
+class Model3 extends AbstractMySQL {
 
     function __construct() {
         parent::__construct('mydb');
@@ -123,7 +96,7 @@ class Model3 extends AbstractModel {
 
 }
 
-class Model4 extends AbstractModel {
+class Model4 extends AbstractMySQL {
 
     function __construct() {
         parent::__construct('mydb');

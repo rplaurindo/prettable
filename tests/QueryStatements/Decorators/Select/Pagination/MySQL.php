@@ -7,7 +7,6 @@ use
     PReTTable\QueryStatements\AbstractSelectComponent,
     PReTTable\QueryStatements\PDO\AbstractSelectPaginationDecorator
 ;
-use PDO;
 
 class MySQL extends AbstractSelectPaginationDecorator {
 
