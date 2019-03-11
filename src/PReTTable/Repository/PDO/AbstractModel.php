@@ -5,7 +5,7 @@ namespace PReTTable\Repository\PDO;
 use
     Exception,
     PDOException,
-    PReTTable\QueryStatementStrategyContext,
+    PReTTable\QueryStatements,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
     PReTTable\Reflection,
@@ -20,7 +20,7 @@ abstract class AbstractModel extends OnlyReading\PDO\AbstractModel
     function create(array $attributes) {
         $clone = $this->getClone();
 
-        $strategy = new QueryStatementStrategyContext(
+        $strategy = new QueryStatements\StrategyContext(
             new InsertInto($clone->tableName));
 
         try {

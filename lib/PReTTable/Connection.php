@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-class Connection implements ConnectionStrategyInterface {
+class Connection implements Connections\StrategyInterface {
 
     private static $data;
 

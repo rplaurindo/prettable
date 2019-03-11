@@ -1,8 +1,8 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\Connections;
 
-interface ConnectionStrategyInterface {
+interface StrategyInterface {
 
     function establishConnection($schemaName, $host = null);
 

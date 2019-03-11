@@ -1,8 +1,8 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\QueryStatements;
 
-interface QueryStatementStrategyInterface {
+interface StrategyInterface {
 
     function getStatement(array $attributes);
     

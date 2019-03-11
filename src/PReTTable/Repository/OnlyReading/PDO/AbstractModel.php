@@ -6,7 +6,7 @@ use
     Exception,
     PDO,
     PDOException,
-    PReTTable\ConnectionContext,
+    PReTTable\Connections,
     PReTTable\Connections\PDOConnection,
     PReTTable\QueryStatements\Select,
     PReTTable\QueryStatements\SelectComponent,
@@ -20,7 +20,7 @@ abstract class AbstractModel extends Repository\AbstractModel {
         
         PDOConnection::setData($this->connectionData);
         
-        $this->connectionContext = new ConnectionContext(new PDOConnection($this->environment));
+        $this->connectionContext = new Connections\StrategyContext(new PDOConnection($this->environment));
     }
     
     function getRow() {

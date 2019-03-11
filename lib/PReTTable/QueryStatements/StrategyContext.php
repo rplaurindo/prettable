@@ -1,12 +1,12 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\QueryStatements;
 
-class QueryStatementStrategyContext {
+class StrategyContext {
     
     private $strategy;
 
-    function __construct(QueryStatementStrategyInterface $strategy) {
+    function __construct(StrategyInterface $strategy) {
         $this->strategy = $strategy;
     }
     

@@ -1,12 +1,12 @@
 <?php
 
-namespace PReTTable;
+namespace PReTTable\Connections;
 
-class ConnectionContext {
+class StrategyContext {
 
     private $_connection;
 
-    function __construct(ConnectionStrategyInterface $connection) {
+    function __construct(StrategyInterface $connection) {
         $this->_connection = $connection;
     }
 
