@@ -2,6 +2,7 @@
 
 namespace Models;
 
+// to mixin code (not to repeat the the same code)
 trait ModelTrait {
 
     function __construct($databaseSchema) {

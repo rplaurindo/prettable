@@ -2,16 +2,16 @@
 
 namespace PReTTable\QueryStatements\Select\PDO;
 
-use 
+use
     PDO,
     PDOException,
     PReTTable\QueryStatements
 ;
 
 abstract class AbstractPaginationDecorator extends QueryStatements\AbstractDecorator {
-    
+
     protected $limit;
-    
+
     protected $pageNumber;
 
     function __construct(QueryStatements\AbstractComponent $component) {
@@ -20,17 +20,17 @@ abstract class AbstractPaginationDecorator extends QueryStatements\AbstractDecor
 
     function mountStatement() {
         $statement = $this->getStatement();
-        
+
         return "{$this->_component->getStatement()}
             $statement";
     }
-    
+
     function getRersult() {
         $queryStatement = $this->mountStatement();
-        
+
+        echo "$queryStatement\n\n";
+
         try {
-            echo "$queryStatement\n\n";
-            
             $PDOstatement = $this->_component->getConnection()->query($queryStatement);
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
