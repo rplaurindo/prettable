@@ -3,11 +3,11 @@
 require 'autoload.php';
 
 use
-    PReTTable\AssociativeModelInterface,
-    Models\Paginables\AbstractMySQL
+    Models\MySQL\AbstractModel,
+    PReTTable\AssociativeModelInterface
 ;
 
-class Model1 extends AbstractMySQL {
+class Model1 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
@@ -41,7 +41,7 @@ class Model1 extends AbstractMySQL {
 
 }
 
-class Model2 extends AbstractMySQL {
+class Model2 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
@@ -68,7 +68,7 @@ class Model2 extends AbstractMySQL {
 
 }
 
-class Model3 extends AbstractMySQL {
+class Model3 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
@@ -96,7 +96,7 @@ class Model3 extends AbstractMySQL {
 
 }
 
-class Model4 extends AbstractMySQL {
+class Model4 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');

@@ -8,11 +8,10 @@ use
     PReTTable\QueryStatements,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
-    PReTTable\Reflection,
-    PReTTable\Repository\PDO\Readonly
+    PReTTable\Reflection
 ;
 
-abstract class AbstractModel extends Readonly\AbstractModel 
+abstract class AbstractModel extends Readonly\AbstractModel
     implements
         \PReTTable\WritableModelInterface
 {
@@ -73,7 +72,7 @@ abstract class AbstractModel extends Readonly\AbstractModel
                                                     $clone->primaryKeyValue,
                                                     ...$rows);
 
-        $strategy = new QueryStatementStrategyContext(
+        $strategy = new QueryStatements\StrategyContext(
             new InsertInto($associativeTableName));
 
         try {
@@ -105,7 +104,7 @@ abstract class AbstractModel extends Readonly\AbstractModel
 
         $update = new Update($clone->tableName, $primaryKeyName);
 
-        $strategy = new QueryStatementStrategyContext($update);
+        $strategy = new QueryStatements\StrategyContext($update);
 
         try {
             if (!$clone->connection->inTransaction()) {

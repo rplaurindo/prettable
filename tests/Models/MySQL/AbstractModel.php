@@ -1,12 +1,15 @@
 <?php
 
-namespace Models;
+namespace Models\MySQL;
 
 use
+    Models\Paginables\MySQLTrait,
     PReTTable\Repository\PDO
 ;
 
 abstract class AbstractModel extends PDO\AbstractModel {
+
+    use MySQLTrait;
 
     function __construct($databaseSchema) {
         $data = include 'settings/database.php';

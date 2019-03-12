@@ -1,12 +1,15 @@
 <?php
 
-namespace Models\Readonly;
+namespace Models\MySQL\Readonly;
 
 use
+    Models\Paginables\MySQLTrait,
     PReTTable\Repository\PDO\Readonly
 ;
 
 abstract class AbstractModel extends Readonly\AbstractModel {
+
+    use MySQLTrait;
 
     function __construct($databaseSchema) {
         $data = include 'settings/database.php';
