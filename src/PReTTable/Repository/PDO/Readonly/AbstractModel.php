@@ -36,8 +36,9 @@ abstract class AbstractModel extends Repository\AbstractModel {
             FROM $clone->tableName
             WHERE $primaryKeyName = :$primaryKeyName";
 
+        echo "$queryStatement\n\n";
+
         try {
-            echo "$queryStatement\n\n";
             $PDOstatement = $clone->connection->prepare($queryStatement);
             $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
             $PDOstatement->execute();
@@ -171,8 +172,9 @@ abstract class AbstractModel extends Repository\AbstractModel {
         $queryStatement .= "
             WHERE $whereClause";
 
+        echo "$queryStatement\n\n";
+
         try {
-            echo "$queryStatement\n\n";
             $PDOstatement = $clone->connection->query($queryStatement);
 
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
