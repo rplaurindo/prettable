@@ -8,12 +8,13 @@ use
     PReTTable\QueryStatements,
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
-    PReTTable\Reflection
+    PReTTable\Reflection,
+    PReTTable\WritableModelInterface
 ;
 
 abstract class AbstractModel extends Readonly\AbstractModel
     implements
-        \PReTTable\WritableModelInterface
+        WritableModelInterface
 {
 
     function create(array $attributes) {

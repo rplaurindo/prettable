@@ -22,7 +22,7 @@ abstract class AbstractModel extends Repository\AbstractModel {
         $this->connectionContext = new Connections\StrategyContext(new PDOConnection($this->environment));
     }
 
-    function getRow() {
+    function read() {
         $clone = $this->getClone();
 
         $select = new Select($clone->modelName);
@@ -95,7 +95,7 @@ abstract class AbstractModel extends Repository\AbstractModel {
         return $component;
     }
 
-    function get($modelName) {
+    function getModel($modelName) {
         $clone = $this->getClone();
 
         $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName, $clone->primaryKeyValue);
