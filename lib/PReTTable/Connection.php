@@ -4,8 +4,6 @@ namespace PReTTable;
 
 class Connection implements Connections\StrategyInterface {
 
-    private static $data;
-
     protected $environment;
 
     protected $host;
@@ -15,6 +13,8 @@ class Connection implements Connections\StrategyInterface {
     protected $username;
 
     protected $password;
+
+    private static $data;
 
     function __construct($environment = null) {
         if (!isset($environment)) {
