@@ -1,13 +1,13 @@
 <?php
 
-namespace PReTTable\Repository\PDO;
+namespace PReTTable\PDO;
 
 use
-    PReTTable\Repository,
+    PReTTable,
     PReTTable\Connections
 ;
 
-abstract class AbstractModel extends Repository\AbstractModel {
+abstract class AbstractModel extends PReTTable\AbstractModelBase {
 
     function __construct($environment = null, array $connectionData) {
         parent::__construct($environment, $connectionData);

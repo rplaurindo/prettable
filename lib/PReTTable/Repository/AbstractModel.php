@@ -7,7 +7,7 @@ use
     Exception
 ;
 
-abstract class AbstractModelBase extends PReTTable\AbstractModel {
+abstract class AbstractModel extends PReTTable\AbstractModel {
 
     protected $model;
 

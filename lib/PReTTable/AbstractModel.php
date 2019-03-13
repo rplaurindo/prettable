@@ -2,16 +2,10 @@
 
 namespace PReTTable;
 
-use
-    Exception
-;
-
-abstract class AbstractModel
+abstract class AbstractModel extends AbstractModelBase
     implements
         \PReTTable\IdentifiableModelInterface
 {
-
-    protected $connection;
 
     protected $name;
 
@@ -21,20 +15,8 @@ abstract class AbstractModel
 
     protected $orderOfOrderBy;
 
-    protected $connectionContext;
-
-    protected $environment;
-
-    protected $connectionData;
-
     function __construct($environment = null, array $connectionData) {
-        if (gettype($environment) == 'array') {
-            $connectionData = $environment;
-            $environment = null;
-        }
-
-        $this->environment = $environment;
-        $this->connectionData = $connectionData;
+        parent::__construct($environment, $connectionData);
 
         $this->name = get_class($this);
     }
@@ -50,20 +32,6 @@ abstract class AbstractModel
         $clone->orderOfOrderBy = $order;
 
         return $clone;
-    }
-
-    protected function establishConnection($schemaName, $host = null) {
-        if (!isset($schemaName)) {
-            throw new Exception('A database schema should be passed.');
-        }
-
-        $this->connection = $this->connectionContext
-            ->establishConnection($schemaName, $host);
-    }
-
-//     to comply the Prototype pattern
-    protected function getClone() {
-        return clone $this;
     }
 
 }
