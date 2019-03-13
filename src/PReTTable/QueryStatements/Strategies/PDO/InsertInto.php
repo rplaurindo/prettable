@@ -3,10 +3,10 @@
 namespace PReTTable\QueryStatements\Strategies\PDO;
 
 use
-    PReTTable\QueryStatementStrategyInterface
+    PReTTable\QueryStatements
 ;
 
-class InsertInto implements QueryStatementStrategyInterface {
+class InsertInto implements QueryStatements\StrategyInterface {
 
     private $tableName;
 
