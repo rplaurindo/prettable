@@ -6,7 +6,7 @@ use
     PReTTable\Connections
 ;
 
-trait AbstractModelTrait {
+trait ModelTrait {
 
     function __construct($environment = null, array $connectionData) {
         parent::__construct($environment, $connectionData);
