@@ -10,7 +10,7 @@ use
     PReTTable\PDO\Repository
 ;
 
-abstract class AbstractModel extends Repository\AbstractModel {
+abstract class AbstractModel extends Repository\AbstractModelBase {
 
     function read() {
         $clone = $this->getClone();

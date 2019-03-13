@@ -1,10 +1,10 @@
 <?php
 
-namespace Models\MySQL\Readonly;
+namespace Models\Repository\PDO\MySQL\Readonly;
 
 use
     Models\ModelTrait,
-    Models\Paginables\MySQLTrait,
+    Models\PDO\Paginables\MySQLTrait,
     PReTTable\PDO\Repository\Readonly
 ;
 

@@ -3,7 +3,8 @@
 namespace PReTTable;
 
 use
-    Exception
+    Exception,
+    PReTTable\Helpers\StringEncoding
 ;
 
 abstract class AbstractModelBase {
@@ -14,6 +15,8 @@ abstract class AbstractModelBase {
 
     protected $environment;
 
+    protected $stringEncoder;
+
     function __construct($environment = null, array $connectionData) {
         if (gettype($environment) == 'array') {
             $connectionData = $environment;
@@ -21,6 +24,8 @@ abstract class AbstractModelBase {
         }
 
         $this->environment = $environment;
+
+        $this->stringEncoder = new StringEncoding();
     }
 
     protected function establishConnection($schemaName, $host = null) {

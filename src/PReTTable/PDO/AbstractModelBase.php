@@ -6,7 +6,7 @@ use
     PReTTable
 ;
 
-abstract class AbstractModel extends PReTTable\AbstractModelBase {
+abstract class AbstractModelBase extends PReTTable\AbstractModelBase {
 
     use ModelTrait;
 

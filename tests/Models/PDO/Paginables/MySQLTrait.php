@@ -1,16 +1,16 @@
 <?php
 
-namespace Models\Paginables;
+namespace Models\PDO\Paginables;
 
 use
-    QueryStatements\Decorators\Select\Pagination
+    QueryStatements\Decorators\Select\Pagination\PDO\MySQL
 ;
 
 trait MySQLTrait {
 
     function getAll($limit = null, $pageNumber = 1) {
         $select = parent::getAll();
-        $queryStatementObject = new Pagination\MySQL($select, $limit, $pageNumber);
+        $queryStatementObject = new MySQL($select, $limit, $pageNumber);
 
         return $queryStatementObject->getRersult();
     }

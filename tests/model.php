@@ -3,7 +3,7 @@
 require 'autoload.php';
 
 use
-    Models\MySQL\AbstractModel,
+    Models\Repository\PDO\MySQL\AbstractModel,
     PReTTable\AssociativeModelInterface
 ;
 
@@ -256,7 +256,7 @@ $model1 = new Model1();
 // ;
 
 
-$model1->setPrimaryKeyValue(2);
+// $model1->setPrimaryKeyValue(2);
 
 // print_r($model1->read());
 
@@ -266,7 +266,7 @@ $model1->setPrimaryKeyValue(2);
 
 // print_r($model1->getAll());
 // erro
-print_r($model1->getAll(2, 2));
+print_r($model1->getAll(2));
 // print_r($model1->getAll(2, 2));
 
 
@@ -274,7 +274,7 @@ print_r($model1->getAll(2, 2));
 // print_r($model1->getModel('Model2'));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
-print_r($model1->getModel('Model4'));
+// print_r($model1->getModel('Model4'));
 
 // $model4->setPrimaryKeyValue(1);
 // print_r($model4->getParent('Model1'));

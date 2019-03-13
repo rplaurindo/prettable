@@ -1,10 +1,10 @@
 <?php
 
-namespace Models\MySQL;
+namespace Models\Repository\PDO\MySQL;
 
 use
     Models\ModelTrait,
-    Models\Paginables\MySQLTrait,
+    Models\PDO\Paginables\MySQLTrait,
     PReTTable\PDO\Repository\Writable
 ;
 

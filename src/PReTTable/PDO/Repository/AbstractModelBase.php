@@ -7,7 +7,7 @@ use
     PReTTable\Repository
 ;
 
-abstract class AbstractModel extends Repository\AbstractModelBase {
+abstract class AbstractModelBase extends Repository\AbstractModelBase {
 
     use ModelTrait;
 
