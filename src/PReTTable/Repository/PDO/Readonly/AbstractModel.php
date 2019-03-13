@@ -6,20 +6,17 @@ use
     PDO,
     PDOException,
     PReTTable\Connections,
-    PReTTable\Connections\PDOConnection,
     PReTTable\QueryStatements\Select,
     PReTTable\QueryStatements\SelectComponent,
-    PReTTable\Repository
+    PReTTable\Repository\PDO
 ;
 
-abstract class AbstractModel extends Repository\AbstractModel {
+abstract class AbstractModel extends PDO\AbstractModel {
 
     function __construct($environment = null, array $connectionData) {
         parent::__construct($environment, $connectionData);
 
-        PDOConnection::setData($this->connectionData);
-
-        $this->connectionContext = new Connections\StrategyContext(new PDOConnection($this->environment));
+        $this->connectionContext = new Connections\StrategyContext(new Connections\PDOConnection($this->environment));
     }
 
     function read() {

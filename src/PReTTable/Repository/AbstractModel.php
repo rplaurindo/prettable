@@ -1,9 +1,9 @@
 <?php
 
-namespace PReTTable\Repository\PDO;
+namespace PReTTable\Repository;
 
 use
-    PReTTable\Connections,
+    PReTTable\Connections\PDOConnection,
     PReTTable\Repository
 ;
 
@@ -12,7 +12,7 @@ abstract class AbstractModel extends Repository\AbstractModel {
     function __construct($environment = null, array $connectionData) {
         parent::__construct($environment, $connectionData);
 
-        $this->connectionContext = new Connections\StrategyContext(new Connections\PDOConnection($this->environment));
+        PDOConnection::setData($this->connectionData);
     }
 
 }

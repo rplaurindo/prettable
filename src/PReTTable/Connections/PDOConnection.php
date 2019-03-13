@@ -3,9 +3,9 @@
 namespace PReTTable\Connections;
 
 use
-    PReTTable\Connection,
     PDO,
-    PDOException
+    PDOException,
+    PReTTable\Connection
 ;
 
 class PDOConnection extends Connection {
