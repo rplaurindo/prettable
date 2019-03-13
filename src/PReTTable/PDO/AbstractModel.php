@@ -7,6 +7,7 @@ use
     PReTTable\Connections
 ;
 
+// abstrair para um trait
 abstract class AbstractModel extends PReTTable\AbstractModelBase {
 
     function __construct($environment = null, array $connectionData) {

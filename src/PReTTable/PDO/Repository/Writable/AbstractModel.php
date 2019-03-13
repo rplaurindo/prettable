@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\Repository\PDO\Writable;
+namespace PReTTable\PDO\Repository\Writable;
 
 use
     Exception,
@@ -9,7 +9,7 @@ use
     PReTTable\QueryStatements\Strategies\PDO\InsertInto,
     PReTTable\QueryStatements\Strategies\PDO\Update,
     PReTTable\Reflection,
-    PReTTable\Repository\PDO\Readonly,
+    PReTTable\PDO\Repository\Readonly,
     PReTTable\WritableModelInterface
 ;
 

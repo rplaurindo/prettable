@@ -1,16 +1,16 @@
 <?php
 
-namespace PReTTable\Repository\PDO\Readonly;
+namespace PReTTable\PDO\Repository\Readonly;
 
 use
     PDO,
     PDOException,
     PReTTable\QueryStatements\Select,
     PReTTable\QueryStatements\SelectComponent,
-    PReTTable\Repository
+    PReTTable\PDO\Repository
 ;
 
-abstract class AbstractModel extends Repository\PDO\AbstractModel {
+abstract class AbstractModel extends Repository\AbstractModel {
 
     function read() {
         $clone = $this->getClone();
