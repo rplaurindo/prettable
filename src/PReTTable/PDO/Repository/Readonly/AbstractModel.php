@@ -86,9 +86,7 @@ abstract class AbstractModel extends Repository\AbstractModel {
     }
 
     function getModel($modelName) {
-        $clone = $this->getClone();
-
-        $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName, $clone->primaryKeyValue);
+        $relationalSelectBuilding = $this->relationalSelectBuilding->build($modelName, $this->primaryKeyValue);
 
         $select = $relationalSelectBuilding->getSelect();
         $from = $relationalSelectBuilding->getFrom();
@@ -117,7 +115,7 @@ abstract class AbstractModel extends Repository\AbstractModel {
         $queryStatement .= "
             WHERE $whereClause";
 
-        $orderByStatement = $clone->getOrderBy();
+        $orderByStatement = $this->getOrderBy();
 
         if (isset($orderByStatement)) {
             $queryStatement .= "
