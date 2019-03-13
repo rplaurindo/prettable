@@ -13,18 +13,18 @@ abstract class AbstractModel
 
     protected $connection;
 
-    protected $modelName;
-    
+    protected $name;
+
     protected $primaryKeyValue;
-    
+
     protected $orderBy;
-    
+
     protected $orderOfOrderBy;
-    
+
     protected $connectionContext;
-    
+
     protected $environment;
-    
+
     protected $connectionData;
 
     function __construct($environment = null, array $connectionData) {
@@ -32,11 +32,11 @@ abstract class AbstractModel
             $connectionData = $environment;
             $environment = null;
         }
-        
+
         $this->environment = $environment;
         $this->connectionData = $connectionData;
-        
-        $this->modelName = get_class($this);
+
+        $this->name = get_class($this);
     }
 
     function setPrimaryKeyValue($value) {
@@ -45,10 +45,10 @@ abstract class AbstractModel
 
     function setOrderBy($columnName, $order = '') {
         $clone = $this->getClone();
-        
+
         $clone->orderBy = $columnName;
         $clone->orderOfOrderBy = $order;
-        
+
         return $clone;
     }
 

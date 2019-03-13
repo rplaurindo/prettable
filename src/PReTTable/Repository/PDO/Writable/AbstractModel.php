@@ -60,7 +60,7 @@ abstract class AbstractModel extends Readonly\AbstractModel
             ->getAssociativeModelNameOf($modelName);
 
         if (!isset($associativeModelName)) {
-            throw new Exception("There's no such relationship between $clone->modelName and $modelName.");
+            throw new Exception("There's no such relationship between $clone->name and $modelName.");
         }
 
         $associativeModel = Reflection
@@ -69,7 +69,7 @@ abstract class AbstractModel extends Readonly\AbstractModel
         $associativeTableName = $associativeModel->getTableName();
 
         $foreignKeyName = $associativeModel
-            ::getAssociativeColumnNames()[$clone->modelName];
+            ::getAssociativeColumnNames()[$clone->name];
         $rows = self::attachesAssociativeForeignKey($foreignKeyName,
                                                     $clone->primaryKeyValue,
                                                     ...$rows);
@@ -174,7 +174,7 @@ abstract class AbstractModel extends Readonly\AbstractModel
             ->getAssociativeModelNameOf($modelName);
 
         if (!isset($associativeModelName)) {
-            throw new Exception("There's no such relationship between $clone->modelName and $modelName.");
+            throw new Exception("There's no such relationship between $clone->name and $modelName.");
         }
 
         $associativeModel = Reflection
@@ -183,7 +183,7 @@ abstract class AbstractModel extends Readonly\AbstractModel
         $associativeTableName = $associativeModel->getTableName();
 
         $foreignKeyName = $associativeModel
-            ::getAssociativeColumnNames()[$clone->modelName];
+            ::getAssociativeColumnNames()[$clone->name];
 
         try {
             if (!$clone->connection->inTransaction()) {
