@@ -14,9 +14,9 @@ class Model1 extends AbstractModel {
 
         $ordered = $this->setOrderBy('id', 'DESC');
 
-//         $ordered->containsThrough('Model2', 'AssociativeModel');
+        $ordered->containsThrough('Model2', 'AssociativeModel');
 
-//         $ordered->contains('Model4', 'table1_id');
+        $ordered->contains('Model4', 'table1_id');
     }
 
     static function getTableName() {
@@ -258,7 +258,7 @@ $model1 = new Model1();
 
 $model1->setPrimaryKeyValue(2);
 
-// print_r($model1->getRow());
+// print_r($model1->read());
 
 
 // $model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
@@ -271,10 +271,10 @@ print_r($model1->getAll(2, 2));
 
 
 // $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
-// print_r($model1->get('Model2'));
+// print_r($model1->getModel('Model2'));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
-// print_r($model1->get('Model4'));
+print_r($model1->getModel('Model4'));
 
 // $model4->setPrimaryKeyValue(1);
 // print_r($model4->getParent('Model1'));
