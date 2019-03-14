@@ -5,7 +5,7 @@ namespace PReTTable\PDO\Repository\Readonly;
 use
     PDO,
     PDOException,
-    PReTTable\QueryStatements\Select,
+    PReTTable\QueryStatements\PDO\Select,
     PReTTable\QueryStatements\SelectComponent,
     PReTTable\PDO\Repository
 ;

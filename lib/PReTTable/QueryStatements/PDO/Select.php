@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements;
+namespace PReTTable\QueryStatements\PDO;
 
 use
     PReTTable\Reflection,

@@ -5,7 +5,7 @@ namespace PReTTable\Repository;
 use
     ArrayObject,
     PReTTable\InheritanceRelationship,
-    PReTTable\QueryStatements\Select,
+    PReTTable\QueryStatements\PDO\Select,
     PReTTable\Reflection
 ;
 
@@ -82,7 +82,7 @@ class RelationalSelectBuilding {
     function getInvolvedModelNames() {
         return $this->involvedModelNames->getArrayCopy();
     }
-    
+
     function getInvolvedTableNames() {
         return $this->involvedTableNames->getArrayCopy();
     }
