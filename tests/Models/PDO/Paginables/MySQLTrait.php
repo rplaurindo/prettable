@@ -8,9 +8,16 @@ use
 
 trait MySQLTrait {
 
-    function getAll($limit = null, $pageNumber = 1) {
-        $select = parent::getAll();
-        $queryStatementObject = new MySQL($select, $limit, $pageNumber);
+    function readAll($limit = null, $pageNumber = 1) {
+        $component = parent::readAll();
+        $queryStatementObject = new MySQL($component, $limit, $pageNumber);
+
+        return $queryStatementObject->getRersult();
+    }
+
+    function readFrom($modelName, $limit = null, $pageNumber = 1) {
+        $component = parent::readFrom($modelName);
+        $queryStatementObject = new MySQL($component, $limit, $pageNumber);
 
         return $queryStatementObject->getRersult();
     }

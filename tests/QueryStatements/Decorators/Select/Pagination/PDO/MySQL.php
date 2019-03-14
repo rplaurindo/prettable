@@ -10,7 +10,7 @@ use
 
 class MySQL extends PDO\AbstractPaginationDecorator {
 
-    function __construct(QueryStatements\AbstractComponent $component, $limit, $pageNumber = 1) {
+    function __construct(QueryStatements\AbstractComponent $component, $limit = null, $pageNumber = 1) {
         parent::__construct($component);
 
         $this->limit = $limit;
@@ -20,10 +20,14 @@ class MySQL extends PDO\AbstractPaginationDecorator {
     function getStatement() {
         $offset = Pagination::calculatesOffset($this->limit, $this->pageNumber);
 
-        return "
+        if (isset($this->limit)) {
+            return "
             LIMIT $this->limit
 
             OFFSET $offset";
+        }
+
+        return '';
     }
 
 }

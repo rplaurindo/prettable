@@ -50,7 +50,7 @@ abstract class AbstractModel extends Repository\AbstractModelBase {
         return null;
     }
 
-    function getAll() {
+    function readAll() {
         $select = new Select($this->name);
 
         $queryStatement = "
@@ -85,7 +85,7 @@ abstract class AbstractModel extends Repository\AbstractModelBase {
         return $component;
     }
 
-    function getModel($modelName) {
+    function readFrom($modelName) {
         $relationalSelectBuilding = $this->relationalSelectBuilding->build($modelName, $this->primaryKeyValue);
 
         $select = $relationalSelectBuilding->getSelect();
@@ -128,7 +128,7 @@ abstract class AbstractModel extends Repository\AbstractModelBase {
         return $component;
     }
 
-    function getParent($modelName) {
+    function readParent($modelName) {
         $clone = $this->getClone();
 
         $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName, $clone->primaryKeyValue);
