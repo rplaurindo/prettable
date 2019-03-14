@@ -33,6 +33,10 @@ abstract class AbstractModelBase {
             throw new Exception('A database schema should be passed.');
         }
 
+        if (!isset($this->connectionContext)) {
+            throw new Exception('A instance of "Connections\StrategyInterface" kind should be passed to "Connections\StrategyContext" constructor to set "$connectionContext" property.');
+        }
+
         $this->connection = $this->connectionContext
             ->establishConnection($schemaName, $host);
     }
