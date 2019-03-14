@@ -5,17 +5,13 @@ namespace PReTTable\Connections;
 use
     PDO,
     PDOException,
-    PReTTable\Connection
+    PReTTable\AbstractConnection
 ;
 
-class PDOConnection extends Connection {
-
-    function __construct($environment = null) {
-        parent::__construct($environment);
-    }
+class PDOConnection extends AbstractConnection {
 
     function establishConnection($schemaName, $host = null) {
-        parent::establishConnection($schemaName, $host);
+        parent::resolveConnectionData($schemaName, $host);
 
         $dsn = "$this->adapter:=$this->host;dbname=$schemaName";
 

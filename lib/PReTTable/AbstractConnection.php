@@ -2,7 +2,7 @@
 
 namespace PReTTable;
 
-class Connection implements Connections\StrategyInterface {
+abstract class AbstractConnection {
 
     protected $environment;
 
@@ -26,11 +26,17 @@ class Connection implements Connections\StrategyInterface {
         $this->password = null;
     }
 
+    abstract function establishConnection($schemaName, $host = null);
+
     static function setData(array $data) {
         self::$data = $data;
     }
 
-    function establishConnection($schemaName, $host = null) {
+    function setEnvironment($environment) {
+        $this->environment = $environment;
+    }
+
+    function resolveConnectionData($schemaName, $host = null) {
         if (isset($host)) {
             $this->host = $host;
         }

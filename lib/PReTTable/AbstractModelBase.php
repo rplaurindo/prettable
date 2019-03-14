@@ -13,19 +13,12 @@ abstract class AbstractModelBase {
 
     protected $connection;
 
-    protected $environment;
-
     protected $stringEncoder;
 
-    function __construct($environment = null, array $connectionData) {
-        if (gettype($environment) == 'array') {
-            $connectionData = $environment;
-            $environment = null;
-        }
-
-        $this->environment = $environment;
-
+    function __construct(AbstractConnection $connectionContext, array $connectionData) {
         $this->stringEncoder = new StringEncoding();
+
+        $this->connectionContext = $connectionContext;
     }
 
     protected function establishConnection($schemaName, $host = null) {
@@ -33,15 +26,10 @@ abstract class AbstractModelBase {
             throw new Exception('A database schema should be passed.');
         }
 
-        if (!isset($this->connectionContext)) {
-            throw new Exception('A instance of "Connections\StrategyInterface" kind should be passed to "Connections\StrategyContext" constructor to set "$connectionContext" property.');
-        }
-
         $this->connection = $this->connectionContext
             ->establishConnection($schemaName, $host);
     }
 
-    //     to comply the Prototype pattern
     protected function getClone() {
         return clone $this;
     }

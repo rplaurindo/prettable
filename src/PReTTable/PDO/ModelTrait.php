@@ -9,11 +9,8 @@ use
 trait ModelTrait {
 
     function __construct($environment = null, array $connectionData) {
-        parent::__construct($environment, $connectionData);
-
+        parent::__construct(new Connections\PDOConnection($environment), $connectionData);
         Connections\PDOConnection::setData($connectionData);
-
-        $this->connectionContext = new Connections\StrategyContext(new Connections\PDOConnection($this->environment));
     }
 
 }
