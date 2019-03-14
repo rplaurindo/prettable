@@ -5,7 +5,7 @@ namespace PReTTable\PDO\Repository\Readonly;
 use
     PDO,
     PDOException,
-    PReTTable\QueryStatements\PDO\Select,
+    PReTTable\QueryStatements\Select,
     PReTTable\QueryStatements\SelectComponent,
     PReTTable\PDO\Repository
 ;
@@ -15,7 +15,7 @@ abstract class AbstractModel extends Repository\AbstractModelBase {
     function read() {
         $clone = $this->getClone();
 
-        $select = new Select($clone->name);
+        $select = new Select\Repository($clone->name);
         $selectStatement = "SELECT {$select->getStatement()}";
 
         $primaryKeyName = $clone->getPrimaryKeyName();
@@ -51,7 +51,7 @@ abstract class AbstractModel extends Repository\AbstractModelBase {
     }
 
     function readAll() {
-        $select = new Select($this->name);
+        $select = new Select\Repository($this->name);
 
         $queryStatement = "
             SELECT {$select->getStatement(...$this->relationalSelectBuilding->getInvolvedModelNames())}

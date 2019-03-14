@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\Strategies\PDO;
+namespace PReTTable\QueryStatements\WriteStrategies\PDO;
 
 use
     PReTTable\QueryStatements

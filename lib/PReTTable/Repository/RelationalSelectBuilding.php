@@ -5,7 +5,7 @@ namespace PReTTable\Repository;
 use
     ArrayObject,
     PReTTable\InheritanceRelationship,
-    PReTTable\QueryStatements\PDO\Select,
+    PReTTable\QueryStatements\Select,
     PReTTable\Reflection
 ;
 
@@ -102,7 +102,7 @@ class RelationalSelectBuilding {
             $clone->associatedTableName = RelationshipBuilding
                 ::resolveTableName($modelName);
 
-            $clone->select = new Select($clone->associatedModelName);
+            $clone->select = new Select\Repository($clone->associatedModelName);
             $clone->fromStatement = $clone->associatedTableName;
 
             if ($clone->relationshipBuilding->isItContained($modelName)) {

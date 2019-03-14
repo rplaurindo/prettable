@@ -6,8 +6,8 @@ use
     Exception,
     PDOException,
     PReTTable\QueryStatements,
-    PReTTable\QueryStatements\Strategies\PDO\InsertInto,
-    PReTTable\QueryStatements\Strategies\PDO\Update,
+    PReTTable\QueryStatements\WriteStrategies\PDO\InsertInto,
+    PReTTable\QueryStatements\WriteStrategies\PDO\Update,
     PReTTable\Reflection,
     PReTTable\PDO\Repository\Readonly,
     PReTTable\WritableModelInterface

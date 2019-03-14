@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\PDO;
+namespace PReTTable\QueryStatements\Select;
 
 use
     PReTTable\Reflection,
@@ -8,7 +8,7 @@ use
     PReTTable\Repository\RelationshipBuilding
 ;
 
-class Select {
+class Repository {
 
     private $modelName;
 
