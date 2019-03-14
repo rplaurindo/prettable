@@ -15,8 +15,8 @@ abstract class AbstractModel extends AbstractModelBase
 
     protected $orderOfOrderBy;
 
-    function __construct($environment = null, array $connectionData) {
-        parent::__construct($environment, $connectionData);
+    function __construct(array $connectionData) {
+        parent::__construct($connectionData);
 
         $this->name = get_class($this);
     }

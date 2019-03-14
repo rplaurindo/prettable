@@ -18,7 +18,7 @@ trait ModelTrait {
     }
 
     function getConnection() {
-        return new new Connections\PDOConnection($this->environment);
+        return new Connections\PDOConnection($this->environment);
     }
 
 }

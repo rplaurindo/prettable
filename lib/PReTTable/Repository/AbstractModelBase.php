@@ -17,8 +17,8 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
 
     protected $relationalSelectBuilding;
 
-    function __construct($environment = null, array $connectionData) {
-        parent::__construct($environment, $connectionData);
+    function __construct(array $connectionData) {
+        parent::__construct($connectionData);
 
         $this->relationshipBuilding = new RelationshipBuilding($this->name);
         $this->relationalSelectBuilding = new RelationalSelectBuilding($this->relationshipBuilding);
