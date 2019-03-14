@@ -277,4 +277,4 @@ print_r($model1->readFrom('Model2', 1, 1));
 // print_r($model1->getModel('Model4'));
 
 // $model4->setPrimaryKeyValue(1);
-// print_r($model4->getParent('Model1'));
+// print_r($model4->readParent('Model1'));
