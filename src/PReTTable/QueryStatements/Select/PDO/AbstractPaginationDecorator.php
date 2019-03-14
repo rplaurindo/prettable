@@ -5,16 +5,17 @@ namespace PReTTable\QueryStatements\Select\PDO;
 use
     PDO,
     PDOException,
-    PReTTable\QueryStatements
+    PReTTable\QueryStatements\AbstractComponent,
+    PReTTable\QueryStatements\AbstractDecorator
 ;
 
-abstract class AbstractPaginationDecorator extends QueryStatements\AbstractDecorator {
+abstract class AbstractPaginationDecorator extends AbstractDecorator {
 
     protected $limit;
 
     protected $pageNumber;
 
-    function __construct(QueryStatements\AbstractComponent $component) {
+    function __construct(AbstractComponent $component) {
         $this->_component = $component;
     }
 
