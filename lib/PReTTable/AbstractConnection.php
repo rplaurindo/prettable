@@ -16,7 +16,7 @@ abstract class AbstractConnection {
 
     private static $data;
 
-    function __construct($environment = null) {
+    function __construct(array $data, $environment = null) {
         if (!isset($environment)) {
             $environment = 'development';
         }
@@ -24,6 +24,8 @@ abstract class AbstractConnection {
         $this->environment = $environment;
         $this->username = null;
         $this->password = null;
+
+        self::$data = $data;
     }
 
     abstract function establishConnection($schemaName, $host = null);

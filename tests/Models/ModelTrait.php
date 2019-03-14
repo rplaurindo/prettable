@@ -10,7 +10,7 @@ trait ModelTrait {
 
         putenv('_ENV=development');
         $environment = getenv('_ENV');
-        parent::__construct($environment, $data);
+        parent::__construct($data, $environment);
 
         $this->establishConnection($databaseSchema, 'localhost');
     }
