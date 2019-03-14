@@ -3,33 +3,39 @@
 namespace PReTTable;
 
 use
+//     AbstractConnection,
     Exception,
     PReTTable\Helpers\StringEncoding
 ;
 
-abstract class AbstractModelBase {
 
-    protected $connectionContext;
+abstract class AbstractModelBase {
 
     protected $connection;
 
     protected $stringEncoder;
 
-    function __construct(AbstractConnection $connectionContext, array $connectionData) {
+    function __construct(array $connectionData) {
         $this->stringEncoder = new StringEncoding();
-
-        $this->connectionContext = $connectionContext;
     }
+
+//     abstract function getConnection(): AbstractConnection;
+
+    abstract function getConnection();
 
     protected function establishConnection($schemaName, $host = null) {
         if (!isset($schemaName)) {
             throw new Exception('A database schema should be passed.');
         }
 
-        $this->connection = $this->connectionContext
-            ->establishConnection($schemaName, $host);
+//         $this->connection = $this->connectionContext
+//             ->establishConnection($schemaName, $host);
+
+        $this->connection = $this->getConnection()
+        ->establishConnection($schemaName, $host);
     }
 
+//     to comply the Prototype pattern
     protected function getClone() {
         return clone $this;
     }

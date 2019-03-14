@@ -8,9 +8,17 @@ use
 
 trait ModelTrait {
 
+    private $environment;
+
     function __construct($environment = null, array $connectionData) {
-        parent::__construct(new Connections\PDOConnection($environment), $connectionData);
+        parent::__construct($connectionData);
         Connections\PDOConnection::setData($connectionData);
+
+        $this->environment = $environment;
+    }
+
+    function getConnection() {
+        return new new Connections\PDOConnection($this->environment);
     }
 
 }
