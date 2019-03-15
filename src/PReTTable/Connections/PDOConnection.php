@@ -10,8 +10,8 @@ use
 
 class PDOConnection extends AbstractConnection {
 
-    function establishConnection($schemaName, $host = null) {
-        parent::resolveConnectionData($schemaName, $host);
+    function establishConnection($schemaName) {
+        parent::resolveConnectionData($schemaName);
 
         $dsn = "$this->adapter:=$this->host;dbname=$schemaName";
 

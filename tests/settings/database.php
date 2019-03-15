@@ -2,14 +2,13 @@
 
 return [
 
-    'localhost' => [
-        'mydb' => [
-            'development' => [
-                'adapter' => 'mysql',
-                'username' => 'root',
-                'password' => '1234'
-            ]
+    'mydb' => [
+        'development' => [
+            'host' => 'localhost',
+            'adapter' => 'mysql',
+            'username' => 'root',
+            'password' => '1234'
         ]
     ]
-    
+
 ];

@@ -8,6 +8,8 @@ abstract class AbstractConnection {
 
     protected $host;
 
+    protected $port;
+
     protected $adapter;
 
     protected $username;
@@ -16,11 +18,7 @@ abstract class AbstractConnection {
 
     private static $data;
 
-    function __construct(array $data, $environment = null) {
-        if (!isset($environment)) {
-            $environment = 'development';
-        }
-
+    function __construct(array $data, $environment) {
         $this->environment = $environment;
         $this->username = null;
         $this->password = null;
@@ -28,22 +26,18 @@ abstract class AbstractConnection {
         self::$data = $data;
     }
 
-    abstract function establishConnection($schemaName, $host = null);
+    abstract function establishConnection($schemaName);
 
     static function setData(array $data) {
         self::$data = $data;
     }
 
-    function setEnvironment($environment) {
-        $this->environment = $environment;
-    }
+    protected function resolveConnectionData($schemaName) {
+        $environmentData = self::$data[$schemaName][$this->environment];
 
-    function resolveConnectionData($schemaName, $host = null) {
-        if (isset($host)) {
-            $this->host = $host;
-        }
+        $this->host = $environmentData['host'];
 
-        $environmentData = self::$data[$this->host][$schemaName][$this->environment];
+        //         $this->port = $environmentData['port'];
 
         $this->adapter = $environmentData['adapter'];
 
