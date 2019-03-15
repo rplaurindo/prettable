@@ -15,6 +15,10 @@ class PDOConnection extends AbstractConnection {
 
         $dsn = "$this->adapter:=$this->host;dbname=$schemaName";
 
+        if (isset($this->port)) {
+            $dsn .= ";port=$this->port";
+        }
+
         try {
             $connection = new PDO($dsn, $this->username, $this->password);
             $connection
@@ -27,6 +31,5 @@ class PDOConnection extends AbstractConnection {
 
         return $connection;
     }
-
 
 }

@@ -20,6 +20,7 @@ abstract class AbstractConnection {
 
     function __construct(array $data, $environment) {
         $this->environment = $environment;
+        $this->port = null;
         $this->username = null;
         $this->password = null;
 
@@ -37,7 +38,9 @@ abstract class AbstractConnection {
 
         $this->host = $environmentData['host'];
 
-        //         $this->port = $environmentData['port'];
+        if (array_key_exists('port', $environmentData)) {
+            $this->port = $environmentData['port'];
+        }
 
         $this->adapter = $environmentData['adapter'];
 
