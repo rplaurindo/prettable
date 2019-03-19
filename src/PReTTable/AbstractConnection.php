@@ -18,7 +18,7 @@ abstract class AbstractConnection {
 
     private static $data;
 
-    function __construct(array $data, $environment) {
+    function __construct(array $data, $environment = null) {
         $this->environment = $environment;
         $this->port = null;
         $this->username = null;
@@ -34,7 +34,11 @@ abstract class AbstractConnection {
     }
 
     protected function resolveConnectionData($schemaName) {
-        $environmentData = self::$data[$schemaName][$this->environment];
+        if (isset($this->environment)) {
+            $environmentData = self::$data[$schemaName][$this->environment];
+        } else {
+            $environmentData = self::$data[$schemaName];
+        }
 
         $this->host = $environmentData['host'];
 
