@@ -258,7 +258,7 @@ $model1 = new Model1();
 
 $model1->setPrimaryKeyValue(1);
 
-// print_r($model1->read('id', 1));
+print_r($model1->read('id', 1));
 // print_r($model1->read());
 
 
