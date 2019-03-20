@@ -13,25 +13,23 @@ use
 abstract class AbstractModel extends Repository\AbstractModelBase {
 
     function read($columnName = null, $value = null) {
-        $clone = $this->getClone();
-
-        $select = new Select\Repository($clone->name);
+        $select = new Select\Repository($this);
         $selectStatement = "SELECT {$select->getStatement()}";
 
         if (!isset($columnName) || !isset($value)) {
-            $columnName = $clone->getPrimaryKeyName();
-            $value = $clone->primaryKeyValue;
+            $columnName = $this->getPrimaryKeyName();
+            $value = $this->primaryKeyValue;
         }
 
         $queryStatement = "
             $selectStatement
 
-            FROM $clone->tableName
+            FROM $this->tableName
 
             WHERE $columnName = :$columnName";
 
         try {
-            $PDOstatement = $clone->connection->prepare($queryStatement);
+            $PDOstatement = $this->connection->prepare($queryStatement);
             $PDOstatement->bindParam(":$columnName", $value);
             $PDOstatement->execute();
 
@@ -131,9 +129,7 @@ abstract class AbstractModel extends Repository\AbstractModelBase {
     }
 
     function readParent($modelName) {
-        $clone = $this->getClone();
-
-        $relationalSelectBuilding = $clone->relationalSelectBuilding->build($modelName, $clone->primaryKeyValue);
+        $relationalSelectBuilding = $this->relationalSelectBuilding->build($modelName, $this->primaryKeyValue);
 
         $select = $relationalSelectBuilding->getSelect();
         $from = $relationalSelectBuilding->getFrom();
@@ -165,7 +161,7 @@ abstract class AbstractModel extends Repository\AbstractModelBase {
         echo "$queryStatement\n\n";
 
         try {
-            $PDOstatement = $clone->connection->query($queryStatement);
+            $PDOstatement = $this->connection->query($queryStatement);
 
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
