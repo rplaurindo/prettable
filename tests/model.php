@@ -258,6 +258,7 @@ $model1 = new Model1();
 
 $model1->setPrimaryKeyValue(1);
 
+// print_r($model1->read('id', 1));
 // print_r($model1->read());
 
 
@@ -271,7 +272,7 @@ $model1->setPrimaryKeyValue(1);
 
 
 // $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
-print_r($model1->readFrom('Model2', 1, 1));
+// print_r($model1->readFrom('Model2', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->getModel('Model4'));

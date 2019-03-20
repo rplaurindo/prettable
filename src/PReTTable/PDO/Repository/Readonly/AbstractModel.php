@@ -12,25 +12,27 @@ use
 
 abstract class AbstractModel extends Repository\AbstractModelBase {
 
-    function read() {
+    function read($columnName = null, $value = null) {
         $clone = $this->getClone();
 
         $select = new Select\Repository($clone->name);
         $selectStatement = "SELECT {$select->getStatement()}";
 
-        $primaryKeyName = $clone->getPrimaryKeyName();
+        if (!isset($columnName) || !isset($value)) {
+            $columnName = $clone->getPrimaryKeyName();
+            $value = $clone->primaryKeyValue;
+        }
 
         $queryStatement = "
             $selectStatement
 
             FROM $clone->tableName
-            WHERE $primaryKeyName = :$primaryKeyName";
 
-        echo "$queryStatement\n\n";
+            WHERE $columnName = :$columnName";
 
         try {
             $PDOstatement = $clone->connection->prepare($queryStatement);
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
+            $PDOstatement->bindParam(":$columnName", $value);
             $PDOstatement->execute();
 
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
