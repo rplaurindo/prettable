@@ -1,16 +1,16 @@
 <?php
 
-namespace PReTTable\PDO\Repository\Readonly;
+namespace PReTTable\Repository\PDO\Readonly;
 
 use
     PDO,
     PDOException,
     PReTTable\QueryStatements\Select,
     PReTTable\QueryStatements\SelectComponent,
-    PReTTable\PDO\Repository
+    PReTTable\Repository\PDO\AbstractModelBase
 ;
 
-abstract class AbstractModel extends Repository\AbstractModelBase {
+abstract class AbstractModel extends AbstractModelBase {
 
     function read($columnName = null, $value = null) {
         $select = new Select\Repository($this);

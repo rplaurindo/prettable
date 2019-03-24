@@ -230,18 +230,18 @@ $model1 = new Model1();
 //     ->save())
 // ;
 
-// $model1->setPrimaryKeyValue(1);
-// print_r(
-//     $model1->updateAssociations('Model2',
-//         [
-//             'table2_id' => 1
-//         ],
-//         [
-//             'table2_id' => 3
-//         ]
-//     )
-//     ->save())
-// ;
+$model1->setPrimaryKeyValue(2);
+print_r(
+    $model1->updateAssociations('Model2',
+        [
+            'table2_id' => 1
+        ],
+        [
+            'table2_id' => 3
+        ]
+    )
+    ->save())
+;
 
 // $model1->setPrimaryKeyValue(150);
 // print_r(
@@ -256,9 +256,9 @@ $model1 = new Model1();
 // ;
 
 
-$model1->setPrimaryKeyValue(1);
+// $model1->setPrimaryKeyValue(1);
 
-print_r($model1->read('id', 1));
+// print_r($model1->read('id', 1));
 // print_r($model1->read());
 
 

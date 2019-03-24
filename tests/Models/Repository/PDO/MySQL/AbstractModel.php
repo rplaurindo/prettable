@@ -5,7 +5,7 @@ namespace Models\Repository\PDO\MySQL;
 use
     Models\ModelTrait,
     Models\PDO\Paginables\MySQLTrait,
-    PReTTable\PDO\Repository\Writable
+    PReTTable\Repository\PDO\Writable
 ;
 
 abstract class AbstractModel extends Writable\AbstractModel {

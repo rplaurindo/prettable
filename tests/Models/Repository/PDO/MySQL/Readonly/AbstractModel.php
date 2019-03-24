@@ -5,7 +5,7 @@ namespace Models\Repository\PDO\MySQL\Readonly;
 use
     Models\ModelTrait,
     Models\PDO\Paginables\MySQLTrait,
-    PReTTable\PDO\Repository\Readonly
+    PReTTable\Repository\PDO\Readonly
 ;
 
 abstract class AbstractModel extends Readonly\AbstractModel {

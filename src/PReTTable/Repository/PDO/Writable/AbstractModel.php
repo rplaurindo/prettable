@@ -1,15 +1,15 @@
 <?php
 
-namespace PReTTable\PDO\Repository\Writable;
+namespace PReTTable\Repository\PDO\Writable;
 
 use
     Exception,
     PDOException,
     PReTTable\QueryStatements,
-    PReTTable\QueryStatements\WriteStrategies\PDO\InsertInto,
-    PReTTable\QueryStatements\WriteStrategies\PDO\Update,
+    PReTTable\QueryStatements\WriteStrategies\Repository\PDO\InsertInto,
+    PReTTable\QueryStatements\WriteStrategies\Repository\PDO\Update,
     PReTTable\Reflection,
-    PReTTable\PDO\Repository\Readonly,
+    PReTTable\Repository\PDO\Readonly,
     PReTTable\WritableModelInterface
 ;
 
