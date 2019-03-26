@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\WriteStrategies\Repository\PDO;
+namespace PReTTable\QueryStatements\WriteStrategies\Repository\NamedPlaceholder;
 
 use
     PReTTable\QueryStatements
