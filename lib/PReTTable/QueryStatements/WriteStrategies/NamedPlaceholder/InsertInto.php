@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\WriteStrategies;
+namespace PReTTable\QueryStatements\WriteStrategies\NamedPlaceholder\Repository;
 
 use
     PReTTable\QueryStatements
@@ -18,12 +18,17 @@ class InsertInto implements QueryStatements\StrategyInterface {
         $insertIntoStatement =
             "$this->tableName (" . implode(", ", array_keys($attributes)) . ")";
 
-        $valuesStatement = implode(', ', array_values($attributes));
+        $values = [];
+        foreach (array_keys($attributes) as $columnName) {
+            array_push($values, ":$columnName");
+        }
+
+        $valuesStatement = implode(', ', $values);
 
         $statement = "
             INSERT INTO $insertIntoStatement
-
-            VALUES ($valuesStatement)";
+            VALUES ($valuesStatement)
+        ";
 
         return $statement;
 

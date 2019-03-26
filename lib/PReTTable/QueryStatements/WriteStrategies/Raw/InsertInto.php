@@ -1,9 +1,10 @@
 <?php
 
-namespace PReTTable\QueryStatements\WriteStrategies\Repository\NamedPlaceholder;
+namespace PReTTable\QueryStatements\WriteStrategies\Raw;
 
 use
-    PReTTable\QueryStatements
+    PReTTable\QueryStatements,
+    PReTTable\Helpers\SQL
 ;
 
 class InsertInto implements QueryStatements\StrategyInterface {
@@ -18,17 +19,12 @@ class InsertInto implements QueryStatements\StrategyInterface {
         $insertIntoStatement =
             "$this->tableName (" . implode(", ", array_keys($attributes)) . ")";
 
-        $values = [];
-        foreach (array_keys($attributes) as $columnName) {
-            array_push($values, ":$columnName");
-        }
-
-        $valuesStatement = implode(', ', $values);
+        $valuesStatement = implode(', ', SQL\ValueAdjuster::adjust(array_values($attributes)));
 
         $statement = "
             INSERT INTO $insertIntoStatement
-            VALUES ($valuesStatement)
-        ";
+
+            VALUES ($valuesStatement)";
 
         return $statement;
 

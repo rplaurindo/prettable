@@ -17,7 +17,7 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
             $columnStatement = "$clone->tableName.$columnName";
         }
 
-        $value = ValueAdjuster::adjuste($value)[0];
+        $value = ValueAdjuster::adjust([$value])[0];
 
         $statement = "($columnStatement LIKE $value)";
         $clone->addStatement($statement);
@@ -34,8 +34,8 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
             $columnStatement = "$clone->tableName.$columnName";
         }
 
-        $start = ValueAdjuster::adjust($start)[0];
-        $end = ValueAdjuster::adjust($end)[0];
+        $start = ValueAdjuster::adjust([$start])[0];
+        $end = ValueAdjuster::adjust([$end])[0];
 
         $statement = "$columnStatement BETWEEN $start AND $end";
         $clone->addStatement($statement);
@@ -52,12 +52,12 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
 
         if (gettype($value) == 'array') {
             if (count($value)) {
-                $value = ValueAdjuster::adjust(...$value)[0];
+                $value = ValueAdjuster::adjust($value)[0];
                 $valuesStatement = implode(', ', $value);
                 $statement = "($columnStatement IN ($valuesStatement))";
             }
         } else {
-            $value = ValueAdjuster::adjust($value)[0];
+            $value = ValueAdjuster::adjust([$value])[0];
             $statement = "($columnStatement $this->comparisonOperator $value)";
         }
 

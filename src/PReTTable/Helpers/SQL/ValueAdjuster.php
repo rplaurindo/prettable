@@ -4,7 +4,7 @@ namespace PReTTable\Helpers\SQL;
 
 class ValueAdjuster {
 
-    static function adjust(...$values) {
+    static function adjust(array $values) {
         $adjusted = [];
 
         foreach ($values as $value) {
@@ -17,5 +17,9 @@ class ValueAdjuster {
 
         return $adjusted;
     }
+
+//     static function getAsQuestionMarkPlaceholder(...$values) {
+
+//     }
 
 }

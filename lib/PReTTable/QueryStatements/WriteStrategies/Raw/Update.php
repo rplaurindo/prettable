@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\WriteStrategies;
+namespace PReTTable\QueryStatements\WriteStrategies\Raw;
 
 use
     PReTTable\QueryStatements,
