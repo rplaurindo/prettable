@@ -218,33 +218,35 @@ $model1 = new Model1();
 //         ->save()
 // );
 
-// $model1->setPrimaryKeyValue(2);
+// $model1->setPrimaryKeyValue(1);
+
+// print_r($model1->read('id', 1));
 // print_r($model1->read());
 
-$model1->setPrimaryKeyValue(10);
+// $model1->setPrimaryKeyValue(10);
+// print_r(
+//     $model1->update(
+//         [
+//             'table1col' => 'a updated value 10',
+//         ]
+//     )
+//     ->save()
+// );
+
+$model1->setPrimaryKeyValue(1);
 print_r(
-    $model1->update(
+    $model1->updateAssociations('Model2',
         [
-            'table1col' => 'a updated value 10',
+            'table2_id' => 3
+        ],
+        [
+            'table2_id' => 4
         ]
     )
     ->save()
 );
 
-// $model1->setPrimaryKeyValue(2);
-// print_r(
-//     $model1->updateAssociations('Model2',
-//         [
-//             'table2_id' => 1
-//         ],
-//         [
-//             'table2_id' => 3
-//         ]
-//     )
-//     ->save())
-// ;
-
-// $model1->setPrimaryKeyValue(150);
+// $model1->setPrimaryKeyValue(10);
 // print_r(
 //     $model1->delete()
 //     ->save())
@@ -255,13 +257,6 @@ print_r(
 //     $model1->deleteAssociations('Model2')
 //     ->save())
 // ;
-
-
-// $model1->setPrimaryKeyValue(1);
-
-// print_r($model1->read('id', 1));
-// print_r($model1->read());
-
 
 // $model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
 // print_r($model1->join('Model3', 'table1_id')->readAll());

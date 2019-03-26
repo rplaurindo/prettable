@@ -84,7 +84,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                                                     $clone->primaryKeyValue,
                                                     ...$rows);
 
-        $strategy = new QueryStatements\StrategyContext(
+        $insertStrategy = new QueryStatements\StrategyContext(
             new InsertInto($associativeTableName));
 
         try {
@@ -93,10 +93,18 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             }
 
             foreach ($rows as $attributes) {
+
+                $values = array_values($attributes);
+
+                $placeholderStrategy =
+                    new Placeholders\StrategyContext(new QuestionMark());
+                $attributes = $placeholderStrategy->getStatement($attributes);
+
                 $PDOstatement = $clone->connection
-                    ->prepare($strategy->getStatement($attributes));
-                foreach ($attributes as $columnName => $value) {
-                    $PDOstatement->bindValue(":$columnName", $value);
+                    ->prepare($insertStrategy->getStatement($attributes));
+
+                foreach ($values as $index => $value) {
+                    $PDOstatement->bindValue($index + 1, $value);
                 }
                 $PDOstatement->execute();
             }
@@ -163,7 +171,8 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
         $queryStatement = "
             DELETE FROM $clone->tableName
-            WHERE $primaryKeyName = :$primaryKeyName";
+
+            WHERE $primaryKeyName = ?";
 
         try {
             if (!$clone->connection->inTransaction()) {
@@ -171,7 +180,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             }
 
             $PDOstatement = $clone->connection->prepare($queryStatement);
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
+            $PDOstatement->bindParam(1, $clone->primaryKeyValue);
             $PDOstatement->execute();
         } catch (PDOException $e) {
             $clone->rollBack();
@@ -182,7 +191,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         return $clone;
     }
 
-    function deleteAssociations($modelName, ...$relatedKeyValues) {
+    function deleteAssociations($modelName) {
         $clone = $this->getClone();
 
         $associativeModelName = $clone->relationshipBuilding
@@ -205,40 +214,16 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            if (count($relatedKeyValues)) {
-                $relatedForeignKeyName = $associativeModel
-                    ::getAssociativeColumnNames()[$modelName];
+            $queryStatement = "
+                DELETE FROM $associativeTableName
 
-                $queryStatement = "
-                    DELETE FROM $associativeTableName
-                    WHERE
-                        $foreignKeyName = :$foreignKeyName
-                        AND $relatedForeignKeyName = :$relatedForeignKeyName
-                ";
+                WHERE $foreignKeyName = ?";
 
-                foreach ($relatedKeyValues as $relatedKeyValue) {
-                    $PDOstatement = $clone->connection->prepare($queryStatement);
+            $PDOstatement = $clone->connection->prepare($queryStatement);
+            $PDOstatement->bindParam(1, $clone->primaryKeyValue);
 
-                    $PDOstatement
-                        ->bindParam(":$foreignKeyName", $clone->primaryKeyValue);
+            $PDOstatement->execute();
 
-                    $PDOstatement
-                        ->bindParam(":$relatedForeignKeyName", $relatedKeyValue);
-
-                    $PDOstatement->execute();
-                }
-            } else {
-                $queryStatement = "
-                    DELETE FROM $associativeTableName
-                    WHERE $foreignKeyName = :$foreignKeyName
-                ";
-
-                $PDOstatement = $clone->connection->prepare($queryStatement);
-                $PDOstatement->bindParam(":$foreignKeyName",
-                    $clone->primaryKeyValue);
-
-                $PDOstatement->execute();
-            }
         } catch (PDOException $e) {
             $clone->rollBack();
             echo $e;
