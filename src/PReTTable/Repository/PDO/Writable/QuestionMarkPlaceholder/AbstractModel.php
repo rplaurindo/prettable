@@ -6,7 +6,7 @@ use
     Exception,
     PDOException,
     PReTTable\QueryStatements,
-    PReTTable\QueryStatements\Placeholders\StrategyContext,
+    PReTTable\QueryStatements\Placeholders,
     PReTTable\QueryStatements\Placeholders\Strategies\QuestionMark,
     PReTTable\QueryStatements\WriteStrategies\InsertInto,
     PReTTable\QueryStatements\WriteStrategies\Update,
@@ -27,7 +27,9 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             new InsertInto($clone->tableName));
 
         $values = array_values($attributes);
-        $placeholderStrategy = new StrategyContext(new QuestionMark());
+
+        $placeholderStrategy =
+            new Placeholders\StrategyContext(new QuestionMark());
         $attributes = $placeholderStrategy->getStatement($attributes);
 
         try {
@@ -54,7 +56,8 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         if ($clone->model->isPrimaryKeySelfIncremental()) {
             $clone->setPrimaryKeyValue($clone->connection->lastInsertId());
         } else {
-            $clone->setPrimaryKeyValue($attributes[$clone->getPrimaryKeyName()]);
+            $clone->setPrimaryKeyValue($attributes[$clone
+                ->getPrimaryKeyName()]);
         }
 
         return $clone;
@@ -111,21 +114,26 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
         $primaryKeyName = $clone->getPrimaryKeyName();
 
-        $update = new Update($clone->tableName, $primaryKeyName);
+        $updateStrategy = new QueryStatements\StrategyContext(
+            new Update($clone->tableName, $primaryKeyName, $clone->primaryKeyValue));
 
-        $strategy = new QueryStatements\StrategyContext($update);
+        $values = array_values($attributes);
+
+        $placeholderStrategy =
+            new Placeholders\StrategyContext(new QuestionMark());
+        $attributes = $placeholderStrategy->getStatement($attributes);
 
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
 
-            $PDOstatement = $clone->connection->prepare($strategy
-                ->getStatement($attributes));
-            foreach ($attributes as $columnName => $value) {
-                $PDOstatement->bindValue(":$columnName", $value);
+            $PDOstatement = $clone->connection
+                ->prepare($updateStrategy->getStatement($attributes));
+
+            foreach ($values as $index => $value) {
+                $PDOstatement->bindValue($index + 1, $value);
             }
-            $PDOstatement->bindParam(":$primaryKeyName", $clone->primaryKeyValue);
 
             $PDOstatement->execute();
 

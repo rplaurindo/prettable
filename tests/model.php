@@ -218,19 +218,18 @@ $model1 = new Model1();
 //         ->save()
 // );
 
-$model1->setPrimaryKeyValue(2);
-print_r($model1->read());
+// $model1->setPrimaryKeyValue(2);
+// print_r($model1->read());
 
-// $model3->setPrimaryKeyValue(2);
-// print_r(
-//     $model3->update(
-//         [
-//             'table3col' => 'a updated value 2',
-//             'table1_id' => 1
-//         ]
-//     )
-//     ->save())
-// ;
+$model1->setPrimaryKeyValue(10);
+print_r(
+    $model1->update(
+        [
+            'table1col' => 'a updated value 10',
+        ]
+    )
+    ->save()
+);
 
 // $model1->setPrimaryKeyValue(2);
 // print_r(
