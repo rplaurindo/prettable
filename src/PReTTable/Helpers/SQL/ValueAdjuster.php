@@ -18,8 +18,4 @@ class ValueAdjuster {
         return $adjusted;
     }
 
-//     static function getAsQuestionMarkPlaceholder(...$values) {
-
-//     }
-
 }

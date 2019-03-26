@@ -1,19 +1,21 @@
 <?php
 
-namespace PReTTable\Repository\PDO\Writable;
+namespace PReTTable\Repository\PDO\Writable\QuestionMarkPlaceholder;
 
 use
     Exception,
     PDOException,
     PReTTable\QueryStatements,
+    PReTTable\QueryStatements\Placeholders\StrategyContext,
+    PReTTable\QueryStatements\Placeholders\Strategies\QuestionMark,
     PReTTable\QueryStatements\WriteStrategies\InsertInto,
     PReTTable\QueryStatements\WriteStrategies\Update,
     PReTTable\Reflection,
-    PReTTable\Repository\PDO\Readonly,
+    PReTTable\Repository\PDO\Readonly\QuestionMarkPlaceholder,
     PReTTable\WritableModelInterface
 ;
 
-abstract class AbstractModel extends Readonly\AbstractModel
+abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
     implements
         WritableModelInterface
 {
@@ -21,8 +23,12 @@ abstract class AbstractModel extends Readonly\AbstractModel
     function create(array $attributes) {
         $clone = $this->getClone();
 
-        $strategy = new QueryStatements\StrategyContext(
+        $insertStrategy = new QueryStatements\StrategyContext(
             new InsertInto($clone->tableName));
+
+        $values = array_values($attributes);
+        $placeholderStrategy = new StrategyContext(new QuestionMark());
+        $attributes = $placeholderStrategy->getStatement($attributes);
 
         try {
             if (!$clone->connection->inTransaction()) {
@@ -30,11 +36,12 @@ abstract class AbstractModel extends Readonly\AbstractModel
             }
 
             $PDOstatement = $clone->connection
-                ->prepare($strategy->getStatement($attributes));
-            foreach ($attributes as $columnName => $value) {
+                ->prepare($insertStrategy->getStatement($attributes));
+
+            foreach ($values as $index => $value) {
 //                 another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type,
 //                 for example. So this block can be moved to a external class.
-                $PDOstatement->bindValue(":$columnName", $value);
+                $PDOstatement->bindValue($index + 1, $value);
             }
 
             $PDOstatement->execute();

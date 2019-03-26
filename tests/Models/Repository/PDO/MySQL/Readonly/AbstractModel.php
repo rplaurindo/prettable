@@ -5,10 +5,10 @@ namespace Models\Repository\PDO\MySQL\Readonly;
 use
     Models\ModelTrait,
     Models\PDO\Paginables\MySQLTrait,
-    PReTTable\Repository\PDO\Readonly
+    PReTTable\Repository\PDO\Readonly\QuestionMarkPlaceholder
 ;
 
-abstract class AbstractModel extends Readonly\AbstractModel {
+abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel {
 
     use ModelTrait;
 

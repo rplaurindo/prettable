@@ -6,10 +6,10 @@ use
     PDO,
     PDOException,
     PReTTable\QueryStatements\Select,
-    PReTTable\Repository\PDO\AbstractModelBase
+    PReTTable\Repository\PDO\Readonly
 ;
 
-abstract class AbstractModel extends AbstractModelBase {
+abstract class AbstractModel extends Readonly\AbstractModel {
 
     function read($columnName = null, $value = null) {
         $select = new Select\Repository($this);

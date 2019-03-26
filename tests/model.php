@@ -26,7 +26,6 @@ class Model1 extends AbstractModel {
     static function getPrimaryKeyName() {
         return 'id';
     }
-
     static function isPrimaryKeySelfIncremental() {
         return true;
 //         return false;
@@ -219,6 +218,9 @@ $model1 = new Model1();
 //         ->save()
 // );
 
+$model1->setPrimaryKeyValue(2);
+print_r($model1->read());
+
 // $model3->setPrimaryKeyValue(2);
 // print_r(
 //     $model3->update(
@@ -230,18 +232,18 @@ $model1 = new Model1();
 //     ->save())
 // ;
 
-$model1->setPrimaryKeyValue(2);
-print_r(
-    $model1->updateAssociations('Model2',
-        [
-            'table2_id' => 1
-        ],
-        [
-            'table2_id' => 3
-        ]
-    )
-    ->save())
-;
+// $model1->setPrimaryKeyValue(2);
+// print_r(
+//     $model1->updateAssociations('Model2',
+//         [
+//             'table2_id' => 1
+//         ],
+//         [
+//             'table2_id' => 3
+//         ]
+//     )
+//     ->save())
+// ;
 
 // $model1->setPrimaryKeyValue(150);
 // print_r(
@@ -275,7 +277,7 @@ print_r(
 // print_r($model1->readFrom('Model2', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
-// print_r($model1->getModel('Model4'));
+// print_r($model1->readFrom('Model4'));
 
 // $model4->setPrimaryKeyValue(1);
 // print_r($model4->readParent('Model1'));

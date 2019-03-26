@@ -3,8 +3,7 @@
 namespace PReTTable\QueryStatements\WriteStrategies;
 
 use
-    PReTTable\QueryStatements,
-    PReTTable\Helpers\SQL
+    PReTTable\QueryStatements
 ;
 
 class Update implements QueryStatements\StrategyInterface {
@@ -22,16 +21,14 @@ class Update implements QueryStatements\StrategyInterface {
     }
 
     function getStatement(array $attributes) {
-        $whereStatement = "$this->primaryKeyName = $this->primaryKeyValue";
-        $values = SQL\ValueAdjuster::adjust(array_values($attributes));
-
         $settings = [];
-        foreach (array_keys($attributes) as $index => $columnName) {
-            $value = $values[$index];
+        foreach ($attributes as $columnName => $value) {
             array_push($settings, "$columnName = $value");
         }
 
         $settingsStatement = implode(', ', $settings);
+
+        $whereStatement = "$this->primaryKeyName = $this->primaryKeyValue";
 
         $statement = "
             UPDATE $this->tableName
