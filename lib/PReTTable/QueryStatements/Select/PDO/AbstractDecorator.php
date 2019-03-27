@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\Select;
+namespace PReTTable\QueryStatements\Select\PDO;
 
 use
     PDO,
