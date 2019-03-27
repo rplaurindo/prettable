@@ -233,18 +233,18 @@ $model1 = new Model1();
 //     ->save()
 // );
 
-$model1->setPrimaryKeyValue(1);
-print_r(
-    $model1->updateAssociations('Model2',
-        [
-            'table2_id' => 3
-        ],
-        [
-            'table2_id' => 4
-        ]
-    )
-    ->save()
-);
+// $model1->setPrimaryKeyValue(1);
+// print_r(
+//     $model1->updateAssociations('Model2',
+//         [
+//             'table2_id' => 3
+//         ],
+//         [
+//             'table2_id' => 4
+//         ]
+//     )
+//     ->save()
+// );
 
 // $model1->setPrimaryKeyValue(10);
 // print_r(
@@ -264,7 +264,7 @@ print_r(
 // print_r($model1->readAll());
 // erro
 // print_r($model1->readAll(2));
-// print_r($model1->readAll(2, 2));
+print_r($model1->readAll(2, 2));
 
 
 // $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');

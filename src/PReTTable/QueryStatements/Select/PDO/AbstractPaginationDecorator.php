@@ -19,13 +19,6 @@ abstract class AbstractPaginationDecorator extends AbstractDecorator {
         $this->_component = $component;
     }
 
-    function mountStatement() {
-        $statement = $this->getStatement();
-
-        return "{$this->_component->getStatement()}
-            $statement";
-    }
-
     function getRersult() {
         $queryStatement = $this->mountStatement();
 
