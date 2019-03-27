@@ -10,12 +10,11 @@ abstract class AbstractDecorator extends AbstractComponent {
         $this->_component = $component;
     }
 
-    abstract function getRersult();
-
     protected function mountStatement() {
         $statement = $this->getStatement();
 
         return "{$this->_component->getStatement()}
+
             $statement";
     }
 

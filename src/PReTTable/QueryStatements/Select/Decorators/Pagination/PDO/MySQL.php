@@ -1,6 +1,6 @@
 <?php
 
-namespace QueryStatements\Decorators\Select\Pagination\PDO;
+namespace PReTTable\QueryStatements\Select\Decorators\Pagination\PDO;
 
 use
     PReTTable\Helpers\Pagination,
@@ -21,8 +21,7 @@ class MySQL extends PDO\AbstractPaginationDecorator {
         $offset = Pagination::calculatesOffset($this->limit, $this->pageNumber);
 
         if (isset($this->limit)) {
-            return "
-            LIMIT $this->limit
+            return "LIMIT $this->limit
 
             OFFSET $offset";
         }
