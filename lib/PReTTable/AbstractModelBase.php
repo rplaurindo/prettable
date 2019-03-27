@@ -23,7 +23,7 @@ abstract class AbstractModelBase {
 
     abstract function getConnection();
 
-    protected function establishConnection($schemaName, $host = null) {
+    protected function establishConnection($schemaName) {
         if (!isset($schemaName)) {
             throw new Exception('A database schema should be passed.');
         }
@@ -32,7 +32,7 @@ abstract class AbstractModelBase {
 //             ->establishConnection($schemaName, $host);
 
         $this->connection = $this->getConnection()
-            ->establishConnection($schemaName, $host);
+            ->establishConnection($schemaName);
     }
 
 //     to comply the Prototype pattern
