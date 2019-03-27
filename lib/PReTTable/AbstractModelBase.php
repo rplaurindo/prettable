@@ -32,7 +32,7 @@ abstract class AbstractModelBase {
 //             ->establishConnection($schemaName, $host);
 
         $this->connection = $this->getConnection()
-        ->establishConnection($schemaName, $host);
+            ->establishConnection($schemaName, $host);
     }
 
 //     to comply the Prototype pattern
