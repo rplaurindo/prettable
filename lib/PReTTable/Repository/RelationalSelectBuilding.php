@@ -76,7 +76,7 @@ class RelationalSelectBuilding {
     function addsInvolved($modelName) {
         $this->involvedModelNames->append($modelName);
         $this->involvedTableNames
-            ->append(RelationshipBuilding::resolveTableName($modelName));
+            ->append(self::resolveTableName($modelName));
     }
 
     function getInvolvedModelNames() {
@@ -99,8 +99,7 @@ class RelationalSelectBuilding {
 
             $clone->associatedModelName = $modelName;
             $clone->associatedModel = Reflection::getDeclarationOf($modelName);
-            $clone->associatedTableName = RelationshipBuilding
-                ::resolveTableName($modelName);
+            $clone->associatedTableName = self::resolveTableName($modelName);
 
             $clone->select = new Select\Repository($clone->associatedModelName);
             $clone->fromStatement = $clone->associatedTableName;
@@ -119,7 +118,7 @@ class RelationalSelectBuilding {
                     $clone->associativeModel = Reflection
                         ::getDeclarationOf($clone->associativeModelName);
 
-                    $clone->associativeTableName = RelationshipBuilding
+                    $clone->associativeTableName = self
                         ::resolveTableName($clone->associativeModelName);
                     $clone->fromStatement = $clone->associativeTableName;
 
@@ -178,8 +177,7 @@ class RelationalSelectBuilding {
         $joins = [];
 
         foreach ($this->joins as $joinedModelName => $joinedColumnName) {
-            $joinedTableName = RelationshipBuilding
-                ::resolveTableName($joinedModelName);
+            $joinedTableName = self::resolveTableName($joinedModelName);
 
             if ($this->relationshipBuilding->isItContained($joinedModelName)) {
                 if ($this->relationshipBuilding
@@ -227,6 +225,17 @@ class RelationalSelectBuilding {
 
     protected function getClone() {
         return clone $this;
+    }
+
+    private static function resolveTableName($modelName) {
+        $model = Reflection::getDeclarationOf($modelName);
+
+        $tableName = $model::getTableName();
+        if (empty ($tableName)) {
+            return $modelName;
+        }
+
+        return $tableName;
     }
 
 }

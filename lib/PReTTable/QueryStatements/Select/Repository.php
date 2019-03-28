@@ -41,7 +41,7 @@ class Repository {
         $columnNames = $model->getColumnNames();
 
         if ($attachTableName) {
-            $tableName = RelationshipBuilding::resolveTableName($modelName);
+            $tableName = $model::getTableName();
         }
 
         if ($removePrimaryKeyName) {

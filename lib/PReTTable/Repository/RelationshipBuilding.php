@@ -29,22 +29,11 @@ class RelationshipBuilding {
         $this->modelName = $modelName;
 
         $this->model = Reflection::getDeclarationOf($modelName);
-        $this->tableName = self::resolveTableName($modelName);
+        $this->tableName = $this->model->getTableName();
         $this->primaryKeyName = $this->model->getPrimaryKeyName();
 
         $this->setOfThoseContained = new ArrayObject();
         $this->setOfContains = new ArrayObject();
-    }
-
-    static function resolveTableName($modelName) {
-        $model = Reflection::getDeclarationOf($modelName);
-
-        $tableName = $model::getTableName();
-        if (empty ($tableName)) {
-            return $modelName;
-        }
-
-        return $tableName;
     }
 
     function getModelName() {
