@@ -17,23 +17,23 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         $this->joins = new ArrayObject();
     }
 
-    function join($modelName, $joinedModelNameColumn, $leftModelNameColumn, $type = 'INNER') {
+    function join($tableName, $columnName, $leftTableColumnName, $type = 'INNER') {
         $clone = $this->getClone();
 
-        $joinColumns = [
-            'joinedModelNameColumn' => $joinedModelNameColumn,
-            'leftModelNameColumn' => $leftModelNameColumn
+        $joinedColumns = [
+            'columnName' => $columnName,
+            'leftTableColumnName' => $leftTableColumnName
         ];
 
         if ($clone->joins->offsetExists($type)) {
             $join = $clone->joins->offsetGet($type);
 
-            if (!array_key_exists($modelName, $join)) {
-                $join[$modelName] = $joinColumns;
+            if (!array_key_exists($tableName, $join)) {
+                $join[$tableName] = $joinedColumns;
             }
         } else {
             $join = [];
-            $join[$modelName] = $joinColumns;
+            $join[$tableName] = $joinedColumns;
         }
 
         $clone->joins->offsetSet($type, $join);
@@ -42,7 +42,21 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     }
 
     function getJoinsStatement() {
+        $statement = '';
 
+        foreach ($this->joins as $type => $join) {
+            $joinedTables = array_keys($join);
+
+            foreach ($joinedTables as $joinedTableName => $joinedColumns) {
+                $columnName = $joinedColumns['columnName'];
+                $leftTableColumnName = $joinedColumns['leftTableColumnName'];
+
+                $statement .= "$type JOIN $joinedTableName ON $joinedTableName.$columnName = $this->getTableName().$leftTableColumnName\n\n";
+            }
+
+        }
+
+        return $statement;
     }
 
 }
