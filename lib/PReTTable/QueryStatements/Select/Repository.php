@@ -4,8 +4,7 @@ namespace PReTTable\QueryStatements\Select;
 
 use
     PReTTable\Reflection,
-    PReTTable\InheritanceRelationship,
-    PReTTable\Repository\RelationshipBuilding
+    PReTTable\InheritanceRelationship
 ;
 
 class Repository {

@@ -2,12 +2,14 @@
 
 namespace PReTTable;
 
+use
+    ArrayObject
+;
+
 abstract class AbstractModel extends AbstractModelBase
     implements
         \PReTTable\IdentifiableModelInterface
 {
-
-    protected $name;
 
     protected $primaryKeyValue;
 
@@ -15,10 +17,23 @@ abstract class AbstractModel extends AbstractModelBase
 
     protected $orderOfOrderBy;
 
+    private $name;
+
+    private $involvedModelNames;
+
+    private $involvedTableNames;
+
     function __construct(array $connectionData) {
         parent::__construct($connectionData);
 
         $this->name = get_class($this);
+
+        $this->involvedModelNames = new ArrayObject();
+        $this->involvedTableNames = new ArrayObject();
+    }
+
+    function getName() {
+        return $this->name;
     }
 
     function setPrimaryKeyValue($value) {
@@ -32,6 +47,23 @@ abstract class AbstractModel extends AbstractModelBase
         $clone->orderOfOrderBy = $order;
 
         return $clone;
+    }
+
+    function addsInvolvedModel($modelName) {
+        InheritanceRelationship
+            ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
+
+        $this->involvedModelNames->append($modelName);
+        $model = Reflection::getDeclarationOf($modelName);
+        $this->involvedTableNames->append($model::getTableName());
+    }
+
+    function getInvolvedModelNames() {
+        return $this->involvedModelNames->getArrayCopy();
+    }
+
+    protected function getInvolvedTableNames() {
+        return $this->involvedTableNames->getArrayCopy();
     }
 
 }

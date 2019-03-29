@@ -23,7 +23,7 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         $queryStatement = "
             $selectStatement
 
-            FROM $this->tableName
+            FROM {$this->getTableName()}
 
             WHERE $columnName = ?";
 

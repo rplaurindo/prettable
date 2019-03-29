@@ -13,12 +13,12 @@ use
 abstract class AbstractModel extends AbstractModelBase {
 
     function readAll() {
-        $select = new Select\Repository($this->name);
+        $select = new Select\Repository($this->getName());
 
         $queryStatement = "
-            SELECT {$select->getStatement(...$this->relationalSelectBuilding->getInvolvedModelNames())}
+            SELECT {$select->getStatement(...$this->getInvolvedModelNames())}
 
-            FROM $this->tableName";
+            FROM {$this->getTableName()}";
 
         $joinsStatement = "";
 

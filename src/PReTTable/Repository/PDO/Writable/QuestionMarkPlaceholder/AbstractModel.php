@@ -24,7 +24,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         $clone = $this->getClone();
 
         $insertStrategy = new QueryStatements\StrategyContext(
-            new InsertInto($clone->tableName));
+            new InsertInto($clone->getTableName()));
 
         $values = array_values($attributes);
 
@@ -53,7 +53,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             throw new PDOException($e);
         }
 
-        if ($clone->model->isPrimaryKeySelfIncremental()) {
+        if ($clone->isPrimaryKeySelfIncremental()) {
             $clone->setPrimaryKeyValue($clone->connection->lastInsertId());
         } else {
             $clone->setPrimaryKeyValue($attributes[$clone
@@ -70,7 +70,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             ->getAssociativeModelNameOf($modelName);
 
         if (!isset($associativeModelName)) {
-            throw new Exception("There's no such relationship between $clone->name and $modelName.");
+            throw new Exception("There's no such relationship between {$clone->getName()} and $modelName.");
         }
 
         $associativeModel = Reflection
@@ -79,7 +79,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         $associativeTableName = $associativeModel->getTableName();
 
         $foreignKeyName = $associativeModel
-            ::getAssociativeColumnNames()[$clone->name];
+            ::getAssociativeColumnNames()[$clone->getName()];
         $rows = self::attachesAssociativeForeignKey($foreignKeyName,
                                                     $clone->primaryKeyValue,
                                                     ...$rows);
@@ -123,7 +123,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         $primaryKeyName = $clone->getPrimaryKeyName();
 
         $updateStrategy = new QueryStatements\StrategyContext(
-            new Update($clone->tableName, $primaryKeyName, $clone->primaryKeyValue));
+            new Update($clone->getTableName(), $primaryKeyName, $clone->primaryKeyValue));
 
         $values = array_values($attributes);
 
@@ -170,7 +170,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         $primaryKeyName = $clone->getPrimaryKeyName();
 
         $queryStatement = "
-            DELETE FROM $clone->tableName
+            DELETE FROM {$clone->getTableName()}
 
             WHERE $primaryKeyName = ?";
 
@@ -198,7 +198,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             ->getAssociativeModelNameOf($modelName);
 
         if (!isset($associativeModelName)) {
-            throw new Exception("There's no such relationship between $clone->name and $modelName.");
+            throw new Exception("There's no such relationship between {$clone->getName()} and $modelName.");
         }
 
         $associativeModel = Reflection
@@ -207,7 +207,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         $associativeTableName = $associativeModel->getTableName();
 
         $foreignKeyName = $associativeModel
-            ::getAssociativeColumnNames()[$clone->name];
+            ::getAssociativeColumnNames()[$clone->getName()];
 
         try {
             if (!$clone->connection->inTransaction()) {

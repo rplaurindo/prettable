@@ -4,8 +4,7 @@ namespace PReTTable\Repository;
 
 use
     ArrayObject,
-    PReTTable\InheritanceRelationship,
-    PReTTable\Reflection
+    PReTTable\InheritanceRelationship
 ;
 
 class RelationshipBuilding {
@@ -22,34 +21,9 @@ class RelationshipBuilding {
 
     private $setOfContains;
 
-    function __construct($modelName) {
-        InheritanceRelationship::checkIfClassIsA($modelName,
-            'PReTTable\IdentifiableModelInterface');
-
-        $this->modelName = $modelName;
-
-        $this->model = Reflection::getDeclarationOf($modelName);
-        $this->tableName = $this->model->getTableName();
-        $this->primaryKeyName = $this->model->getPrimaryKeyName();
-
+    function __construct() {
         $this->setOfThoseContained = new ArrayObject();
         $this->setOfContains = new ArrayObject();
-    }
-
-    function getModelName() {
-        return $this->modelName;
-    }
-
-    function getModel() {
-        return $this->model;
-    }
-
-    function getTableName() {
-        return $this->tableName;
-    }
-
-    function getPrimaryKeyName() {
-        return $this->primaryKeyName;
     }
 
     function contains($modelName, $associatedColumn) {

@@ -9,10 +9,6 @@ use
 
 abstract class AbstractModelBase extends PReTTable\AbstractModel {
 
-    protected $model;
-
-    protected $tableName;
-
     protected $relationshipBuilding;
 
     protected $relationalSelectBuilding;
@@ -20,11 +16,8 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     function __construct(array $connectionData) {
         parent::__construct($connectionData);
 
-        $this->relationshipBuilding = new RelationshipBuilding($this->name);
-        $this->relationalSelectBuilding = new RelationalSelectBuilding($this->relationshipBuilding);
-
-        $this->model = $this->relationshipBuilding->getModel();
-        $this->tableName = $this->relationshipBuilding->getTableName();
+        $this->relationshipBuilding = new RelationshipBuilding($this->getName());
+        $this->relationalSelectBuilding = new RelationalSelectBuilding($this->relationshipBuilding, $this);
     }
 
     function join($modelName, $associatedColumn) {
@@ -32,7 +25,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
 
         $clone->relationalSelectBuilding->join($modelName, $associatedColumn);
 
-        $clone->relationalSelectBuilding->addsInvolved($modelName);
+        $clone->addsInvolvedModel($modelName);
 
         return $clone;
     }
@@ -52,11 +45,11 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     protected function getOrderBy() {
         if (isset($this->orderBy)) {
 
-            if (count($this->relationalSelectBuilding->getInvolvedTableNames())) {
+            if (count($this->getInvolvedTableNames())) {
                 $explodedOrderByStatement = explode('.', $this->orderBy);
 
                 if (count($explodedOrderByStatement) != 2
-                    || !in_array($explodedOrderByStatement[0], $this->relationalSelectBuilding->getInvolvedTableNames())
+                    || !in_array($explodedOrderByStatement[0], $this->getInvolvedTableNames())
                     ) {
                         throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
                     }

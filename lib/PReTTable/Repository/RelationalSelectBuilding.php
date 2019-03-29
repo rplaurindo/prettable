@@ -4,6 +4,7 @@ namespace PReTTable\Repository;
 
 use
     ArrayObject,
+    PReTTable\AbstractModel,
     PReTTable\InheritanceRelationship,
     PReTTable\QueryStatements\Select,
     PReTTable\Reflection
@@ -13,6 +14,8 @@ use
 class RelationalSelectBuilding {
 
     private $relationshipBuilding;
+
+    private $model;
 
     private $modelName;
 
@@ -32,10 +35,6 @@ class RelationalSelectBuilding {
 
     private $associativeModel;
 
-    private $involvedModelNames;
-
-    private $involvedTableNames;
-
     private $select;
 
     private $selectStatement;
@@ -46,17 +45,15 @@ class RelationalSelectBuilding {
 
     private $whereClauseStatement;
 
-    function __construct(RelationshipBuilding $relationshipBuilding) {
+    function __construct(RelationshipBuilding $relationshipBuilding, AbstractModel $model) {
         $this->relationshipBuilding = $relationshipBuilding;
 
-        $this->modelName = $relationshipBuilding->getModelName();
-        $this->tableName = $relationshipBuilding->getTableName();
-        $this->primaryKeyName = $relationshipBuilding->getPrimaryKeyName();
+        $this->model = $model;
+        $this->modelName = $this->model->getName();
+        $this->tableName = $this->model->getTableName();
+        $this->primaryKeyName = $this->model->getPrimaryKeyName();
 
         $this->joins = new ArrayObject();
-
-        $this->involvedModelNames = new ArrayObject();
-        $this->involvedTableNames = new ArrayObject();
     }
 
     function join($modelName, $associatedColumn) {
@@ -73,20 +70,6 @@ class RelationalSelectBuilding {
         return clone $clone;
     }
 
-    function addsInvolved($modelName) {
-        $this->involvedModelNames->append($modelName);
-        $this->involvedTableNames
-            ->append(self::resolveTableName($modelName));
-    }
-
-    function getInvolvedModelNames() {
-        return $this->involvedModelNames->getArrayCopy();
-    }
-
-    function getInvolvedTableNames() {
-        return $this->involvedTableNames->getArrayCopy();
-    }
-
     function build($modelName, $primaryKeyValue = null) {
         InheritanceRelationship::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
@@ -99,7 +82,7 @@ class RelationalSelectBuilding {
 
             $clone->associatedModelName = $modelName;
             $clone->associatedModel = Reflection::getDeclarationOf($modelName);
-            $clone->associatedTableName = self::resolveTableName($modelName);
+            $clone->associatedTableName = $clone->associatedModel->getTableName();
 
             $clone->select = new Select\Repository($clone->associatedModelName);
             $clone->fromStatement = $clone->associatedTableName;
@@ -113,13 +96,12 @@ class RelationalSelectBuilding {
                         ->relationshipBuilding
                         ->getAssociativeModelNameOf($modelName);
 
-                    $clone->addsInvolved($clone->associativeModelName);
+                    $clone->model->addsInvolvedModel($clone->associativeModelName);
 
                     $clone->associativeModel = Reflection
                         ::getDeclarationOf($clone->associativeModelName);
 
-                    $clone->associativeTableName = self
-                        ::resolveTableName($clone->associativeModelName);
+                    $clone->associativeTableName = $clone->associativeModel->getTableName();
                     $clone->fromStatement = $clone->associativeTableName;
 
                     $clone->join($clone->modelName, $clone->primaryKeyName);
@@ -155,7 +137,7 @@ class RelationalSelectBuilding {
             }
 
             $clone->selectStatement = $clone->select
-                ->getStatement(true, ...$clone->getInvolvedModelNames());
+                ->getStatement(true, ...$clone->model->getInvolvedModelNames());
         }
 
         return $clone;
@@ -177,7 +159,8 @@ class RelationalSelectBuilding {
         $joins = [];
 
         foreach ($this->joins as $joinedModelName => $joinedColumnName) {
-            $joinedTableName = self::resolveTableName($joinedModelName);
+            $joinedModel = Reflection::getDeclarationOf($joinedModelName);
+            $joinedTableName = $joinedModel::getTableName();
 
             if ($this->relationshipBuilding->isItContained($joinedModelName)) {
                 if ($this->relationshipBuilding
@@ -225,17 +208,6 @@ class RelationalSelectBuilding {
 
     protected function getClone() {
         return clone $this;
-    }
-
-    private static function resolveTableName($modelName) {
-        $model = Reflection::getDeclarationOf($modelName);
-
-        $tableName = $model::getTableName();
-        if (empty ($tableName)) {
-            return $modelName;
-        }
-
-        return $tableName;
     }
 
 }
