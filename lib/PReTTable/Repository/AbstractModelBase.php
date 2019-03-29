@@ -17,7 +17,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         parent::__construct($connectionData);
 
         $this->relationshipBuilding = new RelationshipBuilding($this->getName());
-        $this->relationalSelectBuilding = new RelationalSelectBuilding($this->relationshipBuilding, $this);
+        $this->relationalSelectBuilding = new RelationalSelectBuilding($this, $this->relationshipBuilding);
     }
 
     function join($modelName, $associatedColumn) {

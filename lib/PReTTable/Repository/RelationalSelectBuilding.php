@@ -45,13 +45,13 @@ class RelationalSelectBuilding {
 
     private $whereClauseStatement;
 
-    function __construct(RelationshipBuilding $relationshipBuilding, AbstractModel $model) {
-        $this->relationshipBuilding = $relationshipBuilding;
-
+    function __construct(AbstractModel $model, RelationshipBuilding $relationshipBuilding) {
         $this->model = $model;
         $this->modelName = $this->model->getName();
         $this->tableName = $this->model->getTableName();
         $this->primaryKeyName = $this->model->getPrimaryKeyName();
+
+        $this->relationshipBuilding = $relationshipBuilding;
 
         $this->joins = new ArrayObject();
     }
