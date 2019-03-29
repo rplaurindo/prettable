@@ -23,6 +23,8 @@ abstract class AbstractModel extends AbstractModelBase
 
     private $involvedTableNames;
 
+    private $joins;
+
     function __construct(array $connectionData) {
         parent::__construct($connectionData);
 
@@ -30,6 +32,8 @@ abstract class AbstractModel extends AbstractModelBase
 
         $this->involvedModelNames = new ArrayObject();
         $this->involvedTableNames = new ArrayObject();
+
+        $this->joins = new ArrayObject();
     }
 
     function getName() {
@@ -60,6 +64,42 @@ abstract class AbstractModel extends AbstractModelBase
 
     function getInvolvedModelNames() {
         return $this->involvedModelNames->getArrayCopy();
+    }
+
+    function join($modelName, $columnName, $leftTableColumnName, $type = 'INNER') {
+        InheritanceRelationship::checkIfClassIsA($modelName,
+            'PReTTable\ModelInterface');
+
+        $clone = $this->getClone();
+
+        $clone->addsInvolvedModel($modelName);
+
+        $model = Reflection::getDeclarationOf($modelName);
+        $tableName = $model::getTableName();
+
+        $joinedColumns = [
+            'columnName' => $columnName,
+            'leftTableColumnName' => $leftTableColumnName
+        ];
+
+        if ($clone->joins->offsetExists($type)) {
+            $join = $clone->joins->offsetGet($type);
+
+            if (!array_key_exists($tableName, $join)) {
+                $join[$tableName] = $joinedColumns;
+            }
+        } else {
+            $join = [];
+            $join[$tableName] = $joinedColumns;
+        }
+
+        $clone->joins->offsetSet($type, $join);
+
+        return clone $clone;
+    }
+
+    function getJoins() {
+        return $this->joins->getArrayCopy();
     }
 
     protected function getInvolvedTableNames() {

@@ -3,45 +3,12 @@
 namespace PReTTable\DAO;
 
 use
-ArrayObject,
-PReTTable
+    PReTTable\AbstractModel
 ;
 
-abstract class AbstractModelBase extends PReTTable\AbstractModel {
+abstract class AbstractModelBase extends AbstractModel {
 
-    private $joins;
-
-    function __construct(array $connectionData) {
-        parent::__construct($connectionData);
-
-        $this->joins = new ArrayObject();
-    }
-
-    function join($tableName, $columnName, $leftTableColumnName, $type = 'INNER') {
-        $clone = $this->getClone();
-
-        $joinedColumns = [
-            'columnName' => $columnName,
-            'leftTableColumnName' => $leftTableColumnName
-        ];
-
-        if ($clone->joins->offsetExists($type)) {
-            $join = $clone->joins->offsetGet($type);
-
-            if (!array_key_exists($tableName, $join)) {
-                $join[$tableName] = $joinedColumns;
-            }
-        } else {
-            $join = [];
-            $join[$tableName] = $joinedColumns;
-        }
-
-        $clone->joins->offsetSet($type, $join);
-
-        return clone $clone;
-    }
-
-    function getJoinsStatement() {
+    protected function getJoinsStatement() {
         $statement = '';
 
         foreach ($this->joins as $type => $join) {

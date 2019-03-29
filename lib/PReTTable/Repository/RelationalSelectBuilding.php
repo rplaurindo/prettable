@@ -57,9 +57,8 @@ class RelationalSelectBuilding {
     }
 
     function join($modelName, $associatedColumn) {
-       InheritanceRelationship::checkIfClassIsA($modelName,
-            'PReTTable\IdentifiableModelInterface',
-            'PReTTable\AssociativeModelInterface');
+        InheritanceRelationship
+            ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
 
         $clone = $this->getClone();
 
@@ -105,6 +104,8 @@ class RelationalSelectBuilding {
                     $clone->fromStatement = $clone->associativeTableName;
 
                     $clone->join($clone->modelName, $clone->primaryKeyName);
+//                     $clone->model->join($modelName, $columnName, $leftTableColumnName);
+
                     $clone->join($modelName, $clone->associatedModel
                         ->getPrimaryKeyName());
 
@@ -157,6 +158,8 @@ class RelationalSelectBuilding {
 
     function getJoins() {
         $joins = [];
+
+        print_r("{$this->joins->getArrayCopy()} \n\n");
 
         foreach ($this->joins as $joinedModelName => $joinedColumnName) {
             $joinedModel = Reflection::getDeclarationOf($joinedModelName);

@@ -252,7 +252,7 @@ $model1 = new Model1();
 //     ->save())
 // ;
 
-// $model1->setPrimaryKeyValue(1);
+$model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->deleteAssociations('Model2')
 //     ->save())
@@ -264,11 +264,11 @@ $model1 = new Model1();
 // print_r($model1->readAll());
 // erro
 // print_r($model1->readAll(2));
-print_r($model1->readAll(2, 2));
+// print_r($model1->readAll(2, 2));
 
 
 // $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
-// print_r($model1->readFrom('Model2', 1, 1));
+print_r($model1->readFrom('Model2', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->readFrom('Model4'));
