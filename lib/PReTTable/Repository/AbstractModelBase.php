@@ -98,7 +98,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                         $associativeModelName = $clone
                             ->getAssociativeModelNameOf($modelName);
                         
-//                         $this->addsInvolvedModel($associativeModelName);
+                        $this->addsInvolvedModel($associativeModelName);
                         
                         $associativeModel = Reflection
                             ::getDeclarationOf($associativeModelName);
@@ -124,15 +124,15 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                             $associativeColumnOfAssociatedModel, 'INNER',
                             $associativeModelName);
                     } else {
-                        //                     $clone->join($clone->modelName, $clone->primaryKeyName);
-                        
-                        //                     $associatedColumn = $clone->relationshipBuilding
                         $associatedColumn = $clone->getAssociatedColumn($modelName);
+
+                        $clone->join($clone->name, $clone->getPrimaryKeyName(),
+                            $associatedColumn, 'INNER',
+                            $modelName);
                     }
-                    
                 } else {
                     //                 $associatedColumn = $clone->relationshipBuilding
-                    $associatedColumn = $clone->getAssociatedColumn($modelName);
+//                     $associatedColumn = $clone->getAssociatedColumn($modelName);
                     
                     //                 $clone->join($clone->modelName, $associatedColumn);
                 }
@@ -141,9 +141,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
 //                     ->getStatement(true, ...$clone->getInvolvedModelNames());
             }
             
-//             $clone->mountAssociativeJoinsStatement();
-            
-            $clone->mountJoinsStatement();
+            echo $clone->mountJoinsStatement();
             
             return $clone;
     }

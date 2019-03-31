@@ -20,19 +20,12 @@ abstract class AbstractModel extends AbstractModelBase {
 
             FROM {$this->getTableName()}";
 
-        $joinsStatement = "";
-
-        $joins = $this->relationalSelectBuilding->getJoins();
-        if (count($joins)) {
-            $joinsStatement .= "
-            INNER JOIN " .
-            implode("
-            INNER JOIN ", $joins);
-        }
+        $joinsStatement = $this->mountJoinsStatement();
 
         if (!empty($joinsStatement)) {
             $queryStatement .= "
-                $joinsStatement";
+            
+            $joinsStatement";
         }
 
         $orderByStatement = $this->getOrderBy();

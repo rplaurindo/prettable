@@ -252,14 +252,14 @@ $model1 = new Model1();
 //     ->save())
 // ;
 
-$model1->setPrimaryKeyValue(1);
+// $model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->deleteAssociations('Model2')
 //     ->save())
 // ;
 
 // $model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
-// print_r($model1->join('Model3', 'table1_id')->readAll());
+print_r($model1->join('Model3', 'table1_id', 'id')->readAll());
 
 // print_r($model1->readAll());
 // erro
@@ -268,7 +268,8 @@ $model1->setPrimaryKeyValue(1);
 
 
 // $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
-print_r($model1->readFrom('Model2', 1, 1));
+// print_r($model1->readFrom('Model2', 1, 1));
+// print_r($model1->readFrom('Model4', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->readFrom('Model4'));
