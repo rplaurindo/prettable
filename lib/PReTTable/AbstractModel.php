@@ -17,28 +17,28 @@ abstract class AbstractModel extends AbstractModelBase
 
     protected $orderOfOrderBy;
 
-    private $name;
+    protected $name;
 
+    protected $joins;
+    
     private $involvedModelNames;
-
+    
     private $involvedTableNames;
-
-    private $joins;
 
     function __construct(array $connectionData) {
         parent::__construct($connectionData);
 
         $this->name = get_class($this);
-
+        
         $this->involvedModelNames = new ArrayObject();
         $this->involvedTableNames = new ArrayObject();
 
         $this->joins = new ArrayObject();
     }
 
-    function getName() {
-        return $this->name;
-    }
+//     function getName() {
+//         return $this->name;
+//     }
 
     function setPrimaryKeyValue($value) {
         $this->primaryKeyValue = $value;
@@ -53,53 +53,82 @@ abstract class AbstractModel extends AbstractModelBase
         return $clone;
     }
 
-    function addsInvolvedModel($modelName) {
+    function join($modelName, $columnName, $leftColumnName, $type = 'INNER', $leftModelName = null) {
         InheritanceRelationship
             ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
 
-        $this->involvedModelNames->append($modelName);
-        $model = Reflection::getDeclarationOf($modelName);
-        $this->involvedTableNames->append($model::getTableName());
-    }
-
-    function getInvolvedModelNames() {
-        return $this->involvedModelNames->getArrayCopy();
-    }
-
-    function join($modelName, $columnName, $leftTableColumnName, $type = 'INNER') {
-        InheritanceRelationship::checkIfClassIsA($modelName,
-            'PReTTable\ModelInterface');
-
         $clone = $this->getClone();
+        
+        if (isset($leftModelName)) {
+            InheritanceRelationship
+                ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
+        } else {
+            $leftModelName = $clone->name;
+        }
 
         $clone->addsInvolvedModel($modelName);
 
-        $model = Reflection::getDeclarationOf($modelName);
-        $tableName = $model::getTableName();
-
-        $joinedColumns = [
-            'columnName' => $columnName,
-            'leftTableColumnName' => $leftTableColumnName
+        $join = [
+            'leftColumnName' => $leftColumnName,
+            'columnName' => $columnName
         ];
 
         if ($clone->joins->offsetExists($type)) {
-            $join = $clone->joins->offsetGet($type);
+            $currentJoin = $clone->joins->offsetGet($type);
 
-            if (!array_key_exists($tableName, $join)) {
-                $join[$tableName] = $joinedColumns;
+            if (!array_key_exists($leftModelName, $currentJoin)) {
+                $currentJoin[$leftModelName] = [];
             }
         } else {
-            $join = [];
-            $join[$tableName] = $joinedColumns;
+            $currentJoin = [];
+            $currentJoin[$leftModelName] = [];
         }
+        
+        $currentJoin[$leftModelName][$modelName] = $join;
 
-        $clone->joins->offsetSet($type, $join);
+        $clone->joins->offsetSet($type, $currentJoin);
 
-        return clone $clone;
+        return $clone;
     }
 
-    function getJoins() {
-        return $this->joins->getArrayCopy();
+    protected function addsInvolvedModel($modelName) {
+        InheritanceRelationship
+            ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
+        
+        if (!array_search($modelName, $this->involvedModelNames->getArrayCopy())) {
+            $this->involvedModelNames->append($modelName);
+            $model = Reflection::getDeclarationOf($modelName);
+            $this->involvedTableNames->append($model::getTableName());
+        }
+        
+    }
+    
+    protected function mountJoinsStatement() {
+        $statement = '';
+        
+        print_r($this->joins);
+        
+//         foreach ($this->joins as $type => $join) {
+//             $joinedTables = array_keys($join);
+            
+//             foreach ($joinedTables as $joinedTableName) {
+//                 $joinedColumns = $join[$joinedTableName];
+                
+//                 $columnName = $joinedColumns['columnName'];
+//                 $leftTableColumnName = $joinedColumns['leftTableColumnName'];
+                
+//                 $leftTableName = $this->getTableName();
+                
+//                 $statement .= "$type JOIN $joinedTableName ON $joinedTableName.$columnName = $leftTableName.$leftTableColumnName\n";
+//             }
+            
+//         }
+        
+//         return $statement;
+    }
+    
+    protected function getInvolvedModelNames() {
+        return $this->involvedModelNames->getArrayCopy();
     }
 
     protected function getInvolvedTableNames() {
