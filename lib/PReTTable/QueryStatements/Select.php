@@ -1,13 +1,13 @@
 <?php
 
-namespace PReTTable\QueryStatements\Select;
+namespace PReTTable\QueryStatements;
 
 use
     PReTTable\Reflection,
     PReTTable\InheritanceRelationship
 ;
 
-class Repository {
+class Select {
 
     private $modelName;
 

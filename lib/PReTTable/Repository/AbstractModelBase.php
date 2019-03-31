@@ -3,43 +3,149 @@
 namespace PReTTable\Repository;
 
 use
+    ArrayObject,
+    Exception,
     PReTTable,
-    Exception
+    PReTTable\InheritanceRelationship,
+    PReTTable\QueryStatements\Select,
+    PReTTable\Reflection
 ;
 
 abstract class AbstractModelBase extends PReTTable\AbstractModel {
-
-    protected $relationshipBuilding;
-
-    protected $relationalSelectBuilding;
+    
+    private $setOfThoseContained;
+    
+    private $setOfContains;
 
     function __construct(array $connectionData) {
         parent::__construct($connectionData);
 
-        $this->relationshipBuilding = new RelationshipBuilding($this->getName());
-        $this->relationalSelectBuilding = new RelationalSelectBuilding($this, $this->relationshipBuilding);
+        $this->setOfThoseContained = new ArrayObject();
+        $this->setOfContains = new ArrayObject();
     }
-
-    function join($modelName, $associatedColumn) {
-        $clone = $this->getClone();
-
-        $clone->relationalSelectBuilding->join($modelName, $associatedColumn);
-
-        $clone->addsInvolvedModel($modelName);
-
-        return $clone;
-    }
-
+    
     protected function contains($modelName, $associatedColumn) {
-        $this->relationshipBuilding->contains($modelName, $associatedColumn);
+        InheritanceRelationship::checkIfClassIsA($modelName,
+            'PReTTable\IdentifiableModelInterface',
+            'PReTTable\AssociativeModelInterface');
+        
+        $this->setOfThoseContained
+        ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
-
-    protected function isContained($modelName, $associatedColumn) {
-        $this->relationshipBuilding->isContained($modelName, $associatedColumn);
+    
+    protected function isItContained($modelName) {
+        return $this->setOfThoseContained->offsetExists($modelName);
     }
-
+    
     protected function containsThrough($modelName, $through) {
-        $this->relationshipBuilding->containsThrough($modelName, $through);
+        InheritanceRelationship::checkIfClassIsA($modelName,
+            'PReTTable\IdentifiableModelInterface',
+            'PReTTable\AssociativeModelInterface');
+        
+        $this->setOfThoseContained
+        ->offsetSet($modelName, ['associativeModelName' => $through]);
+    }
+    
+    protected function getAssociativeModelNameOf($modelName) {
+        if ($this->isItContained($modelName)) {
+            $relationshipData = $this->setOfThoseContained
+            ->offsetGet($modelName);
+            
+            if ($this->isItContainedThrough($modelName)) {
+                return $relationshipData['associativeModelName'];
+            }
+        }
+        
+        return null;
+    }
+    
+    protected function getAssociatedColumn($modelName) {
+        if (($this->isItContained($modelName)
+            || $this->doesItContain($modelName))
+            && !$this->isItContainedThrough($modelName)) {
+                if ($this->isItContained($modelName)) {
+                    return $this->setOfThoseContained
+                    ->offsetGet($modelName)['associatedColumn'];
+                } else {
+                    return $this->setOfContains
+                    ->offsetGet($modelName)['associatedColumn'];
+                }
+            }
+            
+            return null;
+    }
+    
+    protected function build($modelName) {
+        InheritanceRelationship::checkIfClassIsA($modelName,
+            'PReTTable\IdentifiableModelInterface',
+            'PReTTable\AssociativeModelInterface');
+        
+        $clone = $this->getClone();
+        
+        if ($clone->isItContained($modelName)
+            || $clone->doesItContain($modelName)) {
+                
+                $associatedModel = Reflection::getDeclarationOf($modelName);
+                $associatedTableName = $associatedModel->getTableName();
+//                 usar como strategy
+                $selectStatement = new Select($modelName);
+                $fromStatement = $associatedTableName;
+                
+                if ($clone->isItContained($modelName)) {
+                    
+                    if ($clone->isItContainedThrough($modelName)) {
+                        
+                        $associativeModelName = $clone
+                            ->getAssociativeModelNameOf($modelName);
+                        
+//                         $this->addsInvolvedModel($associativeModelName);
+                        
+                        $associativeModel = Reflection
+                            ::getDeclarationOf($associativeModelName);
+                        
+                        $associativeTableName = $associativeModel
+                            ->getTableName();
+                        $fromStatement = $associativeTableName;
+                        
+                        
+                        $associativeColumnOfModel = $associativeModel
+                            ->getAssociativeColumnNames()[$clone->name];
+                        
+                        $clone->join($clone->name, $clone->getPrimaryKeyName(),
+                            $associativeColumnOfModel, 'INNER',
+                            $associativeModelName);
+                        
+                        
+                        $associativeColumnOfAssociatedModel = $associativeModel
+                            ->getAssociativeColumnNames()[$modelName];
+                        
+                        $clone->join($modelName,
+                            $associatedModel->getPrimaryKeyName(),
+                            $associativeColumnOfAssociatedModel, 'INNER',
+                            $associativeModelName);
+                    } else {
+                        //                     $clone->join($clone->modelName, $clone->primaryKeyName);
+                        
+                        //                     $associatedColumn = $clone->relationshipBuilding
+                        $associatedColumn = $clone->getAssociatedColumn($modelName);
+                    }
+                    
+                } else {
+                    //                 $associatedColumn = $clone->relationshipBuilding
+                    $associatedColumn = $clone->getAssociatedColumn($modelName);
+                    
+                    //                 $clone->join($clone->modelName, $associatedColumn);
+                }
+                
+//                 $clone->selectStatement = $clone->select
+//                     ->getStatement(true, ...$clone->getInvolvedModelNames());
+            }
+            
+//             $clone->mountAssociativeJoinsStatement();
+            
+            $clone->mountJoinsStatement();
+            
+            return $clone;
     }
 
     protected function getOrderBy() {
@@ -49,7 +155,8 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                 $explodedOrderByStatement = explode('.', $this->orderBy);
 
                 if (count($explodedOrderByStatement) != 2
-                    || !in_array($explodedOrderByStatement[0], $this->getInvolvedTableNames())
+                    || !in_array($explodedOrderByStatement[0],
+                        $this->getInvolvedTableNames())
                     ) {
                         throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
                     }
@@ -60,6 +167,24 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         }
 
         return null;
+    }
+    
+    private function isItContainedThrough($modelName) {
+        return ($this->setOfThoseContained->offsetExists($modelName)
+            && array_key_exists('associativeModelName',
+                $this->setOfThoseContained->offsetGet($modelName)));
+    }
+    
+    private function isContained($modelName, $associatedColumn) {
+        InheritanceRelationship::checkIfClassIsA($modelName,
+            'PReTTable\IdentifiableModelInterface');
+        
+        $this->setOfContains
+            ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
+    }
+    
+    private function doesItContain($modelName) {
+        return $this->setOfContains->offsetExists($modelName);
     }
 
 }

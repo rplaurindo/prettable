@@ -13,7 +13,7 @@ use
 abstract class AbstractModel extends AbstractModelBase {
 
     function readAll() {
-        $select = new Select\Repository($this->getName());
+        $select = new Select($this->name);
 
         $queryStatement = "
             SELECT {$select->getStatement(...$this->getInvolvedModelNames())}
@@ -48,46 +48,50 @@ abstract class AbstractModel extends AbstractModelBase {
     }
 
     function readFrom($modelName) {
-        $relationalSelectBuilding = $this->relationalSelectBuilding->build($modelName, $this->primaryKeyValue);
+//         $relationalSelectBuilding = $this->relationalSelectBuilding->build($modelName, $this->primaryKeyValue);
+        $relationalSelectBuilding = $this->build($modelName, $this->primaryKeyValue);
 
-        $select = $relationalSelectBuilding->getSelect();
-        $from = $relationalSelectBuilding->getFrom();
-        $whereClause = $relationalSelectBuilding->getWhereClause();
+//         $select = $relationalSelectBuilding->getSelect();
+//         // o from é a tabela do modelName salvo quando isItContainedThrough
+//         $from = $relationalSelectBuilding->getFrom();
+//         $whereClause = $relationalSelectBuilding->getWhereClause();
 
-        $joinsStatement = "";
+//         $joinsStatement = "";
 
-        $queryStatement = "
-            SELECT $select
+//         $queryStatement = "
+//             SELECT $select
 
-            FROM $from";
+//             FROM $from";
 
-        $joins = $relationalSelectBuilding->getJoins();
-        if (count($joins)) {
-            $joinsStatement .= "
-            INNER JOIN " .
-            implode("
-            INNER JOIN ", $joins);
-        }
+//         $joins = $relationalSelectBuilding->getJoins();
+//         if (count($joins)) {
+//             $joinsStatement .= "
+//             INNER JOIN " .
+//             implode("
+//             INNER JOIN ", $joins);
+//         }
 
-        if (!empty($joinsStatement)) {
-            $queryStatement .= "
-                $joinsStatement";
-        }
+//         if (!empty($joinsStatement)) {
+//             $queryStatement .= "
+//                 $joinsStatement";
+//         }
 
-        $queryStatement .= "
-            WHERE $whereClause";
+//         $queryStatement .= "
+//             WHERE $whereClause";
 
-        $orderByStatement = $this->getOrderBy();
+//         $orderByStatement = $this->getOrderBy();
 
-        if (isset($orderByStatement)) {
-            $queryStatement .= "
-                $orderByStatement";
-        }
+//         if (isset($orderByStatement)) {
+//             $queryStatement .= "
+//                 $orderByStatement";
+//         }
+        
+//         echo "$queryStatement\n\n";
 
-        $component = new SelectComponent($queryStatement);
-        $component->setConnection($this->connection);
+//         $component = new SelectComponent($queryStatement);
+//         $component->setConnection($this->connection);
 
-        return $component;
+//         return $component;
     }
 
     function readParent($modelName) {

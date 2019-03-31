@@ -12,7 +12,7 @@ use
 abstract class AbstractModel extends Readonly\AbstractModel {
 
     function read($columnName = null, $value = null) {
-        $select = new Select\Repository($this);
+        $select = new Select($this);
         $selectStatement = "SELECT {$select->getStatement()}";
 
         if (!isset($columnName) || !isset($value)) {
