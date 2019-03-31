@@ -33,10 +33,6 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
     
-    protected function isItContained($modelName) {
-        return $this->setOfThoseContained->offsetExists($modelName);
-    }
-    
     protected function containsThrough($modelName, $through) {
         InheritanceRelationship::checkIfClassIsA($modelName,
             'PReTTable\IdentifiableModelInterface',
@@ -44,6 +40,14 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         
         $this->setOfThoseContained
         ->offsetSet($modelName, ['associativeModelName' => $through]);
+    }
+    
+    protected function isContained($modelName, $associatedColumn) {
+        InheritanceRelationship::checkIfClassIsA($modelName,
+            'PReTTable\IdentifiableModelInterface');
+        
+        $this->setOfContains
+        ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
     
     protected function getAssociativeModelNameOf($modelName) {
@@ -131,6 +135,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                             $modelName);
                     }
                 } else {
+                    echo "here";
                     //                 $associatedColumn = $clone->relationshipBuilding
 //                     $associatedColumn = $clone->getAssociatedColumn($modelName);
                     
@@ -167,18 +172,14 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         return null;
     }
     
+    private function isItContained($modelName) {
+        return $this->setOfThoseContained->offsetExists($modelName);
+    }
+    
     private function isItContainedThrough($modelName) {
         return ($this->setOfThoseContained->offsetExists($modelName)
             && array_key_exists('associativeModelName',
                 $this->setOfThoseContained->offsetGet($modelName)));
-    }
-    
-    private function isContained($modelName, $associatedColumn) {
-        InheritanceRelationship::checkIfClassIsA($modelName,
-            'PReTTable\IdentifiableModelInterface');
-        
-        $this->setOfContains
-            ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
     
     private function doesItContain($modelName) {

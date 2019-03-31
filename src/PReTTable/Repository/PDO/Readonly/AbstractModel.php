@@ -42,7 +42,7 @@ abstract class AbstractModel extends AbstractModelBase {
 
     function readFrom($modelName) {
 //         $relationalSelectBuilding = $this->relationalSelectBuilding->build($modelName, $this->primaryKeyValue);
-        $relationalSelectBuilding = $this->build($modelName, $this->primaryKeyValue);
+        $relationalSelectBuilding = $this->build($modelName);
 
 //         $select = $relationalSelectBuilding->getSelect();
 //         // o from é a tabela do modelName salvo quando isItContainedThrough
@@ -88,55 +88,49 @@ abstract class AbstractModel extends AbstractModelBase {
     }
 
     function readParent($modelName) {
-        $relationalSelectBuilding = $this->relationalSelectBuilding->build($modelName, $this->primaryKeyValue);
+        $relationalSelectBuilding = $this->build($modelName);
 
-        $select = $relationalSelectBuilding->getSelect();
-        $from = $relationalSelectBuilding->getFrom();
-        $whereClause = $relationalSelectBuilding->getWhereClause();
+//         $select = $relationalSelectBuilding->getSelect();
+//         $from = $relationalSelectBuilding->getFrom();
+//         $whereClause = $relationalSelectBuilding->getWhereClause();
 
-        $joinsStatement = "";
+//         $joinsStatement = "";
 
-        $queryStatement = "
-            SELECT $select
+//         $queryStatement = "
+//             SELECT $select
 
-            FROM $from";
+//             FROM $from";
 
-        $joins = $relationalSelectBuilding->getJoins();
-        if (count($joins)) {
-            $joinsStatement .= "
-            INNER JOIN " .
-            implode("
-            INNER JOIN ", $joins);
-        }
+//         $joinsStatement = ;
 
-        if (!empty($joinsStatement)) {
-            $queryStatement .= "
-                $joinsStatement";
-        }
+//         if (!empty($joinsStatement)) {
+//             $queryStatement .= "
+//                 $joinsStatement";
+//         }
 
-        $queryStatement .= "
-            WHERE $whereClause";
+//         $queryStatement .= "
+//             WHERE $whereClause";
 
-        echo "$queryStatement\n\n";
+//         echo "$queryStatement\n\n";
 
-        try {
-            $PDOstatement = $this->connection->query($queryStatement);
+//         try {
+//             $PDOstatement = $this->connection->query($queryStatement);
 
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo $e;
-            throw new PDOException($e);
-        }
+//             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+//         } catch (PDOException $e) {
+//             echo $e;
+//             throw new PDOException($e);
+//         }
 
-        if (
-            isset($result) &&
-            gettype($result) == 'array' &&
-            count($result)
-            ) {
-            return $result[0];
-        }
+//         if (
+//             isset($result) &&
+//             gettype($result) == 'array' &&
+//             count($result)
+//             ) {
+//             return $result[0];
+//         }
 
-        return null;
+//         return null;
     }
 
 }

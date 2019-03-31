@@ -155,7 +155,7 @@ class AssociativeModel implements AssociativeModelInterface {
 $model1 = new Model1();
 // $mode2 = new Model2();
 // $model3 = new Model3();
-// $model4 = new Model4();
+$model4 = new Model4();
 
 // for ($i = 1; $i <= 1; $i++) {
 //     $model1 = $model1->create(
@@ -259,7 +259,7 @@ $model1 = new Model1();
 // ;
 
 // $model1 = $model1->setOrderBy('table3.table1_id', 'DESC');
-print_r($model1->join('Model3', 'table1_id', 'id')->readAll());
+// print_r($model1->join('Model3', 'table1_id', 'id')->readAll());
 
 // print_r($model1->readAll());
 // erro
@@ -274,5 +274,5 @@ print_r($model1->join('Model3', 'table1_id', 'id')->readAll());
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->readFrom('Model4'));
 
-// $model4->setPrimaryKeyValue(1);
-// print_r($model4->readParent('Model1'));
+$model4->setPrimaryKeyValue(1);
+print_r($model4->readParent('Model1'));
