@@ -84,63 +84,61 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
         
-        $clone = $this->getClone();
-        
         $query = new Query();
         
-        if ($clone->isItContained($modelName)
-            || $clone->doesItContain($modelName)) {
+        if ($this->isItContained($modelName)
+            || $this->doesItContain($modelName)) {
                 
                 $associatedModel = Reflection::getDeclarationOf($modelName);
                 $associatedTableName = $associatedModel->getTableName();
-                $associatedColumnName = $clone->getAssociatedColumn($modelName);
+                $associatedColumnName = $this->getAssociatedColumn($modelName);
                 $select = new Select($modelName);
                 
                 $fromStatement = $associatedTableName;
                 
-                if ($clone->isItContained($modelName)) {
+                if ($this->isItContained($modelName)) {
                     
-                    if ($clone->isItContainedThrough($modelName)) {
+                    if ($this->isItContainedThrough($modelName)) {
                         
-                        $associativeModelName = $clone
+                        $associativeModelName = $this
                             ->getAssociativeModelNameOf($modelName);
                         
                         $this->addsInvolvedModel($associativeModelName);
                         
                         $associativeModel = Reflection
-                            ::getDeclarationOf($associativeModelName);
+                        ::getDeclarationOf($associativeModelName);
                         
                         $associativeTableName = $associativeModel
-                            ->getTableName();
+                        ->getTableName();
                         $fromStatement = $associativeTableName;
                         
                         
                         $associativeColumnOfModel = $associativeModel
-                            ->getAssociativeColumnNames()[$clone->name];
+                        ->getAssociativeColumnNames()[$this->name];
                         
-                        $clone->join($clone->name, $clone->getPrimaryKeyName(),
+                        $this->join($this->name, $this->getPrimaryKeyName(),
                             $associativeColumnOfModel, 'INNER',
                             $associativeModelName);
                         
                         
                         $associativeColumnOfAssociatedModel = $associativeModel
-                            ->getAssociativeColumnNames()[$modelName];
+                        ->getAssociativeColumnNames()[$modelName];
                         
-                        $clone->join($modelName,
+                        $this->join($modelName,
                             $associatedModel->getPrimaryKeyName(),
                             $associativeColumnOfAssociatedModel, 'INNER',
                             $associativeModelName);
                     } else {
-                        $clone->join($clone->name, $clone->getPrimaryKeyName(),
+                        $this->join($this->name, $this->getPrimaryKeyName(),
                             $associatedColumnName, 'INNER', $modelName);
                     }
                 } else {
-                    $clone->join($clone->name, $associatedColumnName,
-                        $clone->getPrimaryKeyName(), 'INNER', $modelName);
+                    $this->join($this->name, $associatedColumnName,
+                        $this->getPrimaryKeyName(), 'INNER', $modelName);
                 }
                 
                 $query->setSelectStatement($select
-                    ->getStatement(...$clone->getInvolvedModelNames()));
+                    ->getStatement(...$this->getInvolvedModelNames()));
                 $query->setFromStatement($fromStatement);
             }
             
