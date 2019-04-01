@@ -4,7 +4,6 @@ namespace PReTTable\Repository;
 
 use
     ArrayObject,
-    Exception,
     PReTTable,
     PReTTable\InheritanceRelationship,
     PReTTable\Query,
@@ -146,26 +145,6 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             }
             
             return $query;
-    }
-
-    protected function getOrderBy() {
-        if (isset($this->orderBy)) {
-
-            if (count($this->getInvolvedTableNames())) {
-                $explodedOrderByStatement = explode('.', $this->orderBy);
-
-                if (count($explodedOrderByStatement) != 2
-                    || !in_array($explodedOrderByStatement[0],
-                        $this->getInvolvedTableNames())
-                    ) {
-                        throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
-                    }
-            }
-
-            return "\n\n\tORDER BY $this->orderBy $this->orderOfOrderBy";
-        }
-
-        return null;
     }
     
     private function isItContained($modelName) {

@@ -61,7 +61,7 @@ abstract class AbstractModel extends Readonly\AbstractModel {
 
         FROM {$query->getFromStatement()}{$this->mountJoinsStatement()}";
 
-        $orderByStatement = $this->getOrderBy();
+        $orderByStatement = $this->getOrderByStatement();
 
         if (isset($orderByStatement)) {
             $queryStatement .= "$orderByStatement";

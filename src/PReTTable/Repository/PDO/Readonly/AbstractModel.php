@@ -25,7 +25,7 @@ abstract class AbstractModel extends AbstractModelBase {
             $joinsStatement";
         }
 
-        $orderByStatement = $this->getOrderBy();
+        $orderByStatement = $this->getOrderByStatement();
 
         if (isset($orderByStatement)) {
             $queryStatement .= $orderByStatement;

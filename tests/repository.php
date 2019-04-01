@@ -11,12 +11,12 @@ class Model1 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
-
-        $ordered = $this->setOrderBy('id', 'DESC');
-
-        $ordered->containsThrough('Model2', 'AssociativeModel');
-
-        $ordered->contains('Model4', 'table1_id');
+        
+        $this->setOrderBy('id', 'DESC');
+        
+        $this->containsThrough('Model2', 'AssociativeModel');
+        
+        $this->contains('Model4', 'table1_id');
     }
 
     static function getTableName() {
@@ -259,11 +259,11 @@ $model4 = new Model4();
 
 // print_r($model1->readAll());
 // print_r($model1->readAll(2));
-// print_r($model1->readAll(2, 2));
+print_r($model1->readAll(2, 2));
 
 
 // $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
-print_r($model1->readFrom('Model2'));
+// print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model2', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');

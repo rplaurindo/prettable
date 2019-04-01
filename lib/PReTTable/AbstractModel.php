@@ -3,7 +3,8 @@
 namespace PReTTable;
 
 use
-    ArrayObject
+    ArrayObject,
+    Exception
 ;
 
 abstract class AbstractModel extends AbstractModelBase
@@ -41,12 +42,8 @@ abstract class AbstractModel extends AbstractModelBase
     }
 
     function setOrderBy($columnName, $order = '') {
-        $clone = $this->getClone();
-
-        $clone->orderBy = $columnName;
-        $clone->orderOfOrderBy = $order;
-
-        return $clone;
+        $this->orderBy = $columnName;
+        $this->orderOfOrderBy = $order;
     }
 
     function join($modelName, $columnName, $leftColumnName, $type = 'INNER', $leftModelName = null) {
@@ -127,6 +124,26 @@ abstract class AbstractModel extends AbstractModelBase
 
     protected function getInvolvedTableNames() {
         return $this->involvedTableNames->getArrayCopy();
+    }
+    
+    protected function getOrderByStatement() {
+
+        if (isset($this->orderBy)) {
+            if (count($this->getInvolvedTableNames())) {
+                $explodedOrderByStatement = explode('.', $this->orderBy);
+                
+                if (count($explodedOrderByStatement) != 2
+                    || !in_array($explodedOrderByStatement[0],
+                        $this->getInvolvedTableNames())
+                    ) {
+                        throw new Exception("The defined column of \"ORDER BY\" statement must be fully qualified containing " . implode(' or ', $this->getInvolvedTableNames()));
+                    }
+            }
+            
+            return "\n\n\tORDER BY $this->orderBy $this->orderOfOrderBy";
+        }
+        
+        return null;
     }
 
 }

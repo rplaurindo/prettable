@@ -15,19 +15,28 @@ class Select {
         $this->modelName = $modelName;
     }
 
-    function getStatement($attachTableName = false, ...$modelNames) {
+//     function getStatement($attachTableName = false, ...$modelNames) {
 
-        if ((gettype($attachTableName) == 'boolean' && $attachTableName)
-            || (gettype($attachTableName) == 'string')
-            ) {
+//         if ((gettype($attachTableName) == 'boolean' && $attachTableName)
+//             || (gettype($attachTableName) == 'string')
+//             ) {
 
-            if (gettype($attachTableName) == 'string') {
-                array_push($modelNames, $attachTableName);
-            }
+//             if (gettype($attachTableName) == 'string') {
+//                 array_push($modelNames, $attachTableName);
+//             }
 
+//             return $this->mountCollection(...$modelNames);
+//         }
+
+//         return implode(', ', $this->mountMember($this->modelName));
+//     }
+
+    function getStatement(...$modelNames) {
+        
+        if (count($modelNames)) {
             return $this->mountCollection(...$modelNames);
         }
-
+        
         return implode(', ', $this->mountMember($this->modelName));
     }
 
