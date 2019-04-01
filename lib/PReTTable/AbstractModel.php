@@ -100,7 +100,7 @@ abstract class AbstractModel extends AbstractModelBase
                     $leftColumnName = $joinedColumns['leftColumnName'];
                     $columnName = $joinedColumns['columnName'];
                     
-                    $statement .= "\n\t$type JOIN $joinedTableName ON $joinedTableName.$columnName = $leftTableName.$leftColumnName";
+                    $statement .= "\n\t$type JOIN $joinedTableName ON $joinedTableName.$columnName = $leftTableName.$leftColumnName\n";
                 }
             }
             

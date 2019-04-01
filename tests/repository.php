@@ -263,6 +263,7 @@ $model4 = new Model4();
 
 
 // $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
+print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model2', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
