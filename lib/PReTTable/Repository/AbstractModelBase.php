@@ -162,7 +162,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                     }
             }
 
-            return "\n\tORDER BY $this->orderBy $this->orderOfOrderBy\n";
+            return "\n\n\tORDER BY $this->orderBy $this->orderOfOrderBy";
         }
 
         return null;

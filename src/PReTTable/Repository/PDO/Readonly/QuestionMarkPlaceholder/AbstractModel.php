@@ -59,8 +59,7 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         $queryStatement = "
         SELECT {$query->getSelectStatement()}
 
-        FROM {$query->getFromStatement()}
-        {$this->mountJoinsStatement()}";
+        FROM {$query->getFromStatement()}{$this->mountJoinsStatement()}";
 
         $orderByStatement = $this->getOrderBy();
 
@@ -80,8 +79,8 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         $queryStatement = "
         SELECT {$query->getSelectStatement()}
         
-        FROM {$query->getFromStatement()}
-        {$this->mountJoinsStatement()}
+        FROM {$query->getFromStatement()}{$this->mountJoinsStatement()}
+        
         WHERE {$this->getTableName()}.{$this->getPrimaryKeyName()} = ?";
         
         echo "$queryStatement\n\n";
