@@ -121,10 +121,6 @@ abstract class AbstractModel extends AbstractModelBase
     protected function getInvolvedModelNames() {
         return $this->involvedModelNames->getArrayCopy();
     }
-
-    protected function getInvolvedTableNames() {
-        return $this->involvedTableNames->getArrayCopy();
-    }
     
     protected function getOrderByStatement() {
 
@@ -144,6 +140,10 @@ abstract class AbstractModel extends AbstractModelBase
         }
         
         return null;
+    }
+    
+    private function getInvolvedTableNames() {
+        return $this->involvedTableNames->getArrayCopy();
     }
 
 }
