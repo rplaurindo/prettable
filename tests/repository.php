@@ -223,7 +223,6 @@ $model4 = new Model4();
 // print_r($model1->read('id', 1));
 // print_r($model1->read());
 
-// $model1->setPrimaryKeyValue(10);
 // print_r(
 //     $model1->update(
 //         [
@@ -233,7 +232,6 @@ $model4 = new Model4();
 //     ->save()
 // );
 
-// $model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->updateAssociations('Model2',
 //         [
@@ -246,13 +244,11 @@ $model4 = new Model4();
 //     ->save()
 // );
 
-// $model1->setPrimaryKeyValue(10);
 // print_r(
 //     $model1->delete()
 //     ->save())
 // ;
 
-// $model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->deleteAssociations('Model2')
 //     ->save())
@@ -262,17 +258,16 @@ $model4 = new Model4();
 // print_r($model1->join('Model3', 'table1_id', 'id')->readAll());
 
 // print_r($model1->readAll());
-// erro
 // print_r($model1->readAll(2));
 // print_r($model1->readAll(2, 2));
 
 
 // $model1 = $model1->setOrderBy('table1_table2.table2_id', 'DESC');
 // print_r($model1->readFrom('Model2', 1, 1));
-// print_r($model1->readFrom('Model4', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->readFrom('Model4'));
+// print_r($model1->readFrom('Model4', 1, 1));
 
-$model4->setPrimaryKeyValue(1);
-print_r($model4->readParent('Model1'));
+// $model4->setPrimaryKeyValue(1);
+// print_r($model4->readParent('Model1'));

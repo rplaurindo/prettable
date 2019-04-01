@@ -17,6 +17,7 @@ abstract class AbstractDecorator extends QueryStatements\AbstractDecorator {
 
         try {
             $PDOstatement = $this->_component->getConnection()->query($queryStatement);
+            
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;

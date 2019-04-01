@@ -19,7 +19,7 @@ abstract class AbstractModel extends AbstractModelBase
 
     protected $name;
 
-    protected $joins;
+    private $joins;
     
     private $involvedModelNames;
     
@@ -35,10 +35,6 @@ abstract class AbstractModel extends AbstractModelBase
 
         $this->joins = new ArrayObject();
     }
-
-//     function getName() {
-//         return $this->name;
-//     }
 
     function setPrimaryKeyValue($value) {
         $this->primaryKeyValue = $value;
@@ -104,7 +100,7 @@ abstract class AbstractModel extends AbstractModelBase
                     $leftColumnName = $joinedColumns['leftColumnName'];
                     $columnName = $joinedColumns['columnName'];
                     
-                    $statement .= "$type JOIN $joinedTableName ON $joinedTableName.$columnName = $leftTableName.$leftColumnName\n";
+                    $statement .= "\n\t$type JOIN $joinedTableName ON $joinedTableName.$columnName = $leftTableName.$leftColumnName";
                 }
             }
             
@@ -115,7 +111,7 @@ abstract class AbstractModel extends AbstractModelBase
     
     protected function addsInvolvedModel($modelName) {
         InheritanceRelationship
-         ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
+            ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
         
         if (!array_search($modelName, $this->involvedModelNames->getArrayCopy())) {
             $this->involvedModelNames->append($modelName);

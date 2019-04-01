@@ -13,9 +13,7 @@ abstract class AbstractDecorator extends AbstractComponent {
     protected function mountStatement() {
         $statement = $this->getStatement();
 
-        return "{$this->_component->getStatement()}
-
-            $statement";
+        return "{$this->_component->getStatement()}\n\n$statement";
     }
 
 }

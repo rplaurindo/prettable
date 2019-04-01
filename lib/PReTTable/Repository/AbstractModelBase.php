@@ -7,6 +7,7 @@ use
     Exception,
     PReTTable,
     PReTTable\InheritanceRelationship,
+    PReTTable\Query,
     PReTTable\QueryStatements\Select,
     PReTTable\Reflection
 ;
@@ -30,7 +31,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             'PReTTable\AssociativeModelInterface');
         
         $this->setOfThoseContained
-        ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
+            ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
     
     protected function containsThrough($modelName, $through) {
@@ -39,7 +40,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             'PReTTable\AssociativeModelInterface');
         
         $this->setOfThoseContained
-        ->offsetSet($modelName, ['associativeModelName' => $through]);
+            ->offsetSet($modelName, ['associativeModelName' => $through]);
     }
     
     protected function isContained($modelName, $associatedColumn) {
@@ -47,13 +48,13 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             'PReTTable\IdentifiableModelInterface');
         
         $this->setOfContains
-        ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
+            ->offsetSet($modelName, ['associatedColumn' => $associatedColumn]);
     }
     
     protected function getAssociativeModelNameOf($modelName) {
         if ($this->isItContained($modelName)) {
             $relationshipData = $this->setOfThoseContained
-            ->offsetGet($modelName);
+                ->offsetGet($modelName);
             
             if ($this->isItContainedThrough($modelName)) {
                 return $relationshipData['associativeModelName'];
@@ -69,10 +70,10 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             && !$this->isItContainedThrough($modelName)) {
                 if ($this->isItContained($modelName)) {
                     return $this->setOfThoseContained
-                    ->offsetGet($modelName)['associatedColumn'];
+                        ->offsetGet($modelName)['associatedColumn'];
                 } else {
                     return $this->setOfContains
-                    ->offsetGet($modelName)['associatedColumn'];
+                        ->offsetGet($modelName)['associatedColumn'];
                 }
             }
             
@@ -86,13 +87,16 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         
         $clone = $this->getClone();
         
+        $query = new Query();
+        
         if ($clone->isItContained($modelName)
             || $clone->doesItContain($modelName)) {
                 
                 $associatedModel = Reflection::getDeclarationOf($modelName);
                 $associatedTableName = $associatedModel->getTableName();
-//                 usar como strategy
-                $selectStatement = new Select($modelName);
+                $associatedColumnName = $clone->getAssociatedColumn($modelName);
+                $select = new Select($modelName);
+                
                 $fromStatement = $associatedTableName;
                 
                 if ($clone->isItContained($modelName)) {
@@ -128,27 +132,20 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                             $associativeColumnOfAssociatedModel, 'INNER',
                             $associativeModelName);
                     } else {
-                        $associatedColumn = $clone->getAssociatedColumn($modelName);
-
                         $clone->join($clone->name, $clone->getPrimaryKeyName(),
-                            $associatedColumn, 'INNER',
-                            $modelName);
+                            $associatedColumnName, 'INNER', $modelName);
                     }
                 } else {
-                    echo "here";
-                    //                 $associatedColumn = $clone->relationshipBuilding
-//                     $associatedColumn = $clone->getAssociatedColumn($modelName);
-                    
-                    //                 $clone->join($clone->modelName, $associatedColumn);
+                    $clone->join($clone->name, $associatedColumnName,
+                        $clone->getPrimaryKeyName(), 'INNER', $modelName);
                 }
                 
-//                 $clone->selectStatement = $clone->select
-//                     ->getStatement(true, ...$clone->getInvolvedModelNames());
+                $query->setSelectStatement($select
+                    ->getStatement(...$clone->getInvolvedModelNames()));
+                $query->setFromStatement($fromStatement);
             }
             
-            echo $clone->mountJoinsStatement();
-            
-            return $clone;
+            return $query;
     }
 
     protected function getOrderBy() {
@@ -165,8 +162,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                     }
             }
 
-            return "
-            ORDER BY $this->orderBy $this->orderOfOrderBy";
+            return "\n\tORDER BY $this->orderBy $this->orderOfOrderBy\n";
         }
 
         return null;

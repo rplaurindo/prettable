@@ -21,9 +21,7 @@ class MySQL extends PDO\AbstractPaginationDecorator {
         $offset = Pagination::calculatesOffset($this->limit, $this->pageNumber);
 
         if (isset($this->limit)) {
-            return "LIMIT $this->limit
-
-            OFFSET $offset";
+            return "\tLIMIT $this->limit\n\n\tOFFSET $offset";
         }
 
         return '';
