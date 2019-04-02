@@ -11,7 +11,7 @@ use
 abstract class AbstractModel extends AbstractModelBase {
 
     function readAll() {
-        $select = new Select($this->name);
+        $select = new Select($this);
 
         $queryStatement = "
         SELECT {$select->getStatement(...$this->getInvolvedModelNames())}

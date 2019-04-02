@@ -13,7 +13,7 @@ use
 abstract class AbstractModel extends Readonly\AbstractModel {
 
     function read($columnName = null, $value = null) {
-        $select = new Select($this->name);
+        $select = new Select($this);
 
         if (!isset($columnName) || !isset($value)) {
             $columnName = $this->getPrimaryKeyName();
