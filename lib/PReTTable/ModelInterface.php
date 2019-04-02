@@ -6,6 +6,6 @@ interface ModelInterface {
 
     static function getTableName();
 
-    static function getColumnNames();
+    function getColumnNames();
 
 }

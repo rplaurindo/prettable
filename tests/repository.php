@@ -11,11 +11,11 @@ class Model1 extends AbstractModel {
 
     function __construct() {
         parent::__construct('mydb');
-        
+
         $this->setOrderBy('id', 'DESC');
-        
+
         $this->containsThrough('Model2', 'AssociativeModel');
-        
+
         $this->contains('Model4', 'table1_id');
     }
 
@@ -31,7 +31,7 @@ class Model1 extends AbstractModel {
 //         return false;
     }
 
-    static function getColumnNames() {
+    function getColumnNames() {
         return [
             'id',
             'table1col'
@@ -58,7 +58,7 @@ class Model2 extends AbstractModel {
         return true;
     }
 
-    static function getColumnNames() {
+    function getColumnNames() {
         return [
             'id',
             'table2col'
@@ -85,7 +85,7 @@ class Model3 extends AbstractModel {
         return true;
     }
 
-    static function getColumnNames() {
+    function getColumnNames() {
         return [
             'id',
             'table3col',
@@ -115,7 +115,7 @@ class Model4 extends AbstractModel {
         return true;
     }
 
-    static function getColumnNames() {
+    function getColumnNames() {
         return [
             'id',
             'table4col',
@@ -135,17 +135,17 @@ class AssociativeModel implements AssociativeModelInterface {
         return 'table1_table2';
     }
 
-    static function getColumnNames() {
-        return [
-            'table1_id',
-            'table2_id'
-        ];
-    }
-
     static function getAssociativeColumnNames() {
         return [
             'Model1' => 'table1_id',
             'Model2' => 'table2_id'
+        ];
+    }
+
+    function getColumnNames() {
+        return [
+            'table1_id',
+            'table2_id'
         ];
     }
 

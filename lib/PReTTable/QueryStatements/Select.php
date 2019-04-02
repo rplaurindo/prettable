@@ -3,16 +3,17 @@
 namespace PReTTable\QueryStatements;
 
 use
+    PReTTable\ModelInterface,
     PReTTable\Reflection,
     PReTTable\InheritanceRelationship
 ;
 
 class Select {
 
-    private $modelName;
+    private $model;
 
-    function __construct($modelName) {
-        $this->modelName = $modelName;
+    function __construct(ModelInterface $model) {
+        $this->model = $model;
     }
 
 //     function getStatement($attachTableName = false, ...$modelNames) {
@@ -32,29 +33,40 @@ class Select {
 //     }
 
     function getStatement(...$modelNames) {
-        
+
         if (count($modelNames)) {
             return $this->mountCollection(...$modelNames);
         }
-        
-        return implode(', ', $this->mountMember($this->modelName));
+
+        return implode(', ', $this->mountMember($this->model));
     }
 
-    private function mountMember($modelName, $attachTableName = false, $removePrimaryKeyName = false) {
-        InheritanceRelationship
-            ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
+    private function mountMember($model, $attachTableName = false,
+        $removePrimaryKeyName = false) {
 
-        $model = Reflection::getDeclarationOf($modelName);
+        if (gettype($model) == 'string') {
+            InheritanceRelationship
+                ::checkIfClassIsA($model, 'PReTTable\ModelInterface');
+
+            $modelDeclaration = Reflection::getDeclarationOf($model);
+            $model = Reflection::getInstanceOf($model);
+        } else if (!gettype($model) == 'object'
+            || !($model instanceof ModelInterface)) {
+            InheritanceRelationship::checkIfClassIsA(get_class($model),
+                'PReTTable\ModelInterface');
+        }
+
+        $modelDeclaration = Reflection::getDeclarationOf(get_class($model));
 
         $columnNames = $model->getColumnNames();
 
         if ($attachTableName) {
-            $tableName = $model::getTableName();
+            $tableName = $modelDeclaration::getTableName();
         }
 
         if ($removePrimaryKeyName) {
             $columnNames = array_diff($columnNames,
-                [$model->getPrimaryKeyName()]);
+                [$modelDeclaration::getPrimaryKeyName()]);
         }
 
         $mountedColumns = [];
@@ -72,10 +84,10 @@ class Select {
 
         if (count($modelNames)) {
             $mountedColumns = array_merge($mountedColumns, $this
-                ->mountMember($this->modelName, true, true));
+                ->mountMember($this->model, true, true));
         } else {
             $mountedColumns = array_merge($mountedColumns, $this
-                ->mountMember($this->modelName, true));
+                ->mountMember($this->model, true));
         }
 
         foreach($modelNames as $modelName) {
