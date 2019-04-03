@@ -54,8 +54,6 @@ abstract class AbstractModel extends Readonly\AbstractModel {
     function readFrom($modelName) {
         $query = $this->build($modelName);
 
-        $joinsStatement = "";
-
         $queryStatement = "
         SELECT {$query->getSelectStatement()}
 
