@@ -11,6 +11,26 @@ use
 ;
 
 abstract class AbstractModel extends Readonly\AbstractModel {
+    
+    function readFrom($modelName) {
+        $query = $this->build($modelName);
+        
+        $queryStatement = "
+        SELECT {$query->getSelectStatement()}
+        
+        FROM {$query->getFromStatement()}{$this->mountJoinsStatement()}";
+        
+        $orderByStatement = $this->getOrderByStatement();
+        
+        if (isset($orderByStatement)) {
+            $queryStatement .= "$orderByStatement";
+        }
+        
+        $this->selectComponent = new SelectComponent($queryStatement);
+        $this->selectComponent->setConnection($this->connection);
+        
+        return $this->selectComponent;
+    }
 
     function read($columnName = null, $value = null) {
         $select = new Select($this);
@@ -49,26 +69,6 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         }
 
         return null;
-    }
-    
-    function readFrom($modelName) {
-        $query = $this->build($modelName);
-
-        $queryStatement = "
-        SELECT {$query->getSelectStatement()}
-
-        FROM {$query->getFromStatement()}{$this->mountJoinsStatement()}";
-
-        $orderByStatement = $this->getOrderByStatement();
-
-        if (isset($orderByStatement)) {
-            $queryStatement .= "$orderByStatement";
-        }
-
-        $component = new SelectComponent($queryStatement);
-        $component->setConnection($this->connection);
-
-        return $component;
     }
     
     function readParent($modelName) {

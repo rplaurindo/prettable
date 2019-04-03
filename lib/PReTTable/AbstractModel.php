@@ -23,8 +23,6 @@ abstract class AbstractModel extends AbstractModelBase
     protected $name;
     
     protected $selectComponent;
-
-    private $joins;
     
     private $involvedModelNames;
     
@@ -37,8 +35,6 @@ abstract class AbstractModel extends AbstractModelBase
         
         $this->involvedModelNames = new ArrayObject();
         $this->involvedTableNames = new ArrayObject();
-
-        $this->joins = new ArrayObject();
     }
 
     function setPrimaryKeyValue($value) {
@@ -61,12 +57,8 @@ abstract class AbstractModel extends AbstractModelBase
         }
         
         $clone->addsInvolvedModel($modelName);
-        
-        if (!isset($clone->selectComponent)
-            || gettype($clone->selectComponent) != 'object'
-            || !($clone->selectComponent instanceof SelectComponent)) {
-            throw new Exception('A basic SELECT must be set to join. You must instantiate PReTTable\QueryStatements\SelectComponent\SelectComponent.');
-        }
+
+        $clone->checkIfThereIsSelectComponent();
         
         $clone->selectComponent = new Join($clone->selectComponent, $clone, $leftColumnName, $modelName, $columnName);
         
@@ -107,6 +99,14 @@ abstract class AbstractModel extends AbstractModelBase
         }
         
         return null;
+    }
+    
+    protected function checkIfThereIsSelectComponent() {
+        if (!isset($this->selectComponent)
+            || gettype($this->selectComponent) != 'object'
+            || !($this->selectComponent instanceof SelectComponent)) {
+                throw new Exception('A basic SELECT must be set to join. You must instantiate PReTTable\QueryStatements\SelectComponent\SelectComponent.');
+            }
     }
     
     private function getInvolvedTableNames() {

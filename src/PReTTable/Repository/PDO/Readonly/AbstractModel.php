@@ -31,10 +31,10 @@ abstract class AbstractModel extends AbstractModelBase {
             $queryStatement .= $orderByStatement;
         }
 
-        $component = new SelectComponent($queryStatement);
-        $component->setConnection($this->connection);
+        $this->selectComponent = new SelectComponent($queryStatement);
+        $this->selectComponent->setConnection($this->connection);
 
-        return $component;
+        return $this->selectComponent;
     }
 
 }

@@ -84,6 +84,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 
+//         retornar um SelectComponent ao invés de um objeto Query
         $query = new Query();
 
         if ($this->isItContained($modelName)
