@@ -3,7 +3,7 @@
 namespace Models\PDO\Paginables;
 
 use
-    PReTTable\QueryStatements\Select\Decorators\Pagination\PDO\MySQL
+    PReTTable\QueryStatements\Select\Decorators\PDO\Pagination\MySQL
 ;
 
 trait MySQLTrait {

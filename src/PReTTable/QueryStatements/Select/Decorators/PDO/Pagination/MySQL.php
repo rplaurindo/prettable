@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\Select\Decorators\Pagination\PDO;
+namespace PReTTable\QueryStatements\Select\Decorators\PDO\Pagination;
 
 use
     PReTTable\Helpers\Pagination,
