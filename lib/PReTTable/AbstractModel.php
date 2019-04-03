@@ -4,7 +4,9 @@ namespace PReTTable;
 
 use
     ArrayObject,
-    Exception
+    Exception,
+    PReTTable\QueryStatements\Select\Decorators\PDO\Join,
+    PReTTable\QueryStatements\SelectComponent
 ;
 
 abstract class AbstractModel extends AbstractModelBase
@@ -19,6 +21,8 @@ abstract class AbstractModel extends AbstractModelBase
     protected $orderOfOrderBy;
 
     protected $name;
+    
+    protected $selectComponent;
 
     private $joins;
     
@@ -47,9 +51,6 @@ abstract class AbstractModel extends AbstractModelBase
     }
 
     function join($modelName, $columnName, $leftColumnName, $type = 'INNER', $leftModelName = null) {
-        InheritanceRelationship
-            ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
-
         $clone = $this->getClone();
         
         if (isset($leftModelName)) {
@@ -58,52 +59,18 @@ abstract class AbstractModel extends AbstractModelBase
         } else {
             $leftModelName = $clone->name;
         }
-
+        
         $clone->addsInvolvedModel($modelName);
-
-        $joinedColumns = [
-            'leftColumnName' => $leftColumnName,
-            'columnName' => $columnName
-        ];
-
-        if ($clone->joins->offsetExists($type)) {
-            $join = $clone->joins->offsetGet($type);
-
-            if (!array_key_exists($leftModelName, $join)) {
-                $join[$leftModelName] = [];
-            }
-        } else {
-            $join = [];
-            $join[$leftModelName] = [];
+        
+        if (!isset($clone->selectComponent)
+            || gettype($clone->selectComponent) != 'object'
+            || !($clone->selectComponent instanceof SelectComponent)) {
+            throw new Exception('A basic SELECT must be set to join. You must instantiate PReTTable\QueryStatements\SelectComponent\SelectComponent.');
         }
         
-        $join[$leftModelName][$modelName] = $joinedColumns;
-
-        $clone->joins->offsetSet($type, $join);
-
-        return $clone;
-    }
-    
-    protected function mountJoinsStatement() {
-        $statement = '';
+        $clone->selectComponent = new Join($clone->selectComponent, $clone, $leftColumnName, $modelName, $columnName);
         
-        foreach ($this->joins as $type => $modelNames) {
-            foreach ($modelNames as $leftModelName => $joins) {
-                $leftModel = Reflection::getDeclarationOf($leftModelName);
-                $leftTableName = $leftModel::getTableName();
-                foreach ($joins as $joinedModelName => $joinedColumns) {
-                    $joinedModel = Reflection::getDeclarationOf($joinedModelName);
-                    $joinedTableName = $joinedModel::getTableName();
-                    $leftColumnName = $joinedColumns['leftColumnName'];
-                    $columnName = $joinedColumns['columnName'];
-                    
-                    $statement .= "\n\n\t$type JOIN $joinedTableName ON $joinedTableName.$columnName = $leftTableName.$leftColumnName";
-                }
-            }
-            
-        }
-        
-        return $statement;
+        return $clone->selectComponent;
     }
     
     protected function addsInvolvedModel($modelName) {

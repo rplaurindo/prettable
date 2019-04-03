@@ -16,9 +16,8 @@ trait MySQLTrait {
 
     function readFrom($modelName, $limit = null, $pageNumber = 1) {
         $component = parent::readFrom($modelName);
-        $queryStatementObject = new MySQL($component, $limit, $pageNumber);
 
-        return $queryStatementObject->getResult();
+        return new MySQL($component, $limit, $pageNumber);
     }
 
 }

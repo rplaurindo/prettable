@@ -10,7 +10,7 @@ use
 
 abstract class AbstractDecorator extends QueryStatements\AbstractDecorator {
 
-    function getResult() {
+    function execute() {
         $queryStatement = $this->mountStatement();
 
         echo "$queryStatement\n\n";

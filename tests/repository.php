@@ -39,7 +39,15 @@ class Model1 extends AbstractModel {
     }
     
     function readAll($limit = null, $pageNumber = 1) {
-        return parent::readAll($limit, $pageNumber)->getResult();
+        $composedQuery = parent::readAll($limit, $pageNumber);
+        
+        return $composedQuery->execute();
+    }
+    
+    function readFrom($modelName, $limit = null, $pageNumber = 1) {
+        $composedQuery = parent::readFrom($modelName, $limit, $pageNumber);
+        
+        return $composedQuery->execute();
     }
 
 }
