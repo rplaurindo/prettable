@@ -37,6 +37,10 @@ class Model1 extends AbstractModel {
             'table1col'
         ];
     }
+    
+    function readAll($limit = null, $pageNumber = 1) {
+        return parent::readAll($limit, $pageNumber)->getResult();
+    }
 
 }
 
