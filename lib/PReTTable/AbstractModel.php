@@ -5,8 +5,10 @@ namespace PReTTable;
 use
     ArrayObject,
     Exception,
-    PReTTable\QueryStatements\Select\Decorators\PDO\Join,
-    PReTTable\QueryStatements\SelectComponent
+//     PReTTable\QueryStatements\AbstractComponent,
+    PReTTable\QueryStatements\Component,
+    PReTTable\QueryStatements\Decorators\Select,
+    PReTTable\QueryStatements\Decorators\Select\Join
 ;
 
 abstract class AbstractModel extends AbstractModelBase
@@ -22,9 +24,9 @@ abstract class AbstractModel extends AbstractModelBase
 
     protected $name;
     
-    protected $selectComponent;
+    protected $selectDecorator;
     
-    private $involvedModelNames;
+    protected $joinsDecorator;
     
     private $involvedTableNames;
 
@@ -56,29 +58,33 @@ abstract class AbstractModel extends AbstractModelBase
             $leftModelName = $clone->name;
         }
         
-        $clone->addsInvolvedModel($modelName);
-
-        $clone->checkIfThereIsSelectComponent();
+        $clone->addsInvolvedTable($modelName);
         
-        $clone->selectComponent = new Join($clone->selectComponent, $clone, $leftColumnName, $modelName, $columnName);
+        if (!isset($clone->selectDecorator)) {
+            $clone->selectDecorator = new Component('SELECT ');
+        }
         
-        return $clone->selectComponent;
+        $clone->selectDecorator = new Select($clone->selectDecorator, $modelName, true);
+        
+        if (!isset($clone->joinsDecorator)) {
+            $clone->joinsDecorator = new Component();
+        }
+        
+        $clone->joinsDecorator = new Join($clone->joinsDecorator, $clone, $leftColumnName, $modelName, $columnName);
+        
+        return $clone;
     }
     
-    protected function addsInvolvedModel($modelName) {
+    protected function addsInvolvedTable($modelName) {
         InheritanceRelationship
             ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
         
-        if (!array_search($modelName, $this->involvedModelNames->getArrayCopy())) {
-            $this->involvedModelNames->append($modelName);
-            $model = Reflection::getDeclarationOf($modelName);
-            $this->involvedTableNames->append($model::getTableName());
+        $model = Reflection::getDeclarationOf($modelName);
+        $tableName = $model::getTableName();
+        if (!array_search($tableName, $this->involvedTableNames->getArrayCopy())) {
+            $this->involvedTableNames->append($tableName);
         }
         
-    }
-    
-    protected function getInvolvedModelNames() {
-        return $this->involvedModelNames->getArrayCopy();
     }
     
     protected function getOrderByStatement() {
@@ -99,14 +105,6 @@ abstract class AbstractModel extends AbstractModelBase
         }
         
         return null;
-    }
-    
-    protected function checkIfThereIsSelectComponent() {
-        if (!isset($this->selectComponent)
-            || gettype($this->selectComponent) != 'object'
-            || !($this->selectComponent instanceof SelectComponent)) {
-                throw new Exception('A basic SELECT must be set to join. You must instantiate PReTTable\QueryStatements\SelectComponent\SelectComponent.');
-            }
     }
     
     private function getInvolvedTableNames() {

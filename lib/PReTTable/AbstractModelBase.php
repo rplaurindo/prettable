@@ -16,7 +16,7 @@ abstract class AbstractModelBase {
 
     protected $stringEncoder;
     
-    protected $queryComponent;
+//     protected $queryComponent;
     
     private $values2Bind;
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace PReTTable\QueryStatements\Select\Decorators\PDO;
+namespace PReTTable\QueryStatements\Decorators\Select;
 
 use
     PReTTable\AbstractModel,
     PReTTable\InheritanceRelationship,
-    PReTTable\QueryStatements,
-    PReTTable\QueryStatements\Select\PDO\AbstractDecorator,
+    PReTTable\QueryStatements\AbstractComponent,
+    PReTTable\QueryStatements\AbstractDecorator,
     PReTTable\Reflection
 ;
 
@@ -22,7 +22,7 @@ class Join extends AbstractDecorator {
     
     private $type;
 
-    function __construct(QueryStatements\AbstractComponent $component, AbstractModel $leftModel, $leftColumnName, $rightModelName, $rightColumnName, $type = 'INNER') {
+    function __construct(AbstractComponent $component, AbstractModel $leftModel, $leftColumnName, $rightModelName, $rightColumnName, $type = 'INNER') {
         InheritanceRelationship
             ::checkIfClassIsA($rightModelName, 'PReTTable\ModelInterface');
         

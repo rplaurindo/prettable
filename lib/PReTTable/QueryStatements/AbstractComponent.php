@@ -6,7 +6,7 @@ abstract class AbstractComponent {
 
     protected $_statement;
 
-    function __construct($statement) {
+    function __construct($statement = '') {
         $this->_statement = $statement;
     }
 

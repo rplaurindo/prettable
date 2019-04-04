@@ -26,6 +26,7 @@ class Model1 extends AbstractModel {
     static function getPrimaryKeyName() {
         return 'id';
     }
+    
     static function isPrimaryKeySelfIncremental() {
         return true;
 //         return false;
@@ -38,11 +39,11 @@ class Model1 extends AbstractModel {
         ];
     }
     
-    function readAll($limit = null, $pageNumber = 1) {
-        $composedQuery = parent::readAll($limit, $pageNumber);
+//     function readAll($limit = null, $pageNumber = 1) {
+//         $composedQuery = parent::readAll($limit, $pageNumber);
         
-        return $composedQuery->execute();
-    }
+//         return $composedQuery->execute();
+//     }
     
     function readFrom($modelName, $limit = null, $pageNumber = 1) {
         $composedQuery = parent::readFrom($modelName, $limit, $pageNumber);

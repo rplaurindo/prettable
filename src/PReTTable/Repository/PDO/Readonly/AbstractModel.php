@@ -18,23 +18,15 @@ abstract class AbstractModel extends AbstractModelBase {
 
         FROM {$this->getTableName()}";
 
-        $joinsStatement = $this->mountJoinsStatement();
-
-        if (!empty($joinsStatement)) {
-            $queryStatement .= "
-            $joinsStatement";
-        }
-
         $orderByStatement = $this->getOrderByStatement();
 
         if (isset($orderByStatement)) {
             $queryStatement .= $orderByStatement;
         }
 
-        $this->selectComponent = new SelectComponent($queryStatement);
-        $this->selectComponent->setConnection($this->connection);
+        $this->queryComponent = new SelectComponent($queryStatement);
 
-        return $this->selectComponent;
+        return $this->queryComponent;
     }
 
 }

@@ -1,14 +1,14 @@
 <?php
 
-namespace PReTTable\QueryStatements\Select\Decorators\PDO\Pagination;
+namespace PReTTable\QueryStatements\Decorators\Select\Pagination;
 
 use
     PReTTable\Helpers\Pagination,
     PReTTable\QueryStatements,
-    PReTTable\QueryStatements\Select\PDO\AbstractPaginationDecorator
+    PReTTable\QueryStatements\Select\Pagination\AbstractDecorator
 ;
 
-class MySQL extends AbstractPaginationDecorator {
+class MySQL extends AbstractDecorator {
 
     function __construct(QueryStatements\AbstractComponent $component, $limit = null, $pageNumber = 1) {
         parent::__construct($component);
