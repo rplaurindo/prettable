@@ -16,7 +16,7 @@ class Join extends AbstractDecorator {
     
     private $leftColumnName;
     
-    private $rightModelName;
+    private $rightTableName;
     
     private $rightColumnName;
     
@@ -32,7 +32,8 @@ class Join extends AbstractDecorator {
         
         $this->leftColumnName = $leftColumnName;
         
-        $this->rightModelName = $rightModelName;
+        $rightModel = Reflection::getInstanceOf($rightModelName);
+        $this->rightTableName = $rightModel->getTableName();
         
         $this->rightColumnName = $rightColumnName;
         
@@ -40,32 +41,7 @@ class Join extends AbstractDecorator {
     }
 
     function getStatement() {
-        $clone = $this->getClone();
-
-        
-        
-        
-        $statement = '';
-        
-        foreach ($this->model->getJoins() as $type => $modelNames) {
-            foreach ($modelNames as $leftModelName => $joins) {
-                
-                $leftModel = Reflection::getDeclarationOf($leftModelName);
-                $leftTableName = $leftModel::getTableName();
-                
-                foreach ($joins as $joinedModelName => $joinedColumns) {
-                    $joinedModel = Reflection::getDeclarationOf($joinedModelName);
-                    $joinedTableName = $joinedModel::getTableName();
-                    $leftColumnName = $joinedColumns['leftColumnName'];
-                    $columnName = $joinedColumns['columnName'];
-                    
-                    $statement .= "\n\n\t$type JOIN $joinedTableName ON $joinedTableName.$columnName = $leftTableName.$leftColumnName";
-                }
-            }
-            
-        }
-
-        return $statement;
+        return "\n\n\t$this->type JOIN $this->rightTableName ON $this->rightTableName.$this->rightColumnName = {$this->leftModel->getTableName()}.$this->leftColumnName";
     }
 
 }

@@ -7,11 +7,15 @@ use
 ;
 
 trait MySQLTrait {
-
+    
     function readAll($limit = null, $pageNumber = 1) {
         $component = parent::readAll();
 
-        return new MySQL($component, $limit, $pageNumber);
+        $clone = $this->getClone();
+        
+        $clone->queryComponent = new MySQL($component, $limit, $pageNumber);
+        
+        return $this;
     }
 
     function readFrom($modelName, $limit = null, $pageNumber = 1) {
