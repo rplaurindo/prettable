@@ -26,12 +26,10 @@ trait ModelTrait {
     }
     
     function execute() {
-        $queryStatement = $this->queryComponent->mountStatement();
-        
-        echo "$queryStatement\n\n";
+        echo "$this->queryStatement\n\n";
         
         try {
-            $PDOstatement = $this->connection->query($queryStatement);
+            $PDOstatement = $this->connection->query($this->queryStatement);
             
             foreach ($this->getValues2Bind() as $index => $value) {
                 $PDOstatement->bindParam($index, $value);

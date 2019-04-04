@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\Select;
+namespace PReTTable\QueryStatements\Decorators\Select;
 
 use
     PReTTable\QueryStatements\AbstractComponent

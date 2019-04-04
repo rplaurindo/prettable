@@ -3,19 +3,19 @@
 namespace Models\PDO\Paginables;
 
 use
-    PReTTable\QueryStatements\Select\Decorators\PDO\Pagination\MySQL
+    PReTTable\QueryStatements\Decorators\Select\Pagination\MySQL
 ;
 
 trait MySQLTrait {
     
     function readAll($limit = null, $pageNumber = 1) {
         $component = parent::readAll();
-
-        $clone = $this->getClone();
         
-        $clone->queryComponent = new MySQL($component, $limit, $pageNumber);
+        $component = new MySQL($component, $limit, $pageNumber);
         
-        return $this;
+        echo $component->mountStatement();
+        
+//         return $this->execute();
     }
 
     function readFrom($modelName, $limit = null, $pageNumber = 1) {

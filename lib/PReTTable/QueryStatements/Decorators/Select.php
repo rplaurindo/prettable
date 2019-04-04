@@ -6,7 +6,7 @@ use
     PReTTable\Reflection,
     PReTTable\InheritanceRelationship,
     PReTTable\QueryStatements\AbstractComponent,
-    PReTTable\QueryStatements\Select\AbstractDecorator
+    PReTTable\QueryStatements\Decorators\Select\AbstractDecorator
 ;
 
 class Select extends AbstractDecorator {
@@ -33,15 +33,15 @@ class Select extends AbstractDecorator {
                 ::checkIfClassIsA($this->model, 'PReTTable\ModelInterface');
             
             $modelDeclaration = Reflection::getDeclarationOf($this->model);
-            $model = Reflection::getInstanceOf($this->model);
+            $this->model = Reflection::getInstanceOf($this->model);
         } else if (gettype($this->model) == 'object') {
             InheritanceRelationship::checkIfClassIsA(get_class($this->model),
                 'PReTTable\ModelInterface');
             $modelDeclaration = Reflection
-                ::getDeclarationOf(get_class($model));
+                ::getDeclarationOf(get_class($this->model));
         }
         
-        $columnNames = $model->getColumnNames();
+        $columnNames = $this->model->getColumnNames();
         
         if ($this->attachTableName) {
             $tableName = $modelDeclaration::getTableName();

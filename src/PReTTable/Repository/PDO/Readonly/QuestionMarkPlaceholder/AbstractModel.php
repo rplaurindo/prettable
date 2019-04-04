@@ -5,8 +5,8 @@ namespace PReTTable\Repository\PDO\Readonly\QuestionMarkPlaceholder;
 use
     PDO,
     PDOException,
-    PReTTable\QueryStatements\Select,
-    PReTTable\QueryStatements\SelectComponent,
+    PReTTable\QueryStatements\Decorators\Select,
+    PReTTable\QueryStatements\Component,
     PReTTable\Repository\PDO\Readonly
 ;
 
@@ -26,7 +26,7 @@ abstract class AbstractModel extends Readonly\AbstractModel {
             $queryStatement .= "$orderByStatement";
         }
         
-        $this->selectComponent = new SelectComponent($queryStatement);
+        $this->selectComponent = new Component($queryStatement);
         $this->selectComponent->setConnection($this->connection);
         
         return $this->selectComponent;

@@ -41,7 +41,7 @@ class Join extends AbstractDecorator {
     }
 
     function getStatement() {
-        return "\n\n\t$this->type JOIN $this->rightTableName ON $this->rightTableName.$this->rightColumnName = {$this->leftModel->getTableName()}.$this->leftColumnName";
+        return "$this->type JOIN $this->rightTableName ON $this->rightTableName.$this->rightColumnName = {$this->leftModel->getTableName()}.$this->leftColumnName";
     }
 
 }

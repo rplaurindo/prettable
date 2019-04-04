@@ -4,8 +4,7 @@ namespace PReTTable\QueryStatements\Decorators\Select\Pagination;
 
 use
     PReTTable\Helpers\Pagination,
-    PReTTable\QueryStatements,
-    PReTTable\QueryStatements\Select\Pagination\AbstractDecorator
+    PReTTable\QueryStatements
 ;
 
 class MySQL extends AbstractDecorator {

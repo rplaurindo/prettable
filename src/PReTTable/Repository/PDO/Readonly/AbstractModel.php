@@ -3,30 +3,36 @@
 namespace PReTTable\Repository\PDO\Readonly;
 
 use
-    PReTTable\QueryStatements\Select,
-    PReTTable\QueryStatements\SelectComponent,
+    PReTTable\QueryStatements\Decorators\Select,
+    PReTTable\QueryStatements\Component,
     PReTTable\Repository\PDO\AbstractModelBase
 ;
 
 abstract class AbstractModel extends AbstractModelBase {
 
     function readAll() {
-        $select = new Select($this);
-
+        if (!isset($this->selectDecorator)) {
+            $this->selectDecorator = new Component('SELECT ');
+        }
+        
+        $this->selectDecorator = new Select($this->selectDecorator, $this);
+        
         $queryStatement = "
-        SELECT {$select->getStatement(...$this->getInvolvedModelNames())}
-
+        {$this->selectDecorator->mountStatement()}
+        
         FROM {$this->getTableName()}";
 
+        if (isset($this->joinsDecorator)) {
+            $queryStatement .= "\n\n\t{$this->joinsDecorator->mountStatement()}";
+        }
+        
         $orderByStatement = $this->getOrderByStatement();
-
+        
         if (isset($orderByStatement)) {
             $queryStatement .= $orderByStatement;
         }
-
-        $this->queryComponent = new SelectComponent($queryStatement);
-
-        return $this->queryComponent;
+        
+        return new Component($queryStatement);
     }
 
 }

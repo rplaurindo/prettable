@@ -49,30 +49,26 @@ abstract class AbstractModel extends AbstractModelBase
     }
 
     function join($modelName, $columnName, $leftColumnName, $type = 'INNER', $leftModelName = null) {
-        $clone = $this->getClone();
-        
         if (isset($leftModelName)) {
             InheritanceRelationship
                 ::checkIfClassIsA($leftModelName, 'PReTTable\ModelInterface');
         } else {
-            $leftModelName = $clone->name;
+            $leftModelName = $this->name;
         }
         
-        $clone->addsInvolvedTable($modelName);
+        $this->addsInvolvedTable($modelName);
         
-        if (!isset($clone->selectDecorator)) {
-            $clone->selectDecorator = new Component('SELECT ');
+        if (!isset($this->selectDecorator)) {
+            $this->selectDecorator = new Component('SELECT ');
         }
         
-        $clone->selectDecorator = new Select($clone->selectDecorator, $modelName, true);
+        $this->selectDecorator = new Select($this->selectDecorator, $modelName, true);
         
-        if (!isset($clone->joinsDecorator)) {
-            $clone->joinsDecorator = new Component();
+        if (!isset($this->joinsDecorator)) {
+            $this->joinsDecorator = new Component();
         }
         
-        $clone->joinsDecorator = new Join($clone->joinsDecorator, $clone, $leftColumnName, $modelName, $columnName);
-        
-        return $clone;
+        $this->joinsDecorator = new Join($this->joinsDecorator, $this, $leftColumnName, $modelName, $columnName);
     }
     
     protected function addsInvolvedTable($modelName) {
