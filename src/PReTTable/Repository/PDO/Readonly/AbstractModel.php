@@ -23,7 +23,7 @@ abstract class AbstractModel extends AbstractModelBase {
         FROM {$this->getTableName()}";
 
         if (isset($this->joinsDecorator)) {
-            $queryStatement .= "\n\n\t{$this->joinsDecorator->mountStatement()}";
+            $queryStatement .= "\t{$this->joinsDecorator->mountStatement()}";
         }
         
         $orderByStatement = $this->getOrderByStatement();

@@ -5,12 +5,12 @@ namespace PReTTable\QueryStatements\Decorators\Select;
 use
     PReTTable\AbstractModel,
     PReTTable\InheritanceRelationship,
+    PReTTable\QueryStatements,
     PReTTable\QueryStatements\AbstractComponent,
-    PReTTable\QueryStatements\AbstractDecorator,
     PReTTable\Reflection
 ;
 
-class Join extends AbstractDecorator {
+class Join extends QueryStatements\AbstractDecorator {
     
     private $leftModel;
     
