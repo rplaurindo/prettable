@@ -10,10 +10,8 @@ abstract class AbstractDecorator extends AbstractComponent {
         $this->_component = $component;
     }
 
-    function mountStatement() {
-        $statement = $this->getStatement();
-
-        return "{$this->_component->getStatement()}\n\n\t$statement";
+    function getStatement() {
+        return "{$this->_component->getStatement()}\n\n\t$this->_statement";
     }
 
 }

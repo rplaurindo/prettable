@@ -14,9 +14,11 @@ class MySQL extends AbstractDecorator {
 
         $this->limit = $limit;
         $this->pageNumber = $pageNumber;
+        
+        $this->_statement = $this->resolveStatement();
     }
 
-    function getStatement() {
+    private function resolveStatement() {
         $offset = Pagination::calculatesOffset($this->limit, $this->pageNumber);
 
         if (isset($this->limit)) {

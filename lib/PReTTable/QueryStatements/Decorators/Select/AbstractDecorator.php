@@ -14,14 +14,14 @@ abstract class AbstractDecorator extends AbstractComponent {
         $this->_component = $component;
     }
 
-    function mountStatement() {
+    function getStatement() {
         $currentStatement = $this->_component->getStatement();
         
         if ($currentStatement[strlen($currentStatement) - 1] == ' ') {
-            return "$currentStatement{$this->getStatement()}";
+            return "$currentStatement$this->_statement";
         }
-        
-        return "$currentStatement, {$this->getStatement()}";
+
+        return "$currentStatement, $this->_statement";
     }
 
 }

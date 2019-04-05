@@ -38,9 +38,11 @@ class Join extends QueryStatements\AbstractDecorator {
         $this->rightColumnName = $rightColumnName;
         
         $this->type = $type;
+        
+        $this->_statement = $this->resolveStatement();
     }
 
-    function getStatement() {
+    private function resolveStatement() {
         return "$this->type JOIN $this->rightTableName ON $this->rightTableName.$this->rightColumnName = {$this->leftModel->getTableName()}.$this->leftColumnName";
     }
 

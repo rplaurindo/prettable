@@ -13,7 +13,7 @@ trait MySQLTrait {
         
         $component = new MySQL($component, $limit, $pageNumber);
         
-        echo $component->mountStatement();
+        echo $component->getStatement();
         
 //         return $this->execute();
     }

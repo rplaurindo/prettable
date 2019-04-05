@@ -15,15 +15,15 @@ abstract class AbstractModel extends AbstractModelBase {
             $this->selectDecorator = new Component('SELECT ');
         }
         
-        $this->selectDecorator = new Select($this->selectDecorator, $this);
+        $this->selectDecorator = new Select($this->selectDecorator, $this, true);
         
         $queryStatement = "
-        {$this->selectDecorator->mountStatement()}
+        {$this->selectDecorator->getStatement()}
         
         FROM {$this->getTableName()}";
 
         if (isset($this->joinsDecorator)) {
-            $queryStatement .= "\t{$this->joinsDecorator->mountStatement()}";
+            $queryStatement .= "\t{$this->joinsDecorator->getStatement()}";
         }
         
         $orderByStatement = $this->getOrderByStatement();
