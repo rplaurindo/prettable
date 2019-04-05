@@ -24,6 +24,10 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         $this->setOfThoseContained = new ArrayObject();
         $this->setOfContains = new ArrayObject();
     }
+    
+    function join($modelName) {
+//         usar parent::join($modelName, $columnName, $leftColumnName) aqui
+    }
 
     protected function contains($modelName, $associatedColumn) {
         InheritanceRelationship::checkIfClassIsA($modelName,

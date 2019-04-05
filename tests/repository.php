@@ -267,7 +267,7 @@ $model4 = new Model4();
 //     ->save())
 // ;
 
-// $model1->join('Model3', 'table1_id', 'id');
+$model1->join('Model3', 'table1_id', 'id');
 // $model1->setOrderBy('table3.table1_id', 'DESC');
 // print_r($model1->readAll());
 
