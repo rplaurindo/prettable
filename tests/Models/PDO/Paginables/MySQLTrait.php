@@ -13,9 +13,9 @@ trait MySQLTrait {
         
         $component = new MySQL($component, $limit, $pageNumber);
         
-        echo $component->getStatement();
+        $queryStatement = $component->getStatement();
         
-//         return $this->execute();
+        return $this->execute($queryStatement);
     }
 
     function readFrom($modelName, $limit = null, $pageNumber = 1) {

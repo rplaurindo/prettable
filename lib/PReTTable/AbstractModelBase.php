@@ -16,8 +16,6 @@ abstract class AbstractModelBase {
 
     protected $stringEncoder;
     
-    protected $queryStatement;
-    
     private $values2Bind;
 
     function __construct(array $connectionData) {

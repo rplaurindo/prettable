@@ -25,11 +25,11 @@ trait ModelTrait {
         return new Connections\PDOConnection($this->connectionData, $this->environment);
     }
     
-    function execute() {
-        echo "$this->queryStatement\n\n";
+    function execute($queryStatement) {
+        echo "$queryStatement\n\n";
         
         try {
-            $PDOstatement = $this->connection->query($this->queryStatement);
+            $PDOstatement = $this->connection->query($queryStatement);
             
             foreach ($this->getValues2Bind() as $index => $value) {
                 $PDOstatement->bindParam($index, $value);

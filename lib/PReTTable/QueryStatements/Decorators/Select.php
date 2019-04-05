@@ -18,8 +18,6 @@ class Select extends AbstractDecorator {
     private $removePrimaryKeyName;
 
     function __construct(AbstractComponent $component, $model, $attachTableName = false, $removePrimaryKeyName = false) {
-//         echo "Select: {$component->getStatement()}\n\n";
-        
         parent::__construct($component);
         
         $this->model = $model;
