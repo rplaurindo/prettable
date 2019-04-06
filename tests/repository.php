@@ -37,7 +37,8 @@ class Model1 extends AbstractModel {
     function getColumnNames() {
         return [
             'id',
-            'table1col'
+            'table1col',
+            'table4_id'
         ];
     }
     
@@ -76,7 +77,8 @@ class Model2 extends AbstractModel {
     function getColumnNames() {
         return [
             'id',
-            'table2col'
+            'table2col',
+            'table1_id'
         ];
     }
 
@@ -103,8 +105,7 @@ class Model3 extends AbstractModel {
     function getColumnNames() {
         return [
             'id',
-            'table3col',
-            'table1_id'
+            'table3col'
         ];
     }
 
@@ -131,8 +132,7 @@ class Model4 extends AbstractModel {
     function getColumnNames() {
         return [
             'id',
-            'table4col',
-            'table1_id'
+            'table4col'
         ];
     }
 
@@ -270,18 +270,17 @@ $model4 = new Model4();
 $model1->setOrderBy('table1.id');
 
 // $model1->join('Model2');
-$model1->join('Model4');
+// $model1->join('Model4');
 
 // print_r($model1->readAll());
 
 // print_r($model1->readAll());
 // print_r($model1->readAll(2));
-print_r($model1->readAll(2, 2));
+// print_r($model1->readAll(2, 2));
 
 
-// $model1->setOrderBy('table1_table2.table2_id', 'DESC');
-// print_r($model1->readFrom('Model2'));
-// print_r($model1->readFrom('Model2', 1, 1));
+// print_r($model1->readFrom('Model3'));
+print_r($model1->readFrom('Model3', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->readFrom('Model4'));

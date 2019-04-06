@@ -40,8 +40,10 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                 || $this->isItContained($modelName)) {
                     
                 if ($this->isItContained($modelName)) {
-                    $leftColumnName = $this->getPrimaryKeyName();
-                    $columnName = $this->getAssociatedColumn($modelName);
+                    $columnName = '';
+                    $parentModel = Reflection::getDeclarationOf($modelName);
+                    $columnName = $parentModel->getPrimarykeyName();
+                    $leftColumnName = $this->getAssociatedColumn($modelName);
                 } else if ($this->doesItContainThrough($modelName)) {
                     $leftModelName = $this->getAssociativeModelNameFrom($modelName);
                     $this->addsInvolvedTable($leftModelName);
