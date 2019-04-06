@@ -5,7 +5,6 @@ namespace PReTTable;
 use
     ArrayObject,
     Exception,
-//     PReTTable\QueryStatements\AbstractComponent,
     PReTTable\QueryStatements\Component,
     PReTTable\QueryStatements\Decorators\Select,
     PReTTable\QueryStatements\Decorators\Select\Join
