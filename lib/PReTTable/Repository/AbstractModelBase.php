@@ -28,10 +28,6 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     }
 
     function join($modelName, $type = 'INNER', $leftModelName = null) {
-        InheritanceRelationship::throwIfClassIsntA($modelName,
-            __NAMESPACE__ . '\IdentifiableModelInterface',
-            __NAMESPACE__ . '\AssociativeModelInterface');
-        
         if (
                 (
                     $this->doesItContain($modelName)
@@ -40,13 +36,18 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                 || ($modelName == $this->name && isset($leftModelName))
             )
         {
-            if ($modelName == $this->name && isset($leftModelName)) {
-                $leftColumnName = $this->getAssociatedColumn($modelName);
-                $columnName = $this->getAssociatedColumn($leftModelName);
-                
-                if ($this->doesItContainThrough($modelName)) {
+            if ($this->doesItContain($modelName)
+                || $this->isItContained($modelName)) {
+                    
+                if ($this->isItContained($modelName)) {
+                    $leftColumnName = $this->getPrimaryKeyName();
+                    $columnName = $this->getAssociatedColumn($modelName);
+                } else if ($this->doesItContainThrough($modelName)) {
                     $leftModelName = $this->getAssociativeModelNameFrom($modelName);
                     $this->addsInvolvedTable($leftModelName);
+                } else {
+                    $leftColumnName = $this->getPrimaryKeyName();
+                    $columnName = $this->getAssociatedColumn($modelName);
                 }
             } else {
                 $associativeModelName = $this->getAssociativeModelNameFrom($leftModelName);
@@ -62,7 +63,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     }
 
     protected function contains($modelName, $associatedColumn) {
-        InheritanceRelationship::throwIfClassIsnotA($modelName,
+        InheritanceRelationship::throwIfClassIsntA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
 
@@ -90,7 +91,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     }
 
     protected function getAssociativeModelNameFrom($modelName) {
-        if (is_subclass_of($modelName, 'PReTTable\AssociativeModelInterface')) {
+        if (is_subclass_of('PReTTable\AssociativeModelInterface', $modelName)) {
             foreach ($this->associativeModels as $currentModelName => $associativeModel) {
                 if ($currentModelName == $modelName) {
                     return $associativeModel;
@@ -176,13 +177,17 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             if ($this->isItContained($modelName)) {
                 return $this->setOfContains
                     ->offsetGet($modelName)['associatedColumn'];
-            } else if (!$this->doesItContainThrough($modelName)) {
+            } else if ($this->doesItContainThrough($modelName)) {
                 $associativeModelName = $this
                     ->getAssociativeModelNameFrom($modelName);
                 $associativeModel = Reflection
                     ::getDeclarationOf($associativeModelName);
                 return $associativeModel->getAssociativeKeys()[$modelName];
             } else {
+                echo "\n";
+                echo $this->setOfThoseContained
+                ->offsetGet($modelName)['associatedColumn'];
+                echo "\n\n";
                 return $this->setOfThoseContained
                     ->offsetGet($modelName)['associatedColumn'];
             }

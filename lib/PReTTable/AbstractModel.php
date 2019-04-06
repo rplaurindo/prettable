@@ -34,8 +34,8 @@ abstract class AbstractModel extends AbstractModelBase
 
         $this->name = get_class($this);
         
-        $this->involvedModelNames = new ArrayObject();
         $this->involvedTableNames = new ArrayObject();
+        $this->involvedTableNames->append($this->getTableName());
     }
 
     function setPrimaryKeyValue($value) {
