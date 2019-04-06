@@ -37,9 +37,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             
             $leftModelName = $this->name;
             $leftColumnName = $this->getAssociatedColumn($modelName);
-            if ($this->doesItContain($modelName)
-                && $this->doesItContainThrough($modelName)
-                ) {
+            if ($this->doesItContainThrough($modelName)) {
                 $leftModelName = $this->getAssociativeModelNameOf($modelName);
             }
         }
@@ -83,79 +81,82 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         return null;
     }
 
-//     protected function build($modelName) {
-//         InheritanceRelationship::checkIfClassIsA($modelName,
-//             'PReTTable\IdentifiableModelInterface',
-//             'PReTTable\AssociativeModelInterface');
+    protected function build($modelName) {
+        InheritanceRelationship::checkIfClassIsA($modelName,
+            'PReTTable\IdentifiableModelInterface',
+            'PReTTable\AssociativeModelInterface');
         
-//         $clone = $this->getClone();
+        $clone = $this->getClone();
 
-//         if ($clone->isItContained($modelName)
-//             || $clone->doesItContain($modelName)) {
+        if ($clone->doesItContain($modelName)
+            || $clone->isItContained($modelName)) {
 
-//                 $associatedModel = Reflection::getDeclarationOf($modelName);
-//                 $associatedTableName = $associatedModel->getTableName();
-//                 $associatedColumnName = $clone->getAssociatedColumn($modelName);
-//                 $select = new Select($this);
+                $associatedModel = Reflection::getDeclarationOf($modelName);
+                $associatedTableName = $associatedModel->getTableName();
+                $associatedColumnName = $clone->getAssociatedColumn($modelName);
+                $select = new Select($this);
 
-//                 $fromStatement = $associatedTableName;
+                $fromStatement = $associatedTableName;
                 
-//                 $queryStatement = "
-//                 SELECT $select->getStatement(...$clone->getInvolvedModelNames());
+                $queryStatement = "
+                SELECT $select->getStatement(...$clone->getInvolvedModelNames());
                 
-//                 FROM $fromStatement";
+                FROM $fromStatement";
                 
-//                 $clone->queryComponent = new SelectComponent($queryStatement);
+                $clone->queryComponent = new Component($queryStatement);
 
-//                 if ($clone->doesItContain($modelName)) {
+                if ($clone->doesItContainThrough($modelName)) {
 
-//                     if ($clone->doesItContainedThrough($modelName)) {
+                    $associativeModelName = $this
+                        ->getAssociativeModelNameOf($modelName);
 
-//                         $associativeModelName = $this
-//                             ->getAssociativeModelNameOf($modelName);
+                    $clone->addsInvolvedModel($associativeModelName);
+                    
+                    $queryStatement = "
+                    SELECT $select->getStatement(...$clone->getInvolvedModelNames());
+                    
+                    FROM $fromStatement";
+                    
+                    $clone->queryComponent = new Component($queryStatement);
 
-//                         $clone->addsInvolvedModel($associativeModelName);
-                        
-//                         $queryStatement = "
-//                         SELECT $select->getStatement(...$clone->getInvolvedModelNames());
-                        
-//                         FROM $fromStatement";
-                        
-//                         $clone->queryComponent = new SelectComponent($queryStatement);
+                    $associativeModel = Reflection
+                        ::getDeclarationOf($associativeModelName);
 
-//                         $associativeModel = Reflection
-//                             ::getDeclarationOf($associativeModelName);
-
-//                         $associativeTableName = $associativeModel
-//                             ->getTableName();
-//                         $fromStatement = $associativeTableName;
+                    $associativeTableName = $associativeModel
+                        ->getTableName();
+                    $fromStatement = $associativeTableName;
 
 
-//                         $associativeColumnOfModel = $associativeModel
-//                             ->getAssociativeColumnNames()[$clone->name];
+                    $associativeColumnOfModel = $associativeModel
+                        ->getAssociativeColumnNames()[$clone->name];
 
-//                         $clone->join($clone->name, $clone->getPrimaryKeyName(),
-//                             $associativeColumnOfModel, 'INNER',
-//                             $associativeModelName);
+//                     TODO: improve and test it
+                    $clone->join($clone->name, $clone->getPrimaryKeyName(),
+                        $associativeColumnOfModel, 'INNER',
+                        $associativeModelName
+                    );
 
 
-//                         $associativeColumnOfAssociatedModel = $associativeModel
-//                             ->getAssociativeColumnNames()[$modelName];
+                    $associativeColumnOfAssociatedModel = $associativeModel
+                        ->getAssociativeColumnNames()[$modelName];
 
-//                         $clone->join($modelName,
-//                             $associatedModel->getPrimaryKeyName(),
-//                             $associativeColumnOfAssociatedModel, 'INNER',
-//                             $associativeModelName);
-//                     } else {
-//                         $clone->join($clone->name, $clone->getPrimaryKeyName(),
-//                             $associatedColumnName, 'INNER', $modelName);
-//                     }
-//                 } else {
-//                     $clone->join($clone->name, $associatedColumnName,
-//                         $clone->getPrimaryKeyName(), 'INNER', $modelName);
-//                 }
-//             }
-//     }
+//                     TODO: improve and test it
+                    $clone->join($modelName,
+                        $associatedModel->getPrimaryKeyName(),
+                        $associativeColumnOfAssociatedModel, 'INNER',
+                        $associativeModelName
+                    );
+                } else if ($clone->doesItContain($modelName)) {
+//                     TODO: improve and test it
+                    $clone->join($clone->name, $associatedColumnName,
+                        $clone->getPrimaryKeyName(), 'INNER', $modelName);
+                } else {
+//                     TODO: improve and test it
+                    $clone->join($clone->name, $clone->getPrimaryKeyName(),
+                        $associatedColumnName, 'INNER', $modelName);
+                }
+            }
+    }
     
     private function doesItContain($modelName) {
         return $this->setOfThoseContained->offsetExists($modelName);
