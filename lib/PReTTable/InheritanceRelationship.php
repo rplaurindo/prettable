@@ -11,8 +11,8 @@ class InheritanceRelationship {
     function __construct() {
 
     }
-
-    static function checkIfClassIsA($modelName, ...$classList) {
+    
+    static function throwIfClassIsntA($modelName, ...$classList) {
         $count = 0;
 
         foreach ($classList as $class) {

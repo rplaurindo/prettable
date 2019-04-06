@@ -50,7 +50,7 @@ abstract class AbstractModel extends AbstractModelBase
     function join($modelName, $columnName, $leftColumnName, $type = 'INNER', $leftModelName = null) {
         if (isset($leftModelName)) {
             InheritanceRelationship
-                ::checkIfClassIsA($leftModelName, 'PReTTable\ModelInterface');
+                ::throwIfClassIsntA($leftModelName, 'PReTTable\ModelInterface');
         } else {
             $leftModelName = $this->name;
         }
@@ -72,7 +72,7 @@ abstract class AbstractModel extends AbstractModelBase
     
     protected function addsInvolvedTable($modelName) {
         InheritanceRelationship
-            ::checkIfClassIsA($modelName, 'PReTTable\ModelInterface');
+            ::throwIfClassIsntA($modelName, 'PReTTable\ModelInterface');
         
         $model = Reflection::getDeclarationOf($modelName);
         $tableName = $model::getTableName();

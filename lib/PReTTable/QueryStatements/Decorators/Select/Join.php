@@ -24,7 +24,7 @@ class Join extends QueryStatements\AbstractDecorator {
 
     function __construct(AbstractComponent $component, AbstractModel $leftModel, $leftColumnName, $rightModelName, $rightColumnName, $type = 'INNER') {
         InheritanceRelationship
-            ::checkIfClassIsA($rightModelName, 'PReTTable\ModelInterface');
+            ::throwIfClassIsntA($rightModelName, 'PReTTable\ModelInterface');
         
         parent::__construct($component);
 

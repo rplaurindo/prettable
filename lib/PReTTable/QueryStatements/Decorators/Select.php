@@ -32,12 +32,12 @@ class Select extends AbstractDecorator {
     private function resolveStatement() {
         if (gettype($this->model) == 'string') {
             InheritanceRelationship
-                ::checkIfClassIsA($this->model, 'PReTTable\ModelInterface');
+                ::throwIfClassIsntA($this->model, 'PReTTable\ModelInterface');
             
             $modelDeclaration = Reflection::getDeclarationOf($this->model);
             $this->model = Reflection::getInstanceOf($this->model);
         } else if (gettype($this->model) == 'object') {
-            InheritanceRelationship::checkIfClassIsA(get_class($this->model),
+            InheritanceRelationship::throwIfClassIsntA(get_class($this->model),
                 'PReTTable\ModelInterface');
             $modelDeclaration = Reflection
                 ::getDeclarationOf(get_class($this->model));
