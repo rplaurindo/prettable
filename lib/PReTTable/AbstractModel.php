@@ -72,8 +72,8 @@ abstract class AbstractModel extends AbstractModelBase
         if (isset($leftModelName)) {
             InheritanceRelationship
                 ::throwIfClassIsntA($leftModelName, 'PReTTable\ModelInterface');
-        } else {
-            $leftModelName = $this->name;
+            
+            $this->addsInvolvedTable($leftModelName);
         }
         
         $this->addsInvolvedTable($modelName);
@@ -88,7 +88,7 @@ abstract class AbstractModel extends AbstractModelBase
             $this->joinsDecorator = new Component();
         }
         
-        $this->joinsDecorator = new Join($this->joinsDecorator, $this, $leftColumnName, $modelName, $columnName);
+        $this->joinsDecorator = new Join($this->joinsDecorator, $modelName, $columnName, $leftModelName, $leftColumnName, $type);
     }
     
     protected function addsInvolvedTable($modelName) {
