@@ -275,7 +275,7 @@ $model1->join('Model2');
 // print_r($model1->readAll());
 
 // print_r(json_encode($model1->readAll()));
-print_r(json_encode($model1->readAll(2)));
+print_r($model1->readAll(2));
 // print_r($model1->readAll(2, 2));
 
 

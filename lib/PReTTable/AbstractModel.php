@@ -46,9 +46,29 @@ abstract class AbstractModel extends AbstractModelBase
         $this->orderBy = $columnName;
         $this->orderOfOrderBy = $order;
     }
-
-//     resolver parâmetros de forma diferente, removendo-os da assinatura para a possibilidade de sobrecarga
-    function join($modelName, $columnName, $leftColumnName, $type = 'INNER', $leftModelName = null) {
+    
+    /**
+     * @param string $modelName
+     * @param string $columnName
+     * @param string $leftColumnName
+     * @param string $type [optional] 'INNER' is the default value
+     * @param string $leftModelName [optional]
+     * @return void
+     */
+    function join() {
+        $modelName = func_get_arg(0);
+        $columnName = func_get_arg(1);
+        $leftColumnName = func_get_arg(2);
+        $type = 'INNER';
+        $leftModelName = null;
+        
+        if (count(func_get_args()) > 3) {
+            $type = func_get_arg(3);
+            if (count(func_get_args()) > 4) {
+                $leftModelName = func_get_arg(4);
+            }
+        }
+        
         if (isset($leftModelName)) {
             InheritanceRelationship
                 ::throwIfClassIsntA($leftModelName, 'PReTTable\ModelInterface');

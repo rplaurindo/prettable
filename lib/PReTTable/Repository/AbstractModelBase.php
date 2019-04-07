@@ -29,8 +29,25 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         $this->setOfContains = new ArrayObject();
         $this->associativeModels = new ArrayObject();
     }
-
-    function join($modelName, $type = 'INNER', $leftModelName = null) {
+    
+    /**
+     * @param string $modelName
+     * @param string $type [optional]
+     * @param string $leftModelName [optional]
+     * @return void
+     */
+    function join() {
+        $modelName = func_get_arg(0);
+        $type = 'INNER';
+        $leftModelName = null;
+        
+        if (count(func_get_args()) > 1) {
+            $type = func_get_arg(1);
+            if (count(func_get_args()) > 2) {
+                $leftModelName = func_get_arg(2);
+            }
+        }
+        
         if (
                 (
                     $this->doesItContain($modelName)
