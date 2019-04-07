@@ -197,7 +197,7 @@ $model4 = new Model4();
 // }
 // echo $model4->save();
 
-$model1->setPrimaryKeyValue(1);
+// $model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->createAssociations('Model2',
 //         [
@@ -260,8 +260,8 @@ $model1->setPrimaryKeyValue(1);
 
 // $model1->setOrderBy('table1.id');
 
-// print_r($model1->read('id', 1));
-print_r($model1->read());
+print_r($model1->read('id', 1));
+// print_r($model1->read());
 
 // error
 // $model1->join('Model2');

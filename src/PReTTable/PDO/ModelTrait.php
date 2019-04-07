@@ -29,10 +29,16 @@ trait ModelTrait {
         echo "$queryStatement\n\n";
         
         try {
-            $PDOstatement = $this->connection->query($queryStatement);
-            
-            foreach ($this->getValues2Bind() as $index => $value) {
-                $PDOstatement->bindParam($index, $value);
+            if (count($this->getValues2Bind())) {
+                $PDOstatement = $this->connection->prepare($queryStatement);
+                
+                foreach ($this->getValues2Bind() as $index => $value) {
+                    $PDOstatement->bindParam($index, $value);
+                }
+                
+                $PDOstatement->execute();
+            } else {
+                $PDOstatement = $this->connection->query($queryStatement);
             }
             
             $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
