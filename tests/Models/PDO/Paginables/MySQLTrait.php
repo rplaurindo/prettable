@@ -23,9 +23,7 @@ trait MySQLTrait {
         
         $queryStatement = $component->getStatement();
         
-        echo $queryStatement;
-        
-//         return $this->execute($queryStatement);
+        return $this->execute($queryStatement);
     }
 
 }

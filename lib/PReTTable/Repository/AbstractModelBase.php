@@ -66,6 +66,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                 } else {
                     $leftColumnName = $this->getPrimaryKeyName();
                     $columnName = $this->getAssociatedColumn($modelName);
+                    $leftModelName = $this->name;
                 }
             } else if ($this->isItContained($leftModelName)) {
                 $columnName = $this->getAssociatedColumn($leftModelName);
@@ -194,9 +195,13 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         if (is_subclass_of($modelName, 'PReTTable\AssociativeModelInterface')) {
             $associativeModel = Reflection::getDeclarationOf($modelName);
             return $associativeModel::getAssociativeColumnNames()[$this->name];
-        } else if (($this->doesItContain($modelName)
-            || $this->isItContained($modelName))
-            ) {
+        } else if
+        (
+            (
+                $this->doesItContain($modelName)
+                || $this->isItContained($modelName)
+            )
+        ) {
             if ($this->isItContained($modelName)) {
                 return $this->setOfContains
                     ->offsetGet($modelName)['associatedColumn'];

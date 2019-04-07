@@ -264,16 +264,16 @@ $model1->setPrimaryKeyValue(1);
 $model1->setOrderBy('table1.id');
 
 // error
-$model1->join('Model2');
+// $model1->join('Model2');
 
 // print_r($model1->readAll());
 
 // print_r(json_encode($model1->readAll()));
 // print_r($model1->readAll(2));
-print_r($model1->readAll(2, 2));
+// print_r($model1->readAll(2, 2));
 
 // print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model3'));
-// print_r($model1->readFrom('Model4'));
+print_r($model1->readFrom('Model4'));
 
 // print_r($model1->readParent('Model4'));
