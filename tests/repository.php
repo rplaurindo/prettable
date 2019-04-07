@@ -43,16 +43,9 @@ class Model1 extends AbstractModel {
     }
     
 //     function readAll($limit = null, $pageNumber = 1) {
-//         $composedQuery = parent::readAll($limit, $pageNumber);
-        
-//         return $composedQuery->execute();
+//         $this->join('');
+//         return parent::readAll($limit, $pageNumber);
 //     }
-    
-    function readFrom($modelName, $limit = null, $pageNumber = 1) {
-        $composedQuery = parent::readFrom($modelName, $limit, $pageNumber);
-        
-        return $composedQuery->execute();
-    }
 
 }
 
@@ -204,7 +197,7 @@ $model4 = new Model4();
 // }
 // echo $model4->save();
 
-// $model1->setPrimaryKeyValue(1);
+$model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->createAssociations('Model2',
 //         [
@@ -230,11 +223,6 @@ $model4 = new Model4();
 //         )
 //         ->save()
 // );
-
-// $model1->setPrimaryKeyValue(1);
-
-// print_r($model1->read('id', 1));
-// print_r($model1->read());
 
 // print_r(
 //     $model1->update(
@@ -267,24 +255,29 @@ $model4 = new Model4();
 //     ->save())
 // ;
 
+
+// SELECTs
+
+// print_r($model1->read('id', 1));
+// print_r($model1->read());
+
 $model1->setOrderBy('table1.id');
 
-$model1->join('Model2');
+// $model1->join('Model2');
 // $model1->join('Model4');
 
 // print_r($model1->readAll());
 
 // print_r(json_encode($model1->readAll()));
-print_r($model1->readAll(2));
+// print_r($model1->readAll(2));
 // print_r($model1->readAll(2, 2));
 
-
-// print_r($model1->readFrom('Model3'));
+// print_r($model1->readFrom('Model2'));
+print_r($model1->readFrom('Model3'));
 // print_r($model1->readFrom('Model3', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->readFrom('Model4'));
 // print_r($model1->readFrom('Model4', 1, 1));
 
-// $model4->setPrimaryKeyValue(1);
 // print_r($model4->readParent('Model1'));

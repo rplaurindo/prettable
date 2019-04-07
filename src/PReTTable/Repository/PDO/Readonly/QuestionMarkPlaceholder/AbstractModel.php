@@ -6,30 +6,13 @@ use
     PDO,
     PDOException,
     PReTTable\QueryStatements\Decorators\Select,
-    PReTTable\QueryStatements\Component,
     PReTTable\Repository\PDO\Readonly
 ;
 
 abstract class AbstractModel extends Readonly\AbstractModel {
     
     function readFrom($modelName) {
-        $query = $this->build($modelName);
-        
-        $queryStatement = "
-        SELECT {$query->getSelectStatement()}
-        
-        FROM {$query->getFromStatement()}{$this->mountJoinsStatement()}";
-        
-        $orderByStatement = $this->getOrderByStatement();
-        
-        if (isset($orderByStatement)) {
-            $queryStatement .= "$orderByStatement";
-        }
-        
-        $this->selectComponent = new Component($queryStatement);
-        $this->selectComponent->setConnection($this->connection);
-        
-        return $this->selectComponent;
+        return $this->resolvedRelationalSelect($modelName);
     }
 
     function read($columnName = null, $value = null) {

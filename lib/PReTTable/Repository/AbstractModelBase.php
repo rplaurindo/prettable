@@ -53,30 +53,34 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                     $this->doesItContain($modelName)
                     || $this->isItContained($modelName)
                 )
-                || ($modelName == $this->name && isset($leftModelName))
+                || (isset($leftModelName))
             )
         {
+            $model = Reflection::getDeclarationOf($modelName);
+            
             if ($this->doesItContain($modelName)
                 || $this->isItContained($modelName)) {
                     
                 if ($this->isItContained($modelName)) {
-                    $columnName = '';
-                    $parentModel = Reflection::getDeclarationOf($modelName);
-                    $columnName = $parentModel->getPrimarykeyName();
-                    $leftColumnName = $this->getAssociatedColumn($modelName);
+//                     $parentModel = Reflection::getDeclarationOf($modelName);
+//                     $columnName = $parentModel->getPrimarykeyName();
+//                     $leftColumnName = $this->getAssociatedColumn($modelName);
                 } else if ($this->doesItContainThrough($modelName)) {
                     $leftModelName = $this->getAssociativeModelNameFrom($modelName);
-                    $this->addsInvolvedTable($leftModelName);
+                    $columnName = $model::getPrimaryKeyName();
+                    $leftColumnName = $this->getAssociatedColumn($modelName);
                 } else {
                     $leftColumnName = $this->getPrimaryKeyName();
                     $columnName = $this->getAssociatedColumn($modelName);
                 }
-            } else {
-                $associativeModelName = $this->getAssociativeModelNameFrom($leftModelName);
-                $leftModelName = $associativeModelName;
                 
-                $leftColumnName = $this->getAssociatedColumn($modelName);
-                $columnName = $this->getAssociatedColumn($leftModelName);
+            } else {
+                $columnName = $model::getPrimaryKeyName();
+                if (is_subclass_of($leftModelName, 'PReTTable\AssociativeModelInterface')) {
+                    $leftColumnName = $this->getAssociatedColumn($leftModelName);
+                } else {
+                    $leftColumnName = $this->getAssociatedColumn($modelName);
+                }
             }
             
             parent::join($modelName, $columnName, $leftColumnName, $type, $leftModelName);
@@ -113,7 +117,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     }
 
     protected function getAssociativeModelNameFrom($modelName) {
-        if (is_subclass_of('PReTTable\AssociativeModelInterface', $modelName)) {
+        if (is_subclass_of($modelName, 'PReTTable\AssociativeModelInterface')) {
             foreach ($this->associativeModels as $currentModelName => $associativeModel) {
                 if ($currentModelName == $modelName) {
                     return $associativeModel;
@@ -126,56 +130,60 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         return null;
     }
 
-    protected function build($modelName) {
+    protected function resolvedRelationalSelect($modelName) {
         InheritanceRelationship::throwIfClassIsntA($modelName,
             'PReTTable\IdentifiableModelInterface',
             'PReTTable\AssociativeModelInterface');
-        
-        $clone = $this->getClone();
 
-        if ($clone->doesItContain($modelName)
-            || $clone->isItContained($modelName)) {
+        if ($this->doesItContain($modelName)
+            || $this->isItContained($modelName)
+            ) {
 
             $associatedModel = Reflection::getDeclarationOf($modelName);
             $associatedTableName = $associatedModel->getTableName();
-            $associatedColumnName = $clone->getAssociatedColumn($modelName);
-            $select = new Select($this);
 
             $fromStatement = $associatedTableName;
-//             só falta consertar isso
-            $queryStatement = "
-            SELECT $select->getStatement(...$clone->getInvolvedModelNames());
             
-            FROM $fromStatement";
-                
-            $clone->queryComponent = new Component($queryStatement);
+            if (!isset($this->selectDecorator)) {
+                $this->selectDecorator = new Component('SELECT ');
+            }
             
-            if ($clone->isItContained($modelName)) {
-                $clone->join($clone->name, 'INNER', $modelName);
-            } else if ($clone->doesItContainThrough($modelName)) {
+            $this->selectDecorator = new Select($this->selectDecorator, $this, true);
+            $this->selectDecorator = new Select($this->selectDecorator, $associatedModel, true);
+            
+            if ($this->isItContained($modelName)) {
+                $this->join($modelName);
+            } else if ($this->doesItContainThrough($modelName)) {
                 $associativeModelName = $this
                     ->getAssociativeModelNameFrom($modelName);
                 
-                $queryStatement = "
-                SELECT $select->getStatement(...$clone->getInvolvedModelNames());
-                
-                FROM $fromStatement";
-                
-                $clone->queryComponent = new Component($queryStatement);
+                $this->selectDecorator = new Select($this->selectDecorator, $associativeModelName, true);
 
                 $associativeModel = Reflection
                     ::getDeclarationOf($associativeModelName);
 
                 $associativeTableName = $associativeModel->getTableName();
+                
                 $fromStatement = $associativeTableName;
 
-                $clone->join($clone->name, 'INNER', $associativeModelName);
+                $this->join($this->name, 'INNER', $associativeModelName);
 
-                $clone->join($modelName);
+                $this->join($modelName, 'INNER', $associativeModelName);
             } else {
-                $clone->join($modelName);
+                $this->join($this->name, 'INNER', $modelName);
             }
+            
+            $queryStatement = "\t{$this->selectDecorator->getStatement()}\nFROM $fromStatement{$this->joinsDecorator->getStatement()}";
+            
+            $orderByStatement = $this->getOrderByStatement();
+            
+            if (isset($orderByStatement)) {
+                $queryStatement .= "$orderByStatement";
+            }
+            
+            return new Component($queryStatement);
         }
+        
     }
     
     private function doesItContain($modelName) {
@@ -193,7 +201,10 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     }
     
     private function getAssociatedColumn($modelName) {
-        if (($this->doesItContain($modelName)
+        if (is_subclass_of($modelName, 'PReTTable\AssociativeModelInterface')) {
+            $associativeModel = Reflection::getDeclarationOf($modelName);
+            return $associativeModel::getAssociativeColumnNames()[$this->name];
+        } else if (($this->doesItContain($modelName)
             || $this->isItContained($modelName))
             ) {
             if ($this->isItContained($modelName)) {
@@ -204,7 +215,8 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                     ->getAssociativeModelNameFrom($modelName);
                 $associativeModel = Reflection
                     ::getDeclarationOf($associativeModelName);
-                return $associativeModel->getAssociativeKeys()[$modelName];
+                return $associativeModel
+                    ::getAssociativeColumnNames()[$modelName];
             } else {
                 return $this->setOfThoseContained
                     ->offsetGet($modelName)['associatedColumn'];
