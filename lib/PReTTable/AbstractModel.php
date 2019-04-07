@@ -106,7 +106,9 @@ abstract class AbstractModel extends AbstractModelBase
     protected function getOrderByStatement() {
 
         if (isset($this->orderBy)) {
-            if (count($this->getInvolvedTableNames())) {
+            if (count($this->getInvolvedTableNames())
+                && count($this->getInvolvedTableNames()) > 1
+                ) {
                 $explodedOrderByStatement = explode('.', $this->orderBy);
                 
                 if (count($explodedOrderByStatement) != 2

@@ -258,10 +258,10 @@ $model1->setPrimaryKeyValue(1);
 
 // SELECTs
 
-// print_r($model1->read('id', 1));
-// print_r($model1->read());
+// $model1->setOrderBy('table1.id');
 
-$model1->setOrderBy('table1.id');
+// print_r($model1->read('id', 1));
+print_r($model1->read());
 
 // error
 // $model1->join('Model2');
@@ -274,6 +274,6 @@ $model1->setOrderBy('table1.id');
 
 // print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model3'));
-print_r($model1->readFrom('Model4'));
+// print_r($model1->readFrom('Model4'));
 
 // print_r($model1->readParent('Model4'));
