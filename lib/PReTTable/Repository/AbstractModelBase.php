@@ -58,14 +58,8 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
         {
             $model = Reflection::getDeclarationOf($modelName);
             
-            if ($this->doesItContain($modelName)
-                || $this->isItContained($modelName)) {
-                    
-                if ($this->isItContained($modelName)) {
-//                     $parentModel = Reflection::getDeclarationOf($modelName);
-//                     $columnName = $parentModel->getPrimarykeyName();
-//                     $leftColumnName = $this->getAssociatedColumn($modelName);
-                } else if ($this->doesItContainThrough($modelName)) {
+            if ($this->doesItContain($modelName)) {
+                if ($this->doesItContainThrough($modelName)) {
                     $leftModelName = $this->getAssociativeModelNameFrom($modelName);
                     $columnName = $model::getPrimaryKeyName();
                     $leftColumnName = $this->getAssociatedColumn($modelName);
@@ -73,7 +67,9 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                     $leftColumnName = $this->getPrimaryKeyName();
                     $columnName = $this->getAssociatedColumn($modelName);
                 }
-                
+            } else if ($this->isItContained($leftModelName)) {
+                $columnName = $this->getAssociatedColumn($leftModelName);
+                $leftColumnName = $model::getPrimaryKeyName();
             } else {
                 $columnName = $model::getPrimaryKeyName();
                 $leftColumnName = $this->getAssociatedColumn($leftModelName);
@@ -147,9 +143,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             $this->selectDecorator = new Select($this->selectDecorator, $this, true);
             $this->selectDecorator = new Select($this->selectDecorator, $associatedModel, true);
             
-            if ($this->isItContained($modelName)) {
-                $this->join($modelName);
-            } else if ($this->doesItContainThrough($modelName)) {
+            if ($this->doesItContainThrough($modelName)) {
                 $associativeModelName = $this
                     ->getAssociativeModelNameFrom($modelName);
                 
@@ -169,7 +163,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                 $this->join($this->name, 'INNER', $modelName);
             }
             
-            $queryStatement = "\t{$this->selectDecorator->getStatement()}\nFROM $fromStatement{$this->joinsDecorator->getStatement()}";
+            $queryStatement = "\t{$this->selectDecorator->getStatement()}\n\n\tFROM $fromStatement{$this->joinsDecorator->getStatement()}";
             
             $orderByStatement = $this->getOrderByStatement();
             
