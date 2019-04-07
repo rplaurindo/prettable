@@ -11,6 +11,9 @@ use
     PReTTable\Reflection
 ;
 
+// to supress warnings
+// error_reporting(E_ALL ^ E_WARNING);
+
 abstract class AbstractModelBase extends PReTTable\AbstractModel {
 
     private $setOfThoseContained;

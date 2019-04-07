@@ -47,6 +47,7 @@ abstract class AbstractModel extends AbstractModelBase
         $this->orderOfOrderBy = $order;
     }
 
+//     resolver parâmetros de forma diferente, removendo-os da assinatura para a possibilidade de sobrecarga
     function join($modelName, $columnName, $leftColumnName, $type = 'INNER', $leftModelName = null) {
         if (isset($leftModelName)) {
             InheritanceRelationship
