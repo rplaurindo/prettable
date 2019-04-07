@@ -76,11 +76,7 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                 
             } else {
                 $columnName = $model::getPrimaryKeyName();
-                if (is_subclass_of($leftModelName, 'PReTTable\AssociativeModelInterface')) {
-                    $leftColumnName = $this->getAssociatedColumn($leftModelName);
-                } else {
-                    $leftColumnName = $this->getAssociatedColumn($modelName);
-                }
+                $leftColumnName = $this->getAssociatedColumn($leftModelName);
             }
             
             parent::join($modelName, $columnName, $leftColumnName, $type, $leftModelName);
