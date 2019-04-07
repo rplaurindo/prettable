@@ -269,18 +269,18 @@ $model4 = new Model4();
 
 $model1->setOrderBy('table1.id');
 
-// $model1->join('Model2');
+$model1->join('Model2');
 // $model1->join('Model4');
 
 // print_r($model1->readAll());
 
-// print_r($model1->readAll());
-// print_r($model1->readAll(2));
+// print_r(json_encode($model1->readAll()));
+print_r(json_encode($model1->readAll(2)));
 // print_r($model1->readAll(2, 2));
 
 
 // print_r($model1->readFrom('Model3'));
-print_r($model1->readFrom('Model3', 1, 1));
+// print_r($model1->readFrom('Model3', 1, 1));
 
 // $model1 = $model1->setOrderBy('table4.table1_id', 'DESC');
 // print_r($model1->readFrom('Model4'));

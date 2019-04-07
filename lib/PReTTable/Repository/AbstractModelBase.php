@@ -186,10 +186,6 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
                     ::getDeclarationOf($associativeModelName);
                 return $associativeModel->getAssociativeKeys()[$modelName];
             } else {
-                echo "\n";
-                echo $this->setOfThoseContained
-                ->offsetGet($modelName)['associatedColumn'];
-                echo "\n\n";
                 return $this->setOfThoseContained
                     ->offsetGet($modelName)['associatedColumn'];
             }

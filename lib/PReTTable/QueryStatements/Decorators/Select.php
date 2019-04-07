@@ -14,17 +14,13 @@ class Select extends AbstractDecorator {
     private $model;
     
     private $attachTableName;
-    
-    private $removePrimaryKeyName;
 
-    function __construct(AbstractComponent $component, $model, $attachTableName = false, $removePrimaryKeyName = false) {
+    function __construct(AbstractComponent $component, $model, $attachTableName = false) {
         parent::__construct($component);
         
         $this->model = $model;
         
         $this->attachTableName = $attachTableName;
-        
-        $this->removePrimaryKeyName = $removePrimaryKeyName;
         
         $this->_statement = $this->resolveStatement();
     }
@@ -49,17 +45,12 @@ class Select extends AbstractDecorator {
             $tableName = $modelDeclaration::getTableName();
         }
         
-        if ($this->removePrimaryKeyName) {
-            $columnNames = array_diff($columnNames,
-                [$modelDeclaration::getPrimaryKeyName()]);
-        }
-        
         $mountedColumns = [];
         
         foreach($columnNames as $columnName) {
             $columnName = $columnName;
             array_push($mountedColumns, ($this->attachTableName
-                ? "$tableName.$columnName"
+                ? "$tableName.$columnName AS '{$tableName}.{$columnName}'"
                 : $columnName)
             );
         }

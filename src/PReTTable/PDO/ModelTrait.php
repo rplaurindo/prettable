@@ -35,7 +35,11 @@ trait ModelTrait {
                 $PDOstatement->bindParam($index, $value);
             }
             
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+            if (isset($this->joinsDecorator)) {
+                $result = $PDOstatement->fetchAll(PDO::FETCH_NAMED);
+            } else {
+                $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+            }
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);

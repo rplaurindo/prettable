@@ -11,12 +11,10 @@ use
 abstract class AbstractModel extends AbstractModelBase {
 
     function readAll() {
-        $removePrimaryKeyName = false;
         $attachTableName = false;
         
         if (isset($this->joinsDecorator)) {
             $joinsStatement = "\t{$this->joinsDecorator->getStatement()}";
-            $removePrimaryKeyName = true;
             $attachTableName = true;
         } else {
             $joinsStatement = '';
@@ -26,7 +24,7 @@ abstract class AbstractModel extends AbstractModelBase {
             $this->selectDecorator = new Component('SELECT ');
         }
         
-        $this->selectDecorator = new Select($this->selectDecorator, $this, $attachTableName, $removePrimaryKeyName);
+        $this->selectDecorator = new Select($this->selectDecorator, $this, $attachTableName);
         
         $queryStatement = "
         {$this->selectDecorator->getStatement()}
