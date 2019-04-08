@@ -274,5 +274,3 @@ $model1->setOrderBy('table1.id');
 print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model3'));
 // print_r($model1->readFrom('Model4'));
-
-// print_r($model1->readParent('Model4'));

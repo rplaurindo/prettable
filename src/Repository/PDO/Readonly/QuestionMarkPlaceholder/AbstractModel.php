@@ -10,45 +10,6 @@ use
 
 abstract class AbstractModel extends Readonly\AbstractModel {
     
-    function readFrom($modelName) {
-        $queryStatement = $this->resolvedRelationalSelect($modelName)->getStatement();
-        
-        $orderByStatement = $this->getOrderByStatement();
-        
-        if (isset($orderByStatement)) {
-            $queryStatement .= "$orderByStatement";
-        }
-        
-        return new Component($queryStatement);
-    }
-    
-    function readParent($modelName) {
-        $this->bind(1, $this->primaryKeyValue);
-        
-        $queryStatement = $this->resolvedRelationalSelect($modelName)->getStatement();
-        
-        $queryStatement .= "
-
-        WHERE {$this->getTableName()}.{$this->getPrimaryKeyName()} = ?";
-        
-        $orderByStatement = $this->getOrderByStatement();
-        
-        if (isset($orderByStatement)) {
-            $queryStatement .= "$orderByStatement";
-        }
-        
-        $result = $this->execute($queryStatement);
-        
-        if (isset($result)
-            && gettype($result) == 'array'
-            && count($result)
-            ) {
-            return $result[0];
-        }
-        
-        return null;
-    }
-    
     function read($columnName = null, $value = null) {
         if (!isset($columnName) || !isset($value)) {
             $columnName = $this->getPrimaryKeyName();
@@ -100,6 +61,24 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         }
         
         return null;
+    }
+    
+    function readFrom($modelName) {
+        $queryStatement = $this->resolvedRelationalSelect($modelName)->getStatement();
+        
+        $queryStatement .= "
+        
+        WHERE {$this->getTableName()}.{$this->getPrimaryKeyName()} = ?";
+        
+        $this->bind(1, $this->primaryKeyValue);
+        
+        $orderByStatement = $this->getOrderByStatement();
+        
+        if (isset($orderByStatement)) {
+            $queryStatement .= "$orderByStatement";
+        }
+        
+        return new Component($queryStatement);
     }
 
 }
