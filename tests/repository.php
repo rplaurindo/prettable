@@ -258,17 +258,16 @@ $model4 = new Model4();
 
 // SELECTs
 
-// $model1->setOrderBy('table1.id');
+$model1->setOrderBy('table1.id');
 
-print_r($model1->read('id', 1));
-// print_r($model1->read());
-
-// error
 // $model1->join('Model2');
+
+// print_r($model1->read('id', 1));
+// print_r($model1->read());
 
 // print_r($model1->readAll());
 
-// print_r(json_encode($model1->readAll()));
+print_r($model1->readAll());
 // print_r($model1->readAll(2));
 // print_r($model1->readAll(2, 2));
 

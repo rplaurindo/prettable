@@ -1,6 +1,10 @@
 <?php
 
-namespace PReTTable\Helpers\SQL;
+namespace PReTTable\QueryStatements\Decorators\Select;
+
+use
+    PReTTable\Helpers\SQL\ValueAdjuster
+;
 
 class WhereClauseStatement extends AbstractWhereClauseStatement {
 

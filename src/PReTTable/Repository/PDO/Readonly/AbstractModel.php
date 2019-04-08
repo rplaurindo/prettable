@@ -31,6 +31,10 @@ abstract class AbstractModel extends AbstractModelBase {
         
         FROM {$this->getTableName()}";
         
+        if (isset($this->whereDecorator)) {
+            $queryStatement .= "\t{$this->whereDecorator->getStatement()}";
+        }
+        
         $queryStatement .= $joinsStatement;
         
         $orderByStatement = $this->getOrderByStatement();

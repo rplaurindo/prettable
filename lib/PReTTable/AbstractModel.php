@@ -27,6 +27,8 @@ abstract class AbstractModel extends AbstractModelBase
     
     protected $joinsDecorator;
     
+    protected $whereDecorator;
+    
     private $involvedTableNames;
 
     function __construct(array $connectionData) {
