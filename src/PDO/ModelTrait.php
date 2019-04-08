@@ -25,14 +25,14 @@ trait ModelTrait {
         return new PDOConnection($this->connectionData, $this->environment);
     }
     
-    function execute($queryStatement, array $binds = []) {
+    function execute($queryStatement, array $bindings = []) {
         echo "$queryStatement\n\n";
         
         try {
-            if (count($binds)) {
+            if (count($bindings)) {
                 $PDOstatement = $this->connection->prepare($queryStatement);
                 
-                foreach ($binds as $index => $value) {
+                foreach ($bindings as $index => $value) {
                     if (gettype($index)) {
                         $PDOstatement->bindParam($index + 1, $value);
                     } else {
