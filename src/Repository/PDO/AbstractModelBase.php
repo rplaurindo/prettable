@@ -1,9 +1,9 @@
 <?php
 
-namespace PReTTable\Repository\PDO;
+namespace Repository\PDO;
 
 use
-    PReTTable\PDO\ModelTrait,
+    PDO\ModelTrait,
     PReTTable\Repository
 ;
 

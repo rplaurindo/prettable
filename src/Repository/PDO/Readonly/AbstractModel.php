@@ -5,7 +5,7 @@ namespace Repository\PDO\Readonly;
 use
     PReTTable\QueryStatements\Decorators\Select,
     PReTTable\QueryStatements\Component,
-    PReTTable\Repository\PDO\AbstractModelBase
+    Repository\PDO\AbstractModelBase
 ;
 
 abstract class AbstractModel extends AbstractModelBase {
