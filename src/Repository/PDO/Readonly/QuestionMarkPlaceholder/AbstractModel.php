@@ -43,15 +43,13 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         
         $queryStatement .= "\n\n\t$whereStatement";
         
-        $this->bind(1, $value);
-        
         $orderByStatement = $this->getOrderByStatement();
         
         if (isset($orderByStatement)) {
             $queryStatement .= $orderByStatement;
         }
         
-        $result = $this->execute($queryStatement);
+        $result = $this->execute($queryStatement, [$value]);
         
         if (isset($result)
             && gettype($result) == 'array'
@@ -69,8 +67,6 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         $queryStatement .= "
         
         WHERE {$this->getTableName()}.{$this->getPrimaryKeyName()} = ?";
-        
-        $this->bind(1, $this->primaryKeyValue);
         
         $orderByStatement = $this->getOrderByStatement();
         
