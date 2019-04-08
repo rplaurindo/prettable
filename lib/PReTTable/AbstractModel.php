@@ -76,6 +76,8 @@ abstract class AbstractModel extends AbstractModelBase
                 ::throwIfClassIsntA($leftModelName, 'PReTTable\ModelInterface');
             
             $this->addsInvolvedTable($leftModelName);
+        } else {
+            $leftModelName = $this->name;
         }
         
         $this->addsInvolvedTable($modelName);
