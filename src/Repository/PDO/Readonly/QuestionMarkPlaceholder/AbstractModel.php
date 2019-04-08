@@ -1,11 +1,11 @@
 <?php
 
-namespace PReTTable\Repository\PDO\Readonly\QuestionMarkPlaceholder;
+namespace Repository\PDO\Readonly\QuestionMarkPlaceholder;
 
 use
     PReTTable\QueryStatements\Component,
     PReTTable\QueryStatements\Decorators\Select,
-    PReTTable\Repository\PDO\Readonly
+    Repository\PDO\Readonly
 ;
 
 abstract class AbstractModel extends Readonly\AbstractModel {

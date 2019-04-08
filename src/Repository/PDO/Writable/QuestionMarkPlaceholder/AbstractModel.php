@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\Repository\PDO\Writable\QuestionMarkPlaceholder;
+namespace Repository\PDO\Writable\QuestionMarkPlaceholder;
 
 use
     Exception,
@@ -10,9 +10,9 @@ use
     PReTTable\QueryStatements\WriteStrategies\InsertInto,
     PReTTable\QueryStatements\WriteStrategies\Update,
     PReTTable\Reflection,
-    PReTTable\Repository\PDO\Readonly\QuestionMarkPlaceholder,
     PReTTable\WritableModelInterface,
-    QueryStatements\Placeholders\Strategies\QuestionMark
+    QueryStatements\Placeholders\Strategies\QuestionMark,
+    Repository\PDO\Readonly\QuestionMarkPlaceholder
 ;
 
 abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel

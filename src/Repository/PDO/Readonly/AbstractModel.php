@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\Repository\PDO\Readonly;
+namespace Repository\PDO\Readonly;
 
 use
     PReTTable\QueryStatements\Decorators\Select,
