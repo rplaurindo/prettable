@@ -3,8 +3,6 @@
 namespace PReTTable\Repository\PDO\Readonly\QuestionMarkPlaceholder;
 
 use
-    PDO,
-    PDOException,
     PReTTable\QueryStatements\Component,
     PReTTable\QueryStatements\Decorators\Select,
     PReTTable\Repository\PDO\Readonly
@@ -13,31 +11,33 @@ use
 abstract class AbstractModel extends Readonly\AbstractModel {
     
     function readFrom($modelName) {
-        return $this->resolvedRelationalSelect($modelName);
+        $queryStatement = $this->resolvedRelationalSelect($modelName)->getStatement();
+        
+        $orderByStatement = $this->getOrderByStatement();
+        
+        if (isset($orderByStatement)) {
+            $queryStatement .= "$orderByStatement";
+        }
+        
+        return new Component($queryStatement);
     }
     
     function readParent($modelName) {
-        $query = $this->build($modelName);
+        $this->bind(1, $this->primaryKeyValue);
         
-        $queryStatement = "
-        SELECT {$query->getSelectStatement()}
+        $queryStatement = $this->resolvedRelationalSelect($modelName)->getStatement();
         
-        FROM {$query->getFromStatement()}{$this->mountJoinsStatement()}
-        
+        $queryStatement .= "
+
         WHERE {$this->getTableName()}.{$this->getPrimaryKeyName()} = ?";
         
-        echo "$queryStatement\n\n";
+        $orderByStatement = $this->getOrderByStatement();
         
-        try {
-            $PDOstatement = $this->connection->prepare($queryStatement);
-            $PDOstatement->bindParam(1, $this->primaryKeyValue);
-            $PDOstatement->execute();
-            
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo $e;
-            throw new PDOException($e);
+        if (isset($orderByStatement)) {
+            $queryStatement .= "$orderByStatement";
         }
+        
+        $result = $this->execute($queryStatement);
         
         if (isset($result)
             && gettype($result) == 'array'

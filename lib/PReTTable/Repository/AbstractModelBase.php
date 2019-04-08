@@ -166,12 +166,6 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
             
             $queryStatement = "\t{$this->selectDecorator->getStatement()}\n\n\tFROM $fromStatement{$this->joinsDecorator->getStatement()}";
             
-            $orderByStatement = $this->getOrderByStatement();
-            
-            if (isset($orderByStatement)) {
-                $queryStatement .= "$orderByStatement";
-            }
-            
             return new Component($queryStatement);
         }
         

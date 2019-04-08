@@ -197,7 +197,7 @@ $model4 = new Model4();
 // }
 // echo $model4->save();
 
-// $model1->setPrimaryKeyValue(1);
+$model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->createAssociations('Model2',
 //         [
@@ -267,11 +267,11 @@ $model1->setOrderBy('table1.id');
 
 // print_r($model1->readAll());
 
-print_r($model1->readAll());
+// print_r($model1->readAll());
 // print_r($model1->readAll(2));
 // print_r($model1->readAll(2, 2));
 
-// print_r($model1->readFrom('Model2'));
+print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model3'));
 // print_r($model1->readFrom('Model4'));
 
