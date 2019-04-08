@@ -7,12 +7,12 @@ use
     PDOException,
     PReTTable\QueryStatements,
     PReTTable\QueryStatements\Placeholders,
-    PReTTable\QueryStatements\Placeholders\Strategies\QuestionMark,
     PReTTable\QueryStatements\WriteStrategies\InsertInto,
     PReTTable\QueryStatements\WriteStrategies\Update,
     PReTTable\Reflection,
     PReTTable\Repository\PDO\Readonly\QuestionMarkPlaceholder,
-    PReTTable\WritableModelInterface
+    PReTTable\WritableModelInterface,
+    QueryStatements\Placeholders\Strategies\QuestionMark
 ;
 
 abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel

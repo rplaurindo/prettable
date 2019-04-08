@@ -1,11 +1,11 @@
 <?php
 
-namespace PReTTable\PDO;
+namespace PDO;
 
 use
     PDO,
     PDOException,
-    PReTTable\Connections\PDOConnection
+    Connections\PDOConnection
 ;
 
 trait ModelTrait {

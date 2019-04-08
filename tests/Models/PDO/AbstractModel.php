@@ -3,7 +3,7 @@
 namespace PReTTable\Models\PDO;
 
 use
-    PReTTable\PDO\AbstractModelBase,
+    PDO\AbstractModelBase,
     Models\ModelTrait
 ;
 

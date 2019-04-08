@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\PDO;
+namespace PDO;
 
 use
     PReTTable

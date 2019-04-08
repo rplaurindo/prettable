@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\QueryStatements\Placeholders\Strategies;
+namespace QueryStatements\Placeholders\Strategies;
 
 use
     PReTTable\QueryStatements\Placeholders\StrategyInterface

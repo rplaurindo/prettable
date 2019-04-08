@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\Connections;
+namespace Connections;
 
 use
     PDO,
