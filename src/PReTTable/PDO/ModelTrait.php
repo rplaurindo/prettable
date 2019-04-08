@@ -5,7 +5,7 @@ namespace PReTTable\PDO;
 use
     PDO,
     PDOException,
-    PReTTable\Connections
+    PReTTable\Connections\PDOConnection
 ;
 
 trait ModelTrait {
@@ -22,7 +22,7 @@ trait ModelTrait {
     }
 
     function getConnection() {
-        return new Connections\PDOConnection($this->connectionData, $this->environment);
+        return new PDOConnection($this->connectionData, $this->environment);
     }
     
     function execute($queryStatement) {
