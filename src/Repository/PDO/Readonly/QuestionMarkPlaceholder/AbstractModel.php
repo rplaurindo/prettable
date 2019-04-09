@@ -76,5 +76,18 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         
         return new Component($queryStatement);
     }
+    
+    function readParent($modelName) {
+        $result = $this->readFrom($modelName);
+        
+        if (isset($result)
+            && gettype($result) == 'array'
+            &&count($result)
+            ) {
+            return $result[0];
+        }
+        
+        return null;
+    }
 
 }
