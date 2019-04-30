@@ -19,6 +19,18 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
     implements
         WritableModelInterface
 {
+    
+//     private $raisedException;
+    
+    private $exceptionMessage;
+    
+    function __construct(array $connectionData, $environment = null) {
+        parent::__construct($connectionData, $environment);
+        
+//         $this->raisedException = false;
+        
+        $this->exceptionMessage = '';
+    }
 
     function create(array $attributes) {
         $clone = $this->getClone();
@@ -48,9 +60,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
             $PDOstatement->execute();
         } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
+            $clone->exceptionMessage = $e;
         }
 
         if ($clone->isPrimaryKeySelfIncremental()) {
@@ -109,9 +119,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $PDOstatement->execute();
             }
         } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
+            $clone->exceptionMessage = $e;
         }
 
         return $clone;
@@ -146,9 +154,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             $PDOstatement->execute();
 
         } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
+            $clone->exceptionMessage = $e;
         }
 
         return $clone;
@@ -183,9 +189,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             $PDOstatement->bindParam(1, $clone->primaryKeyValue);
             $PDOstatement->execute();
         } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
+            $clone->exceptionMessage = $e;
         }
 
         return $clone;
@@ -225,16 +229,26 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             $PDOstatement->execute();
 
         } catch (PDOException $e) {
-            $clone->rollBack();
-            echo $e;
-            throw new PDOException($e);
+            $clone->exceptionMessage = $e;
         }
 
         return $clone;
     }
 
-    function save() {
-        return $this->connection->commit();
+    function save($quiet = false) {
+        if (empty($this->exceptionMessage)) {
+            $this->connection->commit();
+        
+            return true;
+        }
+        
+        $this->connection->rollBack();
+        
+        if ($quiet) {
+            return false;
+        }
+        
+        throw new PDOException($this->errorMessage);
     }
 
     protected function beginTransaction() {
