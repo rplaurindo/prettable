@@ -197,33 +197,34 @@ $model3 = new Model3();
 // }
 // echo $model4->save();
 
+
 // ASSOCIATIONS
+
+print_r(
+    $model1
+        ->create(['table1col' => 'a value'])
+        ->createAssociations('Model3',
+            [
+                'table1_id' => 1
+            ],
+            [
+                'table3_id' => 2
+            ]
+        )
+        ->save()
+);
 
 // $model1->setPrimaryKeyValue(1);
 // print_r(
-//     $model1->createAssociations('Model2',
+//     $model1->createAssociations('Model3',
 //         [
 //             'table2_id' => 1
 //         ],
 //         [
-//             'table2_id' => 2
+//             'table3_id' => 2
 //         ]
 //     )
 //     ->save()
-// );
-
-// print_r(
-//     $model1
-//         ->create(['table1col' => 'a value'])
-//         ->createAssociations('Model2',
-//             [
-//                 'table2_id' => 1
-//             ],
-//             [
-//                 'table2_id' => 2
-//             ]
-//         )
-//         ->save()
 // );
 
 
