@@ -20,14 +20,10 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         WritableModelInterface
 {
     
-//     private $raisedException;
-    
     private $exceptionMessage;
     
     function __construct(array $connectionData, $environment = null) {
         parent::__construct($connectionData, $environment);
-        
-//         $this->raisedException = false;
         
         $this->exceptionMessage = '';
     }
