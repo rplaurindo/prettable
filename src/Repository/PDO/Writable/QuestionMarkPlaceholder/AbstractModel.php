@@ -20,7 +20,15 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         WritableModelInterface
 {
     
-    private $PDOstatement;
+    private $PDOStatement;
+    
+    private $errorsStack;
+    
+    function __construct(array $connectionData, $environment = null) {
+        parent::__construct($connectionData, $environment);
+        
+        $this->errorsStack = [];
+    }
 
     function create(array $attributes) {
         $clone = $this->getClone();
@@ -39,18 +47,18 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->PDOstatement = $clone->connection
+            $clone->PDOStatement = $clone->connection
                 ->prepare($insertStrategy->getStatement($attributes));
 
             foreach ($values as $index => $value) {
 //                 another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type,
 //                 for example. So this block can be moved to a external class.
-                $clone->PDOstatement->bindValue($index + 1, $value);
+                $clone->PDOStatement->bindValue($index + 1, $value);
             }
-
-            $clone->PDOstatement->execute();
+            
+            $clone->PDOStatement->execute();
         } catch (PDOException $e) {
-            $clone->exceptionMessage = $e;
+            $clone->putErrorOnStack($e->getMessage());
         }
 
         if ($clone->isPrimaryKeySelfIncremental()) {
@@ -66,8 +74,8 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
     function createAssociations($modelName, ...$rows) {
         $clone = $this->getClone();
 
-        $associativeModelName = $clone->relationshipBuilding
-            ->getAssociativeModelNameOf($modelName);
+        $associativeModelName = $clone
+            ->getAssociativeModelNameFrom($modelName);
 
         if (!isset($associativeModelName)) {
             throw new Exception("There's no such relationship between {$clone->name} and $modelName.");
@@ -80,10 +88,13 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
         $foreignKeyName = $associativeModel
             ::getAssociativeColumnNames()[$clone->name];
-        $rows = self::attachesAssociativeForeignKey($foreignKeyName,
-                                                    $clone->primaryKeyValue,
-                                                    ...$rows);
 
+        if ($clone->primaryKeyValue) {
+            $rows = self::attachesAssociativeForeignKey($foreignKeyName,
+                $clone->primaryKeyValue,
+                ...$rows);
+        }
+        
         $insertStrategy = new QueryStatements\StrategyContext(
             new InsertInto($associativeTableName));
 
@@ -100,17 +111,17 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                     new Placeholders\StrategyContext(new QuestionMark());
                 $attributes = $placeholderStrategy->getStatement($attributes);
 
-                $clone->PDOstatement = $clone->connection
+                $clone->PDOStatement = $clone->connection
                     ->prepare($insertStrategy->getStatement($attributes));
 
                 foreach ($values as $index => $value) {
-                    $clone->PDOstatement->bindValue($index + 1, $value);
+                    $clone->PDOStatement->bindValue($index + 1, $value);
                 }
                 
-                $clone->PDOstatement->execute();
+                $clone->PDOStatement->execute();
             }
         } catch (PDOException $e) {
-            $clone->exceptionMessage = $e;
+            $clone->putErrorOnStack($e->getMessage());
         }
 
         return $clone;
@@ -135,17 +146,17 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->PDOstatement = $clone->connection
+            $clone->PDOStatement = $clone->connection
                 ->prepare($updateStrategy->getStatement($attributes));
 
             foreach ($values as $index => $value) {
-                $clone->PDOstatement->bindValue($index + 1, $value);
+                $clone->PDOStatement->bindValue($index + 1, $value);
             }
 
-            $clone->PDOstatement->execute();
+            $clone->PDOStatement->execute();
 
         } catch (PDOException $e) {
-            $clone->exceptionMessage = $e;
+            $clone->putErrorOnStack($e);
         }
 
         return $clone;
@@ -176,12 +187,12 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->PDOstatement = $clone->connection->prepare($queryStatement);
-            $clone->PDOstatement->bindParam(1, $clone->primaryKeyValue);
+            $clone->PDOStatement = $clone->connection->prepare($queryStatement);
+            $clone->PDOStatement->bindParam(1, $clone->primaryKeyValue);
             
-            $clone->PDOstatement->execute();
+            $clone->PDOStatement->execute();
         } catch (PDOException $e) {
-            $clone->exceptionMessage = $e;
+            $clone->putErrorOnStack($e);
         }
 
         return $clone;
@@ -190,8 +201,8 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
     function deleteAssociations($modelName) {
         $clone = $this->getClone();
 
-        $associativeModelName = $clone->relationshipBuilding
-            ->getAssociativeModelNameOf($modelName);
+        $associativeModelName = $clone
+            ->getAssociativeModelNameFrom($modelName);
 
         if (!isset($associativeModelName)) {
             throw new Exception("There's no such relationship between {$clone->name} and $modelName.");
@@ -215,19 +226,19 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
                 WHERE $foreignKeyName = ?";
 
-            $clone->PDOstatement = $clone->connection->prepare($queryStatement);
-            $clone->PDOstatement->bindParam(1, $clone->primaryKeyValue);
+            $clone->PDOStatement = $clone->connection->prepare($queryStatement);
+            $clone->PDOStatement->bindParam(1, $clone->primaryKeyValue);
 
-            $clone->PDOstatement->execute();
+            $clone->PDOStatement->execute();
         } catch (PDOException $e) {
-            $clone->exceptionMessage = $e;
+            $clone->putErrorOnStack($e);
         }
 
         return $clone;
     }
 
     function save($quiet = false) {
-        if (empty($this->exceptionMessage)) {
+        if (!count($this->errorsStack)) {
             $this->connection->commit();
         
             return true;
@@ -240,7 +251,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         }
         
         if (isset($this->PDOStatement)) {
-            throw new PDOException($this->PDOStatement->errorInfo()[2]);
+            throw new Exception("\n\n\t" . implode("\n\t", $this->errorsStack) . "\n\n");
         }
     }
 
@@ -250,6 +261,10 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
     protected function rollBack() {
         $this->connection->exec('ROLLBACK');
+    }
+    
+    private function putErrorOnStack($error) {
+        array_unshift($this->errorsStack, $error);
     }
 
     private static function attachesAssociativeForeignKey($foreignKeyName,

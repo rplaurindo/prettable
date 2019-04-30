@@ -202,11 +202,13 @@ $model3 = new Model3();
 
 print_r(
     $model1
-        ->create(['table1col' => 'a value'])
-        ->createAssociations('Model3',
+        ->create(
             [
-                'table1_id' => 1
-            ],
+                'table1col' => 'a value',
+                'table4_id' => 1
+            ]
+        )
+        ->createAssociations('Model3',
             [
                 'table3_id' => 2
             ]
@@ -217,9 +219,6 @@ print_r(
 // $model1->setPrimaryKeyValue(1);
 // print_r(
 //     $model1->createAssociations('Model3',
-//         [
-//             'table2_id' => 1
-//         ],
 //         [
 //             'table3_id' => 2
 //         ]
