@@ -253,7 +253,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         if (isset($this->statement)) {
             $text = '';
             foreach ($this->errorsStack as $exception) {
-                $text .= "\n#{$exception->getLine()} {$exception->getFile()} {$exception->getMessage()}\n";
+                $text .= "\n#{$exception->getLine()} {$exception->getFile()} {$exception->getMessage()}";
             }
             
             throw new Exception("\n" . $text . "\n\n");
