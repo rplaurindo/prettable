@@ -235,7 +235,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         return $clone;
     }
 
-    function save($quiet = false) {
+    function save($quiet = true) {
         if (!count($this->errorsStack)) {
             $this->connection->commit();
             return true;
