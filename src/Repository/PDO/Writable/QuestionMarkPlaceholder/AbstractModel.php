@@ -20,8 +20,6 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         WritableModelInterface
 {
     
-    private $statement;
-    
     private $errorsStack;
     
     function __construct(array $connectionData, $environment = null) {
@@ -47,16 +45,16 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->statement = $clone->connection
+            $statement = $clone->connection
                 ->prepare($insertStrategy->getStatement($attributes));
 
             foreach ($values as $index => $value) {
 //                 another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type,
 //                 for example. So this block can be moved to a external class.
-                $clone->statement->bindValue($index + 1, $value);
+                $statement->bindValue($index + 1, $value);
             }
             
-            $clone->statement->execute();
+            $statement->execute();
         } catch (PDOException $e) {
             $clone->putErrorOnStack($e);
         }
@@ -111,14 +109,14 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                     new Placeholders\StrategyContext(new QuestionMark());
                 $attributes = $placeholderStrategy->getStatement($attributes);
 
-                $clone->statement = $clone->connection
+                $statement = $clone->connection
                     ->prepare($insertStrategy->getStatement($attributes));
 
                 foreach ($values as $index => $value) {
-                    $clone->statement->bindValue($index + 1, $value);
+                    $statement->bindValue($index + 1, $value);
                 }
                 
-                $clone->statement->execute();
+                $statement->execute();
             }
         } catch (PDOException $e) {
             $clone->putErrorOnStack($e);
@@ -146,14 +144,14 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->statement = $clone->connection
+            $statement = $clone->connection
                 ->prepare($updateStrategy->getStatement($attributes));
 
             foreach ($values as $index => $value) {
-                $clone->statement->bindValue($index + 1, $value);
+                $statement->bindValue($index + 1, $value);
             }
 
-            $clone->statement->execute();
+            $statement->execute();
 
         } catch (PDOException $e) {
             $clone->putErrorOnStack($e);
@@ -177,7 +175,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
         $primaryKeyName = $clone->getPrimaryKeyName();
 
-        $queryStatement = "
+        $queryStringStatement = "
             DELETE FROM {$clone->getTableName()}
 
             WHERE $primaryKeyName = ?";
@@ -187,10 +185,10 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->statement = $clone->connection->prepare($queryStatement);
-            $clone->statement->bindParam(1, $clone->primaryKeyValue);
+            $statement = $clone->connection->prepare($queryStringStatement);
+            $statement->bindParam(1, $clone->primaryKeyValue);
             
-            $clone->statement->execute();
+            $statement->execute();
         } catch (PDOException $e) {
             $clone->putErrorOnStack($e);
         }
@@ -221,15 +219,15 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $queryStatement = "
+            $queryStringStatement = "
                 DELETE FROM $associativeTableName
 
                 WHERE $foreignKeyName = ?";
 
-            $clone->statement = $clone->connection->prepare($queryStatement);
-            $clone->statement->bindParam(1, $clone->primaryKeyValue);
+            $statement = $clone->connection->prepare($queryStringStatement);
+            $statement->bindParam(1, $clone->primaryKeyValue);
 
-            $clone->statement->execute();
+            $statement->execute();
         } catch (PDOException $e) {
             $clone->putErrorOnStack($e);
         }
@@ -240,7 +238,6 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
     function save($quiet = false) {
         if (!count($this->errorsStack)) {
             $this->connection->commit();
-        
             return true;
         }
         
@@ -250,14 +247,12 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             return false;
         }
         
-        if (isset($this->statement)) {
-            $text = '';
-            foreach ($this->errorsStack as $exception) {
-                $text .= "\n#{$exception->getLine()} {$exception->getFile()} {$exception->getMessage()}";
-            }
-            
-            throw new Exception("\n" . $text . "\n\n");
+        $text = '';
+        foreach ($this->errorsStack as $exception) {
+            $text .= "\n#{$exception->getLine()} {$exception->getFile()} {$exception->getMessage()}";
         }
+        
+        throw new Exception("\n" . $text . "\n\n");
     }
 
     protected function beginTransaction() {
