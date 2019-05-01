@@ -205,7 +205,7 @@ print_r(
         ->create(
             [
                 'table1col' => 'a value',
-                'table4_id' => 1
+//                 'table4_id' => 1
             ]
         )
         ->createAssociations('Model3',

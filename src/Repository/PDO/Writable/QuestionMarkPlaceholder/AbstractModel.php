@@ -20,7 +20,7 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         WritableModelInterface
 {
     
-    private $PDOStatement;
+    private $statement;
     
     private $errorsStack;
     
@@ -47,18 +47,18 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->PDOStatement = $clone->connection
+            $clone->statement = $clone->connection
                 ->prepare($insertStrategy->getStatement($attributes));
 
             foreach ($values as $index => $value) {
 //                 another params can be passed to make validations. A map of column name => data type can be defined by a interface to validate type,
 //                 for example. So this block can be moved to a external class.
-                $clone->PDOStatement->bindValue($index + 1, $value);
+                $clone->statement->bindValue($index + 1, $value);
             }
             
-            $clone->PDOStatement->execute();
+            $clone->statement->execute();
         } catch (PDOException $e) {
-            $clone->putErrorOnStack($e->getMessage());
+            $clone->putErrorOnStack($e);
         }
 
         if ($clone->isPrimaryKeySelfIncremental()) {
@@ -111,17 +111,17 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                     new Placeholders\StrategyContext(new QuestionMark());
                 $attributes = $placeholderStrategy->getStatement($attributes);
 
-                $clone->PDOStatement = $clone->connection
+                $clone->statement = $clone->connection
                     ->prepare($insertStrategy->getStatement($attributes));
 
                 foreach ($values as $index => $value) {
-                    $clone->PDOStatement->bindValue($index + 1, $value);
+                    $clone->statement->bindValue($index + 1, $value);
                 }
                 
-                $clone->PDOStatement->execute();
+                $clone->statement->execute();
             }
         } catch (PDOException $e) {
-            $clone->putErrorOnStack($e->getMessage());
+            $clone->putErrorOnStack($e);
         }
 
         return $clone;
@@ -146,14 +146,14 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->PDOStatement = $clone->connection
+            $clone->statement = $clone->connection
                 ->prepare($updateStrategy->getStatement($attributes));
 
             foreach ($values as $index => $value) {
-                $clone->PDOStatement->bindValue($index + 1, $value);
+                $clone->statement->bindValue($index + 1, $value);
             }
 
-            $clone->PDOStatement->execute();
+            $clone->statement->execute();
 
         } catch (PDOException $e) {
             $clone->putErrorOnStack($e);
@@ -187,10 +187,10 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $clone->PDOStatement = $clone->connection->prepare($queryStatement);
-            $clone->PDOStatement->bindParam(1, $clone->primaryKeyValue);
+            $clone->statement = $clone->connection->prepare($queryStatement);
+            $clone->statement->bindParam(1, $clone->primaryKeyValue);
             
-            $clone->PDOStatement->execute();
+            $clone->statement->execute();
         } catch (PDOException $e) {
             $clone->putErrorOnStack($e);
         }
@@ -226,10 +226,10 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
                 WHERE $foreignKeyName = ?";
 
-            $clone->PDOStatement = $clone->connection->prepare($queryStatement);
-            $clone->PDOStatement->bindParam(1, $clone->primaryKeyValue);
+            $clone->statement = $clone->connection->prepare($queryStatement);
+            $clone->statement->bindParam(1, $clone->primaryKeyValue);
 
-            $clone->PDOStatement->execute();
+            $clone->statement->execute();
         } catch (PDOException $e) {
             $clone->putErrorOnStack($e);
         }
@@ -250,8 +250,13 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
             return false;
         }
         
-        if (isset($this->PDOStatement)) {
-            throw new Exception("\n\n\t" . implode("\n\t", $this->errorsStack) . "\n\n");
+        if (isset($this->statement)) {
+            $text = '';
+            foreach ($this->errorsStack as $exception) {
+                $text .= "\n#{$exception->getLine()} {$exception->getFile()} {$exception->getMessage()}\n";
+            }
+            
+            throw new Exception("\n" . $text . "\n\n");
         }
     }
 
@@ -263,8 +268,8 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         $this->connection->exec('ROLLBACK');
     }
     
-    private function putErrorOnStack($error) {
-        array_unshift($this->errorsStack, $error);
+    private function putErrorOnStack(PDOException $exception) {
+        array_unshift($this->errorsStack, $exception);
     }
 
     private static function attachesAssociativeForeignKey($foreignKeyName,
