@@ -31,8 +31,8 @@ abstract class AbstractModel extends AbstractModelBase
     
     private $involvedTableNames;
 
-    function __construct(array $connectionData) {
-        parent::__construct($connectionData);
+    function __construct(array $connectionData, $environment = null) {
+        parent::__construct($connectionData, $environment);
 
         $this->name = get_class($this);
         

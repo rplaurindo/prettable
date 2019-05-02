@@ -11,16 +11,23 @@ use
 class PDOConnection extends AbstractConnection {
 
     function establishConnection($schemaName) {
-        parent::resolveConnectionData($schemaName);
+        $schemaData = $this->data[$schemaName];
+        
+        $adapter = $schemaData['adapter'];
+        $host = $schemaData['host'];
 
-        $dsn = "$this->adapter:=$this->host;dbname=$schemaName";
+        $dsn = "$adapter:=$host;dbname=$schemaName";
 
-        if (isset($this->port)) {
-            $dsn .= ";port=$this->port";
+        if (array_key_exists('port', $schemaData)) {
+            $port = $schemaData['port'];
+            $dsn .= ";port=$port";
         }
+        
+        $username = $schemaData['username'];
+        $password = $schemaData['password'];
 
         try {
-            $connection = new PDO($dsn, $this->username, $this->password);
+            $connection = new PDO($dsn, $username, $password);
             $connection
                 ->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {

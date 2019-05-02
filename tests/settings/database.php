@@ -1,9 +1,9 @@
 <?php
 
 return [
-
-    'mydb' => [
-        'development' => [
+    
+    'development' => [
+        'mydb' => [
             'host' => 'localhost',
             'port' => 3306,
             'adapter' => 'mysql',

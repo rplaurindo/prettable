@@ -228,14 +228,14 @@ $model1->setPrimaryKeyValue(1);
 // );
 
 
-print_r(
-    $model1->update(
-        [
-            'table4_id' => 2,
-        ]
-    )
-    ->save()
-);
+// print_r(
+//     $model1->update(
+//         [
+//             'table4_id' => 2,
+//         ]
+//     )
+//     ->save()
+// );
 
 // print_r(
 //     $model1->updateAssociations('Model2',
@@ -269,11 +269,8 @@ print_r(
 // print_r($model1->read('id', 1));
 // print_r($model1->read());
 
+print_r($model1->readAll(2, 2));
 // print_r($model1->readAll());
-
-// print_r($model1->readAll());
-// print_r($model1->readAll(2));
-// print_r($model1->readAll(2, 2));
 
 // print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model3'));

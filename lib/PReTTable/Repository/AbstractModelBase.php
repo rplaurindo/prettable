@@ -22,8 +22,8 @@ abstract class AbstractModelBase extends PReTTable\AbstractModel {
     
     private $associativeModels;
 
-    function __construct(array $connectionData) {
-        parent::__construct($connectionData);
+    function __construct(array $connectionData, $environment = null) {
+        parent::__construct($connectionData, $environment);
 
         $this->setOfThoseContained = new ArrayObject();
         $this->setOfContains = new ArrayObject();
