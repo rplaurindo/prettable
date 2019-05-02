@@ -200,23 +200,24 @@ $model3 = new Model3();
 
 // ASSOCIATIONS
 
-print_r(
-    $model1
-        ->create(
-            [
-                'table1col' => 'a value',
-//                 'table4_id' => 1
-            ]
-        )
-        ->createAssociations('Model3',
-            [
-                'table3_id' => 2
-            ]
-        )
-        ->save()
-);
+// print_r(
+//     $model1
+//         ->create(
+//             [
+//                 'table1col' => 'a value',
+// //                 'table4_id' => 1
+//             ]
+//         )
+//         ->createAssociations('Model3',
+//             [
+//                 'table3_id' => 2
+//             ]
+//         )
+//         ->save()
+// );
 
-// $model1->setPrimaryKeyValue(1);
+$model1->setPrimaryKeyValue(1);
+
 // print_r(
 //     $model1->createAssociations('Model3',
 //         [
@@ -227,14 +228,14 @@ print_r(
 // );
 
 
-// print_r(
-//     $model1->update(
-//         [
-//             'table1col' => 'a updated value 10',
-//         ]
-//     )
-//     ->save()
-// );
+print_r(
+    $model1->update(
+        [
+            'table4_id' => 2,
+        ]
+    )
+    ->save()
+);
 
 // print_r(
 //     $model1->updateAssociations('Model2',

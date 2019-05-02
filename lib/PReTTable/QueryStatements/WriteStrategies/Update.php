@@ -10,14 +10,8 @@ class Update implements QueryStatements\StrategyInterface {
 
     private $tableName;
 
-    private $primaryKeyName;
-
-    private $primaryKeyValue;
-
-    function __construct($tableName, $primaryKeyName, $primaryKeyValue) {
+    function __construct($tableName) {
         $this->tableName = $tableName;
-        $this->primaryKeyName = $primaryKeyName;
-        $this->primaryKeyValue = $primaryKeyValue;
     }
 
     function getStatement(array $attributes) {
@@ -28,14 +22,10 @@ class Update implements QueryStatements\StrategyInterface {
 
         $settingsStatement = implode(', ', $settings);
 
-        $whereStatement = "$this->primaryKeyName = $this->primaryKeyValue";
-
         $statement = "
-            UPDATE $this->tableName
+        UPDATE $this->tableName
 
-            SET $settingsStatement
-
-            WHERE $whereStatement";
+        SET $settingsStatement";
 
         return $statement;
     }

@@ -128,24 +128,31 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
     function update(array $attributes) {
         $clone = $this->getClone();
 
-        $primaryKeyName = $clone->getPrimaryKeyName();
-
         $updateStrategy = new QueryStatements\StrategyContext(
-            new Update($clone->getTableName(), $primaryKeyName, $clone->primaryKeyValue));
+            new Update($clone->getTableName()));
 
         $values = array_values($attributes);
+        
+        array_push($values, $clone->primaryKeyValue);
 
         $placeholderStrategy =
             new Placeholders\StrategyContext(new QuestionMark());
-        $attributes = $placeholderStrategy->getStatement($attributes);
+        $attributesWithPlaceholder = $placeholderStrategy
+            ->getStatement($attributes);
+        
+        $queryStringStatement = $updateStrategy
+            ->getStatement($attributesWithPlaceholder);
+        
+        $queryStringStatement .= "
+
+        WHERE {$clone->getPrimaryKeyName()} = ?";
 
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
 
-            $statement = $clone->connection
-                ->prepare($updateStrategy->getStatement($attributes));
+            $statement = $clone->connection->prepare($queryStringStatement);
 
             foreach ($values as $index => $value) {
                 $statement->bindValue($index + 1, $value);
