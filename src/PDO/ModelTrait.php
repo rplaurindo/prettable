@@ -10,11 +10,11 @@ use
 
 trait ModelTrait {
 
-    function getConnection() {
+    protected function getConnection() {
         return new PDOConnection($this->connectionData);
     }
     
-    function execute($queryStatement, array $bindings = []) {
+    protected function execute($queryStatement, array $bindings = []) {
         echo "$queryStatement\n\n";
         
         try {

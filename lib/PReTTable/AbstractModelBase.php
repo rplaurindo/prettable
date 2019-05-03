@@ -22,8 +22,8 @@ abstract class AbstractModelBase {
         $this->resolveConnectionDataEnvironment($connectionData, $environment);
     }
 
-    abstract function getConnection();
-//     abstract function getConnection(): AbstractConnection;
+    protected abstract function getConnection();
+    // protected abstract function getConnection(): AbstractConnection;
 
     protected function establishConnection($schemaName) {
         if (!isset($schemaName)) {
@@ -34,7 +34,7 @@ abstract class AbstractModelBase {
             ->establishConnection($schemaName);
     }
 
-//     to comply the Prototype pattern
+    // to comply the Prototype pattern
     protected function getClone() {
         return clone $this;
     }
