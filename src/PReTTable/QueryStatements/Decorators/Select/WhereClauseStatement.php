@@ -56,7 +56,7 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
 
         if (gettype($value) == 'array') {
             if (count($value)) {
-                $value = ValueAdjuster::adjust($value)[0];
+                $value = ValueAdjuster::adjust($value);
                 $valuesStatement = implode(', ', $value);
                 $statement = "($columnStatement IN ($valuesStatement))";
             }
