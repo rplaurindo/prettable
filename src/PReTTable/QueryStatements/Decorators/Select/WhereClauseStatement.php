@@ -38,9 +38,6 @@ class WhereClauseStatement extends AbstractWhereClauseStatement {
             $columnStatement = "$clone->tableName.$columnName";
         }
 
-        $start = ValueAdjuster::adjust([$start])[0];
-        $end = ValueAdjuster::adjust([$end])[0];
-
         $statement = "$columnStatement BETWEEN $start AND $end";
         $clone->addStatement($statement);
 
