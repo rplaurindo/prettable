@@ -5,12 +5,12 @@ namespace Repository\PDO\Writable\QuestionMarkPlaceholder;
 use
     Exception,
     PDOException,
-    PReTTable\QueryStatements,
-    PReTTable\QueryStatements\Placeholders,
-    PReTTable\QueryStatements\WriteStrategies\InsertInto,
-    PReTTable\QueryStatements\WriteStrategies\Update,
-    PReTTable\Reflection,
-    PReTTable\WritableModelInterface,
+    PreTTable\QueryStatements,
+    PreTTable\QueryStatements\Placeholders,
+    PreTTable\QueryStatements\WriteStrategies\InsertInto,
+    PreTTable\QueryStatements\WriteStrategies\Update,
+    PreTTable\Reflection,
+    PreTTable\WritableModelInterface,
     QueryStatements\Placeholders\Strategies\QuestionMark,
     Repository\PDO\Readonly\QuestionMarkPlaceholder
 ;

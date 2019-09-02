@@ -3,8 +3,8 @@
 namespace QueryStatements\Decorators\Select\Pagination;
 
 use
-    PReTTable\QueryStatements,
-    PReTTable\QueryStatements\AbstractComponent
+    PreTTable\QueryStatements,
+    PreTTable\QueryStatements\AbstractComponent
 ;
 
 abstract class AbstractDecorator extends QueryStatements\AbstractDecorator {

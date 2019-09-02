@@ -4,7 +4,7 @@ namespace Repository\PDO;
 
 use
     PDO\ModelTrait,
-    PReTTable\Repository
+    PreTTable\Repository
 ;
 
 abstract class AbstractModelBase extends Repository\AbstractModelBase {

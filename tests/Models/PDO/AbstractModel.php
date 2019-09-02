@@ -1,6 +1,6 @@
 <?php
 
-namespace PReTTable\Models\PDO;
+namespace PreTTable\Models\PDO;
 
 use
     PDO\AbstractModelBase,

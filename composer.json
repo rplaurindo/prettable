@@ -1,6 +1,6 @@
 {
 	"name" : "rplaurindo/prettable",
-	"version" : "1.0.0",
+	"version" : "1.0.0-rc.1",
 	"homepage" : "https://github.com/rplaurindo/prettable",
 	"description" : "A Repository pattern abstraction (relational models) for PHP.",
 	"type" : "library",
@@ -15,7 +15,7 @@
 	},
 	"autoload" : {
 		"psr-4" : {
-			"PReTTable\\" : "src/"
+			"PreTTable\\" : "src/"
 		}
 	}
 }

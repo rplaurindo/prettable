@@ -3,8 +3,8 @@
 namespace Repository\PDO\Readonly\QuestionMarkPlaceholder;
 
 use
-    PReTTable\QueryStatements\Component,
-    PReTTable\QueryStatements\Decorators\Select,
+    PreTTable\QueryStatements\Component,
+    PreTTable\QueryStatements\Decorators\Select,
     Repository\PDO\Readonly
 ;
 

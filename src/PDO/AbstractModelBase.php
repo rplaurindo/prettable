@@ -3,10 +3,10 @@
 namespace PDO;
 
 use
-    PReTTable
+    PreTTable
 ;
 
-abstract class AbstractModelBase extends PReTTable\AbstractModelBase {
+abstract class AbstractModelBase extends PreTTable\AbstractModelBase {
 
     use ModelTrait;
 

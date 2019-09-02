@@ -3,7 +3,7 @@
 namespace QueryStatements\Placeholders\Strategies;
 
 use
-    PReTTable\QueryStatements\Placeholders\StrategyInterface
+    PreTTable\QueryStatements\Placeholders\StrategyInterface
 ;
 
 class QuestionMark implements StrategyInterface {

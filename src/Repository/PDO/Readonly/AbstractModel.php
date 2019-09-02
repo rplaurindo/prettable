@@ -3,8 +3,8 @@
 namespace Repository\PDO\Readonly;
 
 use
-    PReTTable\QueryStatements\Decorators\Select,
-    PReTTable\QueryStatements\Component,
+    PreTTable\QueryStatements\Decorators\Select,
+    PreTTable\QueryStatements\Component,
     Repository\PDO\AbstractModelBase
 ;
 

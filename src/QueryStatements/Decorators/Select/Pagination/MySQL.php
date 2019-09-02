@@ -3,8 +3,8 @@
 namespace QueryStatements\Decorators\Select\Pagination;
 
 use
-    PReTTable\Helpers\Pagination,
-    PReTTable\QueryStatements\AbstractComponent
+    PreTTable\Helpers\Pagination,
+    PreTTable\QueryStatements\AbstractComponent
 ;
 
 class MySQL extends AbstractDecorator {

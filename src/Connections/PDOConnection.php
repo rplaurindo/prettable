@@ -5,7 +5,7 @@ namespace Connections;
 use
     PDO,
     PDOException,
-    PReTTable\AbstractConnection
+    PreTTable\AbstractConnection
 ;
 
 class PDOConnection extends AbstractConnection {

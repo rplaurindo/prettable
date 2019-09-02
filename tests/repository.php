@@ -4,7 +4,7 @@ require 'autoload.php';
 
 use
     Models\Repository\PDO\MySQL\AbstractModel,
-    PReTTable\AssociativeModelInterface
+    PreTTable\AssociativeModelInterface
 ;
 
 class Model1 extends AbstractModel {
