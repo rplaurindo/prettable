@@ -5,10 +5,15 @@ namespace PreTTable\Helpers;
 class Pagination {
     
     private $collection;
+    
     private $limit;
+    
     private $count;
+    
     private $totalPages;
+    
     private $currentPageNumber;
+    
 //     a array with items of page
     private $page;
     
