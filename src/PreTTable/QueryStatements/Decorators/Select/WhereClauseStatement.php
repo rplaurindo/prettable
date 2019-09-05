@@ -24,30 +24,6 @@ class WhereClauseStatement {
         ];
     }
     
-    function addStatements(array $params, $options = []) {
-        $clone = $this->getClone();
-        
-        foreach($params as $columnName => $value) {
-            $clone->addStatementTo($columnName, $value, $options);
-        }
-        
-        return $clone;
-    }
-    
-    function addStatement($statement, $options = []) {
-        if (array_key_exists('logicalOperator', $options)) {
-            $logicalOperator = $options['logicalOperator'];
-        } else {
-            $logicalOperator = $this->options['logicalOperator'];
-        }
-        
-        if (empty($this->statement)) {
-            $this->statement .= $statement;
-        } else {
-            $this->statement .= "\n\t$logicalOperator $statement";
-        }
-    }
-    
     function like($columnName, $value, $options = []) {
         $clone = $this->getClone();
         
@@ -82,6 +58,30 @@ class WhereClauseStatement {
     
     function getStatement() {
         return $this->statement;
+    }
+    
+    function addStatements(array $params, $options = []) {
+        $clone = $this->getClone();
+        
+        foreach($params as $columnName => $value) {
+            $clone->addStatementTo($columnName, $value, $options);
+        }
+        
+        return $clone;
+    }
+    
+    private function addStatement($statement, $options = []) {
+        if (array_key_exists('logicalOperator', $options)) {
+            $logicalOperator = $options['logicalOperator'];
+        } else {
+            $logicalOperator = $this->options['logicalOperator'];
+        }
+        
+        if (empty($this->statement)) {
+            $this->statement .= $statement;
+        } else {
+            $this->statement .= "\n\t$logicalOperator $statement";
+        }
     }
     
     private function addStatementTo($columnName, $value, $options = []) {
