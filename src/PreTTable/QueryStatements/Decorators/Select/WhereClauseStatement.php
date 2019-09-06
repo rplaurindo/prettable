@@ -94,6 +94,7 @@ class WhereClauseStatement {
         }
     }
     
+//     if there are equal columns, it is correct to add a statement manually for each one that repeats. These columns should not be mapped.
     private function addsStatement2($columnName, $value, $options = []) {
         if (array_key_exists('comparisonOperator', $options)) {
             $comparisonOperator = $options['comparisonOperator'];
