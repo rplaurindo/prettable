@@ -3,20 +3,22 @@
 namespace PreTTable\QueryStatements\Decorators\Select;
 
 use
-    PreTTable\Helpers\SQL\ValueAdjuster
+    PreTTable\Helpers\SQL,
+    PreTTable\WhereClause
 ;
 
 class WhereClauseStatement {
-
-    private $tableName;
     
     private $statement;
     
+    private $involvedTableNames;
+    
     private $options = [];
     
-    function __construct($tableName = null) {
-        $this->tableName = $tableName;
+    function __construct(WhereClause\InvolvedTableNames $involvedTableNames = null) {
         $this->statement = '';
+        
+        $this->involvedTableNames = $involvedTableNames;
         
         $this->options = [
             'comparisonOperator' => '=',
@@ -27,16 +29,20 @@ class WhereClauseStatement {
     function like($columnName, $value, $options = []) {
         $clone = $this->getClone();
         
+        $value = SQL\ValueAdjuster::adjust([$value])[0];
+        
         $columnStatement = $columnName;
         
-        if (isset($clone->tableName)) {
-            $columnStatement = "$clone->tableName.$columnName";
+        if (isset($clone->involvedTableNames)) {
+            $tableName = $clone->involvedTableNames->getTableNameOfColumnName($columnName);
+            
+            if (isset($tableName)) {
+                $columnStatement = "$tableName.$columnName";
+            }
         }
         
-        $value = ValueAdjuster::adjust([$value])[0];
-        
         $statement = "($columnStatement LIKE $value)";
-        $clone->addStatement($statement, $options);
+        $clone->addsStatement($statement, $options);
         
         return $clone;
     }
@@ -46,12 +52,16 @@ class WhereClauseStatement {
         
         $columnStatement = $columnName;
         
-        if (isset($clone->tableName)) {
-            $columnStatement = "$clone->tableName.$columnName";
+        if (isset($clone->involvedTableNames)) {
+            $tableName = $clone->involvedTableNames->getTableNameOfColumnName($columnName);
+            
+            if (isset($tableName)) {
+                $columnStatement = "$tableName.$columnName";
+            }
         }
         
         $statement = "$columnStatement BETWEEN $start AND $end";
-        $clone->addStatement($statement, $options);
+        $clone->addsStatement($statement, $options);
         
         return $clone;
     }
@@ -60,17 +70,17 @@ class WhereClauseStatement {
         return $this->statement;
     }
     
-    function addStatements(array $params, $options = []) {
+    function addsStatements(array $params, $options = []) {
         $clone = $this->getClone();
         
         foreach($params as $columnName => $value) {
-            $clone->addStatementTo($columnName, $value, $options);
+            $clone->addsStatement2($columnName, $value, $options);
         }
         
         return $clone;
     }
     
-    private function addStatement($statement, $options = []) {
+    private function addsStatement($statement, $options = []) {
         if (array_key_exists('logicalOperator', $options)) {
             $logicalOperator = $options['logicalOperator'];
         } else {
@@ -80,11 +90,12 @@ class WhereClauseStatement {
         if (empty($this->statement)) {
             $this->statement .= $statement;
         } else {
-            $this->statement .= "\n\t$logicalOperator $statement";
+            $this->statement .= "\n\n\t\t$logicalOperator $statement";
         }
     }
     
-    private function addStatementTo($columnName, $value, $options = []) {
+//     if there are equal columns, it is correct to add a statement manually for each one that repeats. These columns should not be mapped.
+    private function addsStatement2($columnName, $value, $options = []) {
         if (array_key_exists('comparisonOperator', $options)) {
             $comparisonOperator = $options['comparisonOperator'];
         } else {
@@ -93,23 +104,26 @@ class WhereClauseStatement {
         
         $columnStatement = $columnName;
         
-        if (isset($this->tableName)) {
-            $columnStatement = "$this->tableName.$columnName";
+        if (isset($this->involvedTableNames)) {
+            $tableName = $this->involvedTableNames->getTableNameOfColumnName($columnName);
+            if (isset($tableName)) {
+                $columnStatement = "$tableName.$columnName";
+            }
         }
         
         if (gettype($value) == 'array') {
             if (count($value)) {
-                $value = ValueAdjuster::adjust($value);
+                $value = SQL\ValueAdjuster::adjust($value);
                 $valuesStatement = implode(', ', $value);
                 $statement = "($columnStatement IN ($valuesStatement))";
             }
         } else {
-            $value = ValueAdjuster::adjust([$value])[0];
+            $value = SQL\ValueAdjuster::adjust([$value])[0];
             $statement = "($columnStatement $comparisonOperator $value)";
         }
         
         if (isset($statement)) {
-            $this->addStatement($statement, $options);
+            $this->addsStatement($statement, $options);
         }
         
         return $this;
@@ -118,5 +132,5 @@ class WhereClauseStatement {
     private function getClone() {
         return clone $this;
     }
-
+    
 }
