@@ -34,22 +34,22 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         
         $this->selectDecorator = new Select($this->selectDecorator, $this, $attachTableName);
         
-        $queryStatement = "
+        $queryStringStatement = "
         {$this->selectDecorator->getStatement()}
         
         FROM $tableName";
         
-        $queryStatement .= $joinsStatement;
+        $queryStringStatement .= $joinsStatement;
         
-        $queryStatement .= "\n\n\t$whereStatement";
+        $queryStringStatement .= "\n\n\t$whereStatement";
         
         $orderByStatement = $this->getOrderByStatement();
         
         if (isset($orderByStatement)) {
-            $queryStatement .= $orderByStatement;
+            $queryStringStatement .= $orderByStatement;
         }
         
-        $result = $this->execute($queryStatement, [$value]);
+        $result = $this->execute($queryStringStatement, [$value]);
         
         if (isset($result)
             && gettype($result) == 'array'
@@ -62,19 +62,19 @@ abstract class AbstractModel extends Readonly\AbstractModel {
     }
     
     function readFrom($modelName) {
-        $queryStatement = $this->resolvedRelationalSelect($modelName)->getStatement();
+        $queryStringStatement = $this->resolvedRelationalSelect($modelName)->getStatement();
         
-        $queryStatement .= "
+        $queryStringStatement .= "
         
         WHERE {$this->getTableName()}.{$this->getPrimaryKeyName()} = ?";
         
         $orderByStatement = $this->getOrderByStatement();
         
         if (isset($orderByStatement)) {
-            $queryStatement .= "$orderByStatement";
+            $queryStringStatement .= "$orderByStatement";
         }
         
-        return new Component($queryStatement);
+        return new Component($queryStringStatement);
     }
     
     function readParent($modelName) {

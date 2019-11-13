@@ -14,27 +14,27 @@ trait ModelTrait {
         return new PDOConnection($this->connectionData);
     }
     
-    protected function execute($queryStatement, array $bindings = []) {
-        echo "$queryStatement\n\n";
+    protected function execute($sql, array $bindings = []) {
+        echo "$sql\n\n";
         
         try {
             if (count($bindings)) {
-                $PDOstatement = $this->connection->prepare($queryStatement);
+                $statement = $this->connection->prepare($sql);
                 
                 foreach ($bindings as $index => $value) {
                     if (gettype($index)) {
-                        $PDOstatement->bindParam($index + 1, $value);
+                        $statement->bindParam($index + 1, $value);
                     } else {
-                        $PDOstatement->bindParam($index, $value);
+                        $statement->bindParam($index, $value);
                     }
                 }
                 
-                $PDOstatement->execute();
+                $statement->execute();
             } else {
-                $PDOstatement = $this->connection->query($queryStatement);
+                $statement = $this->connection->query($sql);
             }
             
-            $result = $PDOstatement->fetchAll(PDO::FETCH_ASSOC);
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);

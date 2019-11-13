@@ -26,24 +26,24 @@ abstract class AbstractModel extends AbstractModelBase {
         
         $this->selectDecorator = new Select($this->selectDecorator, $this, $attachTableName);
         
-        $queryStatement = "
+        $queryStringStatement = "
         {$this->selectDecorator->getStatement()}
         
         FROM {$this->getTableName()}";
         
         if (isset($this->whereDecorator)) {
-            $queryStatement .= "\t{$this->whereDecorator->getStatement()}";
+            $queryStringStatement .= "\t{$this->whereDecorator->getStatement()}";
         }
         
-        $queryStatement .= $joinsStatement;
+        $queryStringStatement .= $joinsStatement;
         
         $orderByStatement = $this->getOrderByStatement();
         
         if (isset($orderByStatement)) {
-            $queryStatement .= $orderByStatement;
+            $queryStringStatement .= $orderByStatement;
         }
         
-        return new Component($queryStatement);
+        return new Component($queryStringStatement);
     }
 
 }

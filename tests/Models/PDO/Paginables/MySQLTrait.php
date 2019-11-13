@@ -12,18 +12,18 @@ trait MySQLTrait {
         $component = parent::readAll();
         $component = new MySQL($component, $limit, $pageNumber);
         
-        $queryStatement = $component->getStatement();
+        $sql = $component->getStatement();
         
-        return $this->execute($queryStatement);
+        return $this->execute($sql);
     }
 
     function readFrom($modelName, $limit = null, $pageNumber = 1) {
         $component = parent::readFrom($modelName);
         $component = new MySQL($component, $limit, $pageNumber);
         
-        $queryStatement = $component->getStatement();
+        $sql = $component->getStatement();
         
-        return $this->execute($queryStatement, [$this->primaryKeyValue]);
+        return $this->execute($sql, [$this->primaryKeyValue]);
     }
 
 }
