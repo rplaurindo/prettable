@@ -16,7 +16,7 @@ class PDOConnection extends AbstractConnection {
         $adapter = $schemaData['adapter'];
         $host = $schemaData['host'];
 
-        $dsn = "$adapter:=$host;dbname=$schemaName";
+        $dsn = "$adapter:host=$host;dbname=$schemaName";
 
         if (array_key_exists('port', $schemaData)) {
             $port = $schemaData['port'];
