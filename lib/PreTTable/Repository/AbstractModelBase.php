@@ -166,7 +166,7 @@ abstract class AbstractModelBase extends PreTTable\AbstractModel {
                 $this->join($this->name, 'INNER', $modelName);
             }
             
-            $sql = "\t{$this->columnSelectDecorator->getStatement()}\n\n\tFROM $fromStatement{$this->joinsDecorator->getStatement()}";
+            $sql = "\t{$this->columnSelectDecorator->getStatement()}\n\tFROM $fromStatement{$this->joinsDecorator->getStatement()}";
             
             return new Component($sql);
         }
