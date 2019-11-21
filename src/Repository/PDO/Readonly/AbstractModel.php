@@ -19,18 +19,18 @@ abstract class AbstractModel extends AbstractModelBase {
         
         $this->selectDecorator = new Component("SELECT\n\tcount(*)");
         
-        $queryStringStatement = "\n{$this->selectDecorator->getStatement()}\n\n\tFROM {$this->getTableName()}";
+        $sql = "\n{$this->selectDecorator->getStatement()}\n\n\tFROM {$this->getTableName()}";
         
-        $queryStringStatement .= $joinsStatement;
+        $sql .= $joinsStatement;
         
-        return new Component($queryStringStatement);
+        return new Component($sql);
     }
     
     function count() {
         $component = $this->countComponent();
-        $sqlStatement = $component->getStatement();
+        $sql = $component->getStatement();
         
-        return $this->execute($sqlStatement)->fetchColumn();
+        return $this->execute($sql)->fetchColumn();
     }
 
     function readAllComponent() {
@@ -49,18 +49,17 @@ abstract class AbstractModel extends AbstractModelBase {
         
         $this->selectDecorator = new Select($this->selectDecorator, $this, $attachTableName);
         
-        $queryStringStatement = "
-        {$this->selectDecorator->getStatement()}\n\n\tFROM {$this->getTableName()}";
+        $sql = "\n\t{$this->selectDecorator->getStatement()}\n\n\tFROM {$this->getTableName()}";
         
-        $queryStringStatement .= $joinsStatement;
+        $sql .= $joinsStatement;
         
         $orderByStatement = $this->getOrderByStatement();
         
         if (isset($orderByStatement)) {
-            $queryStringStatement .= $orderByStatement;
+            $sql .= $orderByStatement;
         }
         
-        return new Component($queryStringStatement);
+        return new Component($sql);
     }
 
 }

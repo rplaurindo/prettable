@@ -140,19 +140,17 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
         $attributesWithPlaceholder = $placeholderStrategy
             ->getStatement($attributes);
         
-        $queryStringStatement = $updateStrategy
+        $sql = $updateStrategy
             ->getStatement($attributesWithPlaceholder);
         
-        $queryStringStatement .= "
-
-        WHERE {$clone->getPrimaryKeyName()} = ?";
+        $sql .= "\n\n\tWHERE {$clone->getPrimaryKeyName()} = ?";
 
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
 
-            $statement = $clone->connection->prepare($queryStringStatement);
+            $statement = $clone->connection->prepare($sql);
 
             foreach ($values as $index => $value) {
                 $statement->bindValue($index + 1, $value);
@@ -182,17 +180,14 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
         $primaryKeyName = $clone->getPrimaryKeyName();
 
-        $queryStringStatement = "
-            DELETE FROM {$clone->getTableName()}
-
-            WHERE $primaryKeyName = ?";
+        $sql = "\n\tDELETE FROM {$clone->getTableName()}\n\n\tWHERE $primaryKeyName = ?";
 
         try {
             if (!$clone->connection->inTransaction()) {
                 $clone->beginTransaction();
             }
 
-            $statement = $clone->connection->prepare($queryStringStatement);
+            $statement = $clone->connection->prepare($sql);
             $statement->bindParam(1, $clone->primaryKeyValue);
             
             $statement->execute();
@@ -226,12 +221,9 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
                 $clone->beginTransaction();
             }
 
-            $queryStringStatement = "
-                DELETE FROM $associativeTableName
+            $sql = "\n\tDELETE FROM $associativeTableName\n\n\tWHERE $foreignKeyName = ?";
 
-                WHERE $foreignKeyName = ?";
-
-            $statement = $clone->connection->prepare($queryStringStatement);
+            $statement = $clone->connection->prepare($sql);
             $statement->bindParam(1, $clone->primaryKeyValue);
 
             $statement->execute();
