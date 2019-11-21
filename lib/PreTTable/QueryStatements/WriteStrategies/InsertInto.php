@@ -20,10 +20,7 @@ class InsertInto implements QueryStatements\StrategyInterface {
 
         $valuesStatement = implode(', ', array_values($attributes));
 
-        $statement = "
-            INSERT INTO $insertIntoStatement
-
-            VALUES ($valuesStatement)";
+        $statement = "\n\tINSERT INTO $insertIntoStatement\n\n\tVALUES ($valuesStatement)";
 
         return $statement;
 

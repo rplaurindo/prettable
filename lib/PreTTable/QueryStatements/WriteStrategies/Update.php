@@ -22,10 +22,7 @@ class Update implements QueryStatements\StrategyInterface {
 
         $settingsStatement = implode(', ', $settings);
 
-        $statement = "
-        UPDATE $this->tableName
-
-        SET $settingsStatement";
+        $statement = "\n\tUPDATE $this->tableName\n\n\tSET $settingsStatement";
 
         return $statement;
     }

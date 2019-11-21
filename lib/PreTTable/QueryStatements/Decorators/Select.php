@@ -3,10 +3,10 @@
 namespace PreTTable\QueryStatements\Decorators;
 
 use
-    PreTTable\Reflection,
-    PreTTable\InheritanceRelationship,
-    PreTTable\QueryStatements\AbstractComponent,
-    PreTTable\QueryStatements\Decorators\Select\AbstractDecorator
+    PreTTable\Reflection
+    , PreTTable\InheritanceRelationship
+    , PreTTable\QueryStatements\AbstractComponent
+    , PreTTable\QueryStatements\Decorators\Select\AbstractDecorator
 ;
 
 class Select extends AbstractDecorator {
