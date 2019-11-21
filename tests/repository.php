@@ -265,7 +265,6 @@ $model1->setPrimaryKeyValue(1);
 // $model1->setOrderBy('table1.id');
 
 // $model1->join('Model2');
-
 // print_r($model1->read('id', 2));
 // print_r($model1->read());
 

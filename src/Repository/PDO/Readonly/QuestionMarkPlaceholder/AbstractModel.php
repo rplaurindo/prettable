@@ -29,14 +29,14 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         }
         
         if (!isset($this->columnSelectDecorator)) {
-            $component = new Component("SELECT ");
+            $component = new Component("SELECT");
         } else {
             $component = $this->columnSelectDecorator;
         }
         
         $this->columnSelectDecorator = new ColumnSelect($component, $this, $attachTableName);
         
-        $sql = "\n\t{$this->columnSelectDecorator->getStatement()}\n\n\tFROM $tableName";
+        $sql = "\n\t{$this->columnSelectDecorator->getStatement()}\n\tFROM $tableName";
         
         $sql .= $joinsStatement;
         

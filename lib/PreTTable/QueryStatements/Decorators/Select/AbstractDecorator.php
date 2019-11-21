@@ -17,11 +17,13 @@ abstract class AbstractDecorator extends AbstractComponent {
     function getStatement() {
         $currentStatement = $this->_component->getStatement();
         
-        if ($currentStatement[strlen($currentStatement) - 1] == ' ') {
-            return "$currentStatement$this->_statement";
+        if (preg_match('/^SELECT$|^SELECT[ \n\t]+$/', $currentStatement)) {
+            $statement = "$currentStatement\n\t\t$this->_statement";
+        } else {
+            $statement = "$currentStatement, $this->_statement";
         }
 
-        return "$currentStatement, $this->_statement";
+        return $statement;
     }
 
 }

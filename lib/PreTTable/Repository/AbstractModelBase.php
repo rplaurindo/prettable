@@ -138,7 +138,7 @@ abstract class AbstractModelBase extends PreTTable\AbstractModel {
             $fromStatement = $associatedTableName;
             
             if (!isset($this->columnSelectDecorator)) {
-                $component = new Component("SELECT ");
+                $component = new Component("SELECT");
             } else {
                 $component = $this->columnSelectDecorator;
             }

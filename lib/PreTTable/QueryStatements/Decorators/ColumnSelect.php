@@ -22,7 +22,8 @@ class ColumnSelect extends AbstractDecorator {
         
         $this->attachTableName = $attachTableName;
         
-        $this->_statement = $this->resolveStatement();
+        
+        $this->_statement =  $this->resolveStatement() . "\n\t\t";
     }
 
     private function resolveStatement() {
@@ -54,7 +55,9 @@ class ColumnSelect extends AbstractDecorator {
             );
         }
         
-        return implode("\n\t\t, ", $mountedColumns) . "\n\t\t";
+        $statement = implode("\n\t\t, ", $mountedColumns);
+        
+        return $statement;
     }
 
 }
