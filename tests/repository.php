@@ -269,12 +269,12 @@ $model1->setPrimaryKeyValue(1);
 // print_r($model1->read('id', 2));
 // print_r($model1->read());
 
-print_r($model1->readAll(2, 2));
+// print_r($model1->readAll(2, 2));
 // print_r($model1->readAll());
 
 // print_r($model1->count());
 
-// print_r($model1->readFrom('Model2'));
+print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model3'));
 // print_r($model1->readFrom('Model4'));
 

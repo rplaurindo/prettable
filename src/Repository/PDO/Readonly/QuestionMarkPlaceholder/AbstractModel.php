@@ -3,11 +3,10 @@
 namespace Repository\PDO\Readonly\QuestionMarkPlaceholder;
 
 use
-    PreTTable\QueryStatements\Component,
-    PreTTable\QueryStatements\Decorators\Select,
-    Repository\PDO\Readonly
+    PreTTable\QueryStatements\Component
+    , PreTTable\QueryStatements\Decorators\ColumnSelect
+    , Repository\PDO\Readonly
 ;
-use PreTTable\QueryStatements\Decorators\ColumnSelect;
 
 abstract class AbstractModel extends Readonly\AbstractModel {
     

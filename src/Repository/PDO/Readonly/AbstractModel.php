@@ -3,11 +3,10 @@
 namespace Repository\PDO\Readonly;
 
 use
-    PreTTable\QueryStatements\Decorators\Select
+    PreTTable\QueryStatements\Decorators\ColumnSelect
     , PreTTable\QueryStatements\Component
     , Repository\PDO\AbstractModelBase
 ;
-use PreTTable\QueryStatements\Decorators\ColumnSelect;
 
 abstract class AbstractModel extends AbstractModelBase {
     

@@ -6,10 +6,9 @@ use
     ArrayObject
     , Exception
     , PreTTable\QueryStatements\Component
-    , PreTTable\QueryStatements\Decorators\Select
+    , PreTTable\QueryStatements\Decorators\ColumnSelect
     , PreTTable\QueryStatements\Decorators\Select\Join
 ;
-use PreTTable\QueryStatements\Decorators\ColumnSelect;
 
 abstract class AbstractModel extends AbstractModelBase
     implements

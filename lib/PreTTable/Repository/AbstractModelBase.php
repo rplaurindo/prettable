@@ -7,10 +7,9 @@ use
     , PreTTable
     , PreTTable\InheritanceRelationship
     , PreTTable\QueryStatements\Component
-    , PreTTable\QueryStatements\Decorators\Select
+    , PreTTable\QueryStatements\Decorators\ColumnSelect
     , PreTTable\Reflection
 ;
-use PreTTable\QueryStatements\Decorators\ColumnSelect;
 
 // to supress warnings
 // error_reporting(E_ALL ^ E_WARNING);
