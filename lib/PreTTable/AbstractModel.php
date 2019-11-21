@@ -9,6 +9,7 @@ use
     , PreTTable\QueryStatements\Decorators\Select
     , PreTTable\QueryStatements\Decorators\Select\Join
 ;
+use PreTTable\QueryStatements\Decorators\ColumnSelect;
 
 abstract class AbstractModel extends AbstractModelBase
     implements
@@ -23,7 +24,7 @@ abstract class AbstractModel extends AbstractModelBase
 
     protected $name;
     
-    protected $selectDecorator;
+    protected $columnSelectDecorator;
     
     protected $joinsDecorator;
     
@@ -80,14 +81,13 @@ abstract class AbstractModel extends AbstractModelBase
         
         $this->addsInvolvedTable($modelName);
         
-        $component = new Component('SELECT ');
-//         if (!isset($this->selectDecorator)) {
-//             $component = new Component('SELECT ');
-//         } else {
-//             $component = $this->selectDecorator;
-//         }
+        if (!isset($this->columnSelectDecorator)) {
+            $component = new Component("SELECT ");
+        } else {
+            $component = $this->columnSelectDecorator;
+        }
         
-        $this->selectDecorator = new Select($component, $modelName, true);
+        $this->columnSelectDecorator = new ColumnSelect($component, $modelName, true);
         
         if (!isset($this->joinsDecorator)) {
             $this->joinsDecorator = new Component();

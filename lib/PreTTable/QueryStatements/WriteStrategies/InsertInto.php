@@ -18,7 +18,7 @@ class InsertInto implements QueryStatements\StrategyInterface {
         $insertIntoStatement =
             "$this->tableName (" . implode(", ", array_keys($attributes)) . ")";
 
-        $valuesStatement = implode(', ', array_values($attributes));
+        $valuesStatement = implode(", ", array_values($attributes));
 
         $statement = "\n\tINSERT INTO $insertIntoStatement\n\n\tVALUES ($valuesStatement)";
 

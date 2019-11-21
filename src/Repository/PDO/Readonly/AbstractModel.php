@@ -7,6 +7,7 @@ use
     , PreTTable\QueryStatements\Component
     , Repository\PDO\AbstractModelBase
 ;
+use PreTTable\QueryStatements\Decorators\ColumnSelect;
 
 abstract class AbstractModel extends AbstractModelBase {
     
@@ -17,9 +18,9 @@ abstract class AbstractModel extends AbstractModelBase {
             $joinsStatement = '';
         }
         
-        $this->selectDecorator = new Component("SELECT\n\tcount(*)");
+        $this->columnSelectDecorator = new Component("SELECT\n\tcount(*)");
         
-        $sql = "\n{$this->selectDecorator->getStatement()}\n\n\tFROM {$this->getTableName()}";
+        $sql = "\n{$this->columnSelectDecorator->getStatement()}\n\n\tFROM {$this->getTableName()}";
         
         $sql .= $joinsStatement;
         
@@ -43,16 +44,15 @@ abstract class AbstractModel extends AbstractModelBase {
             $joinsStatement = '';
         }
         
-        $component = new Component('SELECT ');
-//         if (!isset($this->selectDecorator)) {
-//             $component = new Component('SELECT ');
-//         } else {
-//             $component = $this->selectDecorator;
-//         }
+        if (!isset($this->columnSelectDecorator)) {
+            $component = new Component("SELECT ");
+        } else {
+            $component = $this->columnSelectDecorator;
+        }
         
-        $this->selectDecorator = new Select($component, $this, $attachTableName);
+        $this->columnSelectDecorator = new ColumnSelect($component, $this, $attachTableName);
         
-        $sql = "\n\t{$this->selectDecorator->getStatement()}\n\n\tFROM {$this->getTableName()}";
+        $sql = "\n\t{$this->columnSelectDecorator->getStatement()}\n\n\tFROM {$this->getTableName()}";
         
         $sql .= $joinsStatement;
         

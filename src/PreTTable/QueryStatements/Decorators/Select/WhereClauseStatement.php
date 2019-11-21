@@ -114,7 +114,7 @@ class WhereClauseStatement {
         if (gettype($value) == 'array') {
             if (count($value)) {
                 $value = SQL\ValueAdjuster::adjust($value);
-                $valuesStatement = implode(', ', $value);
+                $valuesStatement = implode(", ", $value);
                 $statement = "($columnStatement IN ($valuesStatement))";
             }
         } else {

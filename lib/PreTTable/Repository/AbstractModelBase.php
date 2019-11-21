@@ -10,6 +10,7 @@ use
     , PreTTable\QueryStatements\Decorators\Select
     , PreTTable\Reflection
 ;
+use PreTTable\QueryStatements\Decorators\ColumnSelect;
 
 // to supress warnings
 // error_reporting(E_ALL ^ E_WARNING);
@@ -137,21 +138,20 @@ abstract class AbstractModelBase extends PreTTable\AbstractModel {
 
             $fromStatement = $associatedTableName;
             
-            $component = new Component('SELECT ');
-//             if (!isset($this->selectDecorator)) {
-//                 $component = new Component('SELECT ');
-//             } else {
-//                 $component = $this->selectDecorator;
-//             }
+            if (!isset($this->columnSelectDecorator)) {
+                $component = new Component("SELECT ");
+            } else {
+                $component = $this->columnSelectDecorator;
+            }
             
-            $this->selectDecorator = new Select($component, $this, true);
-            $this->selectDecorator = new Select($this->selectDecorator, $associatedModel, true);
+            $this->columnSelectDecorator = new ColumnSelect($component, $this, true);
+            $this->columnSelectDecorator = new ColumnSelect($this->columnSelectDecorator, $associatedModel, true);
             
             if ($this->doesItContainThrough($modelName)) {
                 $associativeModelName = $this
                     ->getAssociativeModelNameFrom($modelName);
                 
-                $this->selectDecorator = new Select($this->selectDecorator, $associativeModelName, true);
+                $this->columnSelectDecorator = new ColumnSelect($this->columnSelectDecorator, $associativeModelName, true);
 
                 $associativeModel = Reflection
                     ::getDeclarationOf($associativeModelName);
@@ -167,7 +167,7 @@ abstract class AbstractModelBase extends PreTTable\AbstractModel {
                 $this->join($this->name, 'INNER', $modelName);
             }
             
-            $sql = "\t{$this->selectDecorator->getStatement()}\n\n\tFROM $fromStatement{$this->joinsDecorator->getStatement()}";
+            $sql = "\t{$this->columnSelectDecorator->getStatement()}\n\n\tFROM $fromStatement{$this->joinsDecorator->getStatement()}";
             
             return new Component($sql);
         }

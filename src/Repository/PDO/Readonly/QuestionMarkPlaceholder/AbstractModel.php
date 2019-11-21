@@ -7,6 +7,7 @@ use
     PreTTable\QueryStatements\Decorators\Select,
     Repository\PDO\Readonly
 ;
+use PreTTable\QueryStatements\Decorators\ColumnSelect;
 
 abstract class AbstractModel extends Readonly\AbstractModel {
     
@@ -28,16 +29,15 @@ abstract class AbstractModel extends Readonly\AbstractModel {
             $joinsStatement = '';
         }
         
-        $component = new Component('SELECT ');
-//         if (!isset($this->selectDecorator)) {
-//             $component = new Component('SELECT ');
-//         } else {
-//             $component = $this->selectDecorator;
-//         }
+        if (!isset($this->columnSelectDecorator)) {
+            $component = new Component("SELECT ");
+        } else {
+            $component = $this->columnSelectDecorator;
+        }
         
-        $this->selectDecorator = new Select($component, $this, $attachTableName);
+        $this->columnSelectDecorator = new ColumnSelect($component, $this, $attachTableName);
         
-        $sql = "\n\t{$this->selectDecorator->getStatement()}\n\n\tFROM $tableName";
+        $sql = "\n\t{$this->columnSelectDecorator->getStatement()}\n\n\tFROM $tableName";
         
         $sql .= $joinsStatement;
         

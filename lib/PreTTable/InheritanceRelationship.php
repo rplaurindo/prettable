@@ -22,7 +22,7 @@ class InheritanceRelationship {
         }
 
         if (!$count) {
-            $classesAsText = implode(" or ", $classList);
+            $classesAsText = implode(' or ', $classList);
             throw new Exception("The input class must be a $classesAsText");
         }
 

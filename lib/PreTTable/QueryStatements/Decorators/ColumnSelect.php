@@ -9,7 +9,7 @@ use
     , PreTTable\QueryStatements\Decorators\Select\AbstractDecorator
 ;
 
-class Select extends AbstractDecorator {
+class ColumnSelect extends AbstractDecorator {
 
     private $model;
     
@@ -55,7 +55,7 @@ class Select extends AbstractDecorator {
             );
         }
         
-        return implode(', ', $mountedColumns);
+        return implode(", ", $mountedColumns);
     }
 
 }

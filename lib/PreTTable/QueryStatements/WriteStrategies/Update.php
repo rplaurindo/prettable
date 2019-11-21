@@ -20,7 +20,7 @@ class Update implements QueryStatements\StrategyInterface {
             array_push($settings, "$columnName = $value");
         }
 
-        $settingsStatement = implode(', ', $settings);
+        $settingsStatement = implode(", ", $settings);
 
         $statement = "\n\tUPDATE $this->tableName\n\n\tSET $settingsStatement";
 
