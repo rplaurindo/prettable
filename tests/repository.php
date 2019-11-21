@@ -3,8 +3,8 @@
 require 'autoload.php';
 
 use
-    Models\Repository\PDO\MySQL\AbstractModel,
-    PreTTable\AssociativeModelInterface
+    Models\Repository\PDO\MySQL\AbstractModel
+    , PreTTable\AssociativeModelInterface
 ;
 
 class Model1 extends AbstractModel {
@@ -12,7 +12,7 @@ class Model1 extends AbstractModel {
     function __construct() {
         parent::__construct('mydb');
 
-        $this->setOrderBy('id', 'DESC');
+//         $this->setOrderBy('id', 'DESC');
 
         $this->contains('Model2', 'table1_id');
         
@@ -266,11 +266,13 @@ $model1->setPrimaryKeyValue(1);
 
 // $model1->join('Model2');
 
-// print_r($model1->read('id', 1));
+print_r($model1->read('id', 2));
 // print_r($model1->read());
 
-print_r($model1->readAll(2, 2));
+// print_r($model1->readAll(2, 2));
 // print_r($model1->readAll());
+
+// print_r($model1->count());
 
 // print_r($model1->readFrom('Model2'));
 // print_r($model1->readFrom('Model3'));

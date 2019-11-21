@@ -3,16 +3,16 @@
 namespace PreTTable;
 
 use
-    ArrayObject,
-    Exception,
-    PreTTable\QueryStatements\Component,
-    PreTTable\QueryStatements\Decorators\Select,
-    PreTTable\QueryStatements\Decorators\Select\Join
+    ArrayObject
+    , Exception
+    , PreTTable\QueryStatements\Component
+    , PreTTable\QueryStatements\Decorators\Select
+    , PreTTable\QueryStatements\Decorators\Select\Join
 ;
 
 abstract class AbstractModel extends AbstractModelBase
     implements
-        \PreTTable\IdentifiableModelInterface
+        IdentifiableModelInterface
 {
 
     protected $primaryKeyValue;
@@ -26,8 +26,6 @@ abstract class AbstractModel extends AbstractModelBase
     protected $selectDecorator;
     
     protected $joinsDecorator;
-    
-    protected $whereDecorator;
     
     private $involvedTableNames;
 

@@ -3,44 +3,59 @@
 namespace PDO;
 
 use
-    PDO,
-    PDOException,
     Connections\PDOConnection
+    , PDO
+    , PDOException
+    , PDOStatement
 ;
 
 trait ModelTrait {
+    
+    private $bindings;
+    
+    function __construct(array $connectionData, $environment = null) {
+        parent::__construct($connectionData, $environment);
+        
+        $this->bindings = [];
+    }
+    
+    function setBindings(array $bindings) {
+        $this->bindings = $bindings;
+    }
 
     protected function getConnection() {
         return new PDOConnection($this->connectionData);
     }
     
-    protected function execute($sql, array $bindings = []) {
+    protected function execute($sql) {
         echo "$sql\n\n";
         
         try {
-            if (count($bindings)) {
+            if (count($this->bindings)) {
                 $statement = $this->connection->prepare($sql);
-                
-                foreach ($bindings as $index => $value) {
-                    if (gettype($index)) {
-                        $statement->bindParam($index + 1, $value);
-                    } else {
-                        $statement->bindParam($index, $value);
-                    }
-                }
-                
+                $this->linksParameters($statement);
                 $statement->execute();
             } else {
                 $statement = $this->connection->query($sql);
             }
             
-            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            $statement->setFetchMode(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
         }
         
-        return $result;
+        return $statement;
+    }
+    
+    private function linksParameters(PDOStatement $statement) {
+        foreach ($this->bindings as $index => $value) {
+            if (gettype($index)) {
+                $statement->bindParam($index + 1, $value);
+            } else {
+                $statement->bindParam($index, $value);
+            }
+        }
     }
 
 }

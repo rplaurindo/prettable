@@ -3,8 +3,8 @@
 namespace PreTTable;
 
 use
-    Exception,
-    PreTTable\Helpers\StringEncoding
+    Exception
+    , PreTTable\Helpers\StringEncoding
 ;
 
 

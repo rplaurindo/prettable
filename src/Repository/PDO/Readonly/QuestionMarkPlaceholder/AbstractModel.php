@@ -34,10 +34,7 @@ abstract class AbstractModel extends Readonly\AbstractModel {
         
         $this->selectDecorator = new Select($this->selectDecorator, $this, $attachTableName);
         
-        $queryStringStatement = "
-        {$this->selectDecorator->getStatement()}
-        
-        FROM $tableName";
+        $queryStringStatement = "\n\t{$this->selectDecorator->getStatement()}\n\n\tFROM $tableName";
         
         $queryStringStatement .= $joinsStatement;
         
@@ -49,19 +46,22 @@ abstract class AbstractModel extends Readonly\AbstractModel {
             $queryStringStatement .= $orderByStatement;
         }
         
-        $result = $this->execute($queryStringStatement, [$value]);
+        $this->setBindings([$value]);
         
-        if (isset($result)
-            && gettype($result) == 'array'
-            && count($result)
+        $result = $this->execute($queryStringStatement);
+        
+        $allFetched = $result->fetchAll();
+        
+        if (gettype($allFetched) === 'array'
+            && count($allFetched)
         ) {
-            return $result[0];
+            return $allFetched[0];
         }
         
         return null;
     }
     
-    function readFrom($modelName) {
+    function readFromComponent($modelName) {
         $queryStringStatement = $this->resolvedRelationalSelect($modelName)->getStatement();
         
         $queryStringStatement .= "

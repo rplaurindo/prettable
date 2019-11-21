@@ -7,23 +7,25 @@ use
 ;
 
 trait MySQLTrait {
-    
+
     function readAll($limit = null, $pageNumber = 1) {
-        $component = parent::readAll();
+        $component = parent::readAllComponent();
         $component = new MySQL($component, $limit, $pageNumber);
         
         $sql = $component->getStatement();
         
-        return $this->execute($sql);
+        return $this->execute($sql)->fetchAll();
     }
 
     function readFrom($modelName, $limit = null, $pageNumber = 1) {
-        $component = parent::readFrom($modelName);
+        $component = parent::readFromComponent($modelName);
         $component = new MySQL($component, $limit, $pageNumber);
         
         $sql = $component->getStatement();
         
-        return $this->execute($sql, [$this->primaryKeyValue]);
+        $this->setBindings([$this->primaryKeyValue]);
+        
+        return $this->execute($sql)->fetchAll();
     }
 
 }

@@ -3,12 +3,12 @@
 namespace PreTTable\Repository;
 
 use
-    ArrayObject,
-    PreTTable,
-    PreTTable\InheritanceRelationship,
-    PreTTable\QueryStatements\Component,
-    PreTTable\QueryStatements\Decorators\Select,
-    PreTTable\Reflection
+    ArrayObject
+    , PreTTable
+    , PreTTable\InheritanceRelationship
+    , PreTTable\QueryStatements\Component
+    , PreTTable\QueryStatements\Decorators\Select
+    , PreTTable\Reflection
 ;
 
 // to supress warnings
