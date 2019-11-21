@@ -80,11 +80,12 @@ abstract class AbstractModel extends AbstractModelBase
         
         $this->addsInvolvedTable($modelName);
         
-        if (!isset($this->selectDecorator)) {
-            $component = new Component('SELECT ');
-        } else {
-            $component = $this->selectDecorator;
-        }
+        $component = new Component('SELECT ');
+//         if (!isset($this->selectDecorator)) {
+//             $component = new Component('SELECT ');
+//         } else {
+//             $component = $this->selectDecorator;
+//         }
         
         $this->selectDecorator = new Select($component, $modelName, true);
         

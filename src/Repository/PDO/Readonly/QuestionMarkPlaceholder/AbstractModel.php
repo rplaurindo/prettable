@@ -28,11 +28,12 @@ abstract class AbstractModel extends Readonly\AbstractModel {
             $joinsStatement = '';
         }
         
-        if (!isset($this->selectDecorator)) {
-            $component = new Component('SELECT ');
-        } else {
-            $component = $this->selectDecorator;
-        }
+        $component = new Component('SELECT ');
+//         if (!isset($this->selectDecorator)) {
+//             $component = new Component('SELECT ');
+//         } else {
+//             $component = $this->selectDecorator;
+//         }
         
         $this->selectDecorator = new Select($component, $this, $attachTableName);
         
