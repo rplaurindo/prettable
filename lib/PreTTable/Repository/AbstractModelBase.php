@@ -138,10 +138,12 @@ abstract class AbstractModelBase extends PreTTable\AbstractModel {
             $fromStatement = $associatedTableName;
             
             if (!isset($this->selectDecorator)) {
-                $this->selectDecorator = new Component('SELECT ');
+                $component = new Component('SELECT ');
+            } else {
+                $component = $this->selectDecorator;
             }
             
-            $this->selectDecorator = new Select($this->selectDecorator, $this, true);
+            $this->selectDecorator = new Select($component, $this, true);
             $this->selectDecorator = new Select($this->selectDecorator, $associatedModel, true);
             
             if ($this->doesItContainThrough($modelName)) {
