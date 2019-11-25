@@ -34,6 +34,7 @@ trait ModelTrait {
             if (count($this->bindings)) {
                 $statement = $this->connection->prepare($sql);
                 $this->linksParameters($statement);
+                
                 $statement->execute();
             } else {
                 $statement = $this->connection->query($sql);

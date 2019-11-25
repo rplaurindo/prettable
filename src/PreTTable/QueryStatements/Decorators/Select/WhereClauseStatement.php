@@ -3,8 +3,8 @@
 namespace PreTTable\QueryStatements\Decorators\Select;
 
 use
-    PreTTable\Helpers\SQL,
-    PreTTable\WhereClause
+    PreTTable\Helpers\SQL
+    , PreTTable\WhereClause
 ;
 
 class WhereClauseStatement {

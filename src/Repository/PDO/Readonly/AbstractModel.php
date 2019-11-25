@@ -30,7 +30,9 @@ abstract class AbstractModel extends AbstractModelBase {
         $component = $this->countComponent();
         $sql = $component->getStatement();
         
-        return $this->execute($sql)->fetchColumn();
+        $result = $this->execute($sql);
+        
+        return $result->fetchColumn();
     }
 
     function readAllComponent() {
