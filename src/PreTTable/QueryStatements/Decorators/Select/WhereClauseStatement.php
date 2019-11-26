@@ -88,9 +88,9 @@ class WhereClauseStatement {
         }
         
         if (empty($this->statement)) {
-            $this->statement .= $statement;
+            $this->statement .= "$statement";
         } else {
-            $this->statement .= "\n\n\t\t$logicalOperator $statement";
+            $this->statement .= "\n\n\t\t\t$logicalOperator $statement";
         }
     }
     
