@@ -8,7 +8,7 @@ class ValueAdjuster {
         $adjusted = [];
 
         foreach ($values as $value) {
-            $value = preg_replace("/'/", "\\'", $value);
+            $value = preg_replace("/'/", "''", $value);
             if (gettype($value) == 'string') {
                 array_push($adjusted, "'$value'");
             } else {
