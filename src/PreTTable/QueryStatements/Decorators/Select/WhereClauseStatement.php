@@ -111,6 +111,12 @@ class WhereClauseStatement {
             }
         }
         
+        if (array_key_exists('NOTLogicalOperator', $options)) {
+            if ($options['NOTLogicalOperator']) {
+                $columnStatement = "NOT $columnStatement";
+            }
+        }
+        
         if (gettype($value) == 'array') {
             if (count($value)) {
                 $value = SQL\ValueAdjuster::adjust($value);
