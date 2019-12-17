@@ -26,7 +26,7 @@ class InvolvedTableNames {
         return null;
     }
     
-    function adds($tableName, array $columnNames) {
+    function addsColumnsMap($tableName, array $columnNames) {
         $clone = $this->getClone();
         
         $clone->map->offsetSet($tableName, $columnNames);
