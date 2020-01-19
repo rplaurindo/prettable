@@ -9,7 +9,11 @@ use
     , PDOStatement
 ;
 
-trait ModelTrait {
+trait ModelTraitProxy {
+    
+    protected $statement;
+    
+    protected $connection;
     
     private $bindings;
     
@@ -22,9 +26,11 @@ trait ModelTrait {
     function setBindings(array $bindings) {
         $this->bindings = $bindings;
     }
-
-    protected function getConnection() {
-        return new PDOConnection($this->connectionData);
+    
+    protected function establishConnection($schemaName) {
+        $connection = new PDOConnection($this->connectionData);
+        
+        $this->connection = $connection->establishConnection($schemaName);
     }
     
     protected function execute($sql) {
@@ -32,21 +38,21 @@ trait ModelTrait {
         
         try {
             if (count($this->bindings)) {
-                $statement = $this->connection->prepare($sql);
-                $this->linksParameters($statement);
+                $this->statement = $this->connection->prepare($sql);
+                $this->linksParameters($this->statement);
                 
-                $statement->execute();
+                $this->statement->execute();
             } else {
-                $statement = $this->connection->query($sql);
+                $this->statement = $this->connection->query($sql);
             }
             
-            $statement->setFetchMode(PDO::FETCH_ASSOC);
+            $this->statement->setFetchMode(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             echo $e;
             throw new PDOException($e);
         }
         
-        return $statement;
+        return $this->statement;
     }
     
     private function linksParameters(PDOStatement $statement) {
