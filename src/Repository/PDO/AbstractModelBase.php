@@ -3,12 +3,12 @@
 namespace Repository\PDO;
 
 use
-    PDO\ModelTrait,
-    PreTTable\Repository
+    PDO\ModelTraitProxy
+    , PreTTable\Repository
 ;
 
 abstract class AbstractModelBase extends Repository\AbstractModelBase {
 
-    use ModelTrait;
+    use ModelTraitProxy;
 
 }

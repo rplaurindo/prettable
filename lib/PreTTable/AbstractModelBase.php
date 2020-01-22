@@ -3,14 +3,11 @@
 namespace PreTTable;
 
 use
-    Exception
-    , PreTTable\Helpers\StringEncoding
+    PreTTable\Helpers\StringEncoding
 ;
 
 
 abstract class AbstractModelBase {
-
-    protected $connection;
 
     protected $stringEncoder;
     
@@ -21,18 +18,9 @@ abstract class AbstractModelBase {
         
         $this->resolveConnectionDataEnvironment($connectionData, $environment);
     }
-
-    protected abstract function getConnection();
-    // protected abstract function getConnection(): AbstractConnection;
-
-    protected function establishConnection($schemaName) {
-        if (!isset($schemaName)) {
-            throw new Exception('A database schema should be passed.');
-        }
-
-        $this->connection = $this->getConnection()
-            ->establishConnection($schemaName);
-    }
+    
+//     talvez isso possa ser limado
+    protected abstract function establishConnection($schemaName);
 
     // to comply the Prototype pattern
     protected function getClone() {
