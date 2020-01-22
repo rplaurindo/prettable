@@ -49,10 +49,12 @@ class ColumnSelect extends AbstractDecorator {
         $mountedColumns = [];
         
         foreach($columnNames as $columnName) {
-            array_push($mountedColumns, ($this->attachTableName
-                ? "$tableName.$columnName AS '{$tableName}.{$columnName}'"
-                : $columnName)
-            );
+            $mountedColumns[] = $this->attachTableName ? "$tableName.$columnName AS '{$tableName}.{$columnName}'" : $columnName;
+            
+//             array_push($mountedColumns, ($this->attachTableName
+//                 ? "$tableName.$columnName AS '{$tableName}.{$columnName}'"
+//                 : $columnName)
+//             );
         }
         
         $statement = implode("\n\t\t, ", $mountedColumns);

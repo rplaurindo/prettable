@@ -133,7 +133,8 @@ abstract class AbstractModel extends QuestionMarkPlaceholder\AbstractModel
 
         $values = array_values($attributes);
         
-        array_push($values, $clone->primaryKeyValue);
+//         array_push($values, $clone->primaryKeyValue);
+        $values[] = $clone->primaryKeyValue;
 
         $placeholderStrategy =
             new Placeholders\StrategyContext(new QuestionMark());

@@ -1,9 +1,10 @@
 <?php
 
-namespace PreTTable\QueryStatements\Decorators\Select;
+namespace PreTTable\QueryStatements\Decorators\Select\SingleQuote;
 
 use
     PreTTable\Helpers\SQL
+    , PreTTable\QueryStatements\CharacterFugitive
     , PreTTable\WhereClause
 ;
 
@@ -15,6 +16,8 @@ class WhereClauseStatement {
     
     private $options = [];
     
+    private $characterFugitiveStrategy;
+    
     function __construct(WhereClause\InvolvedTableNames $involvedTableNames = null) {
         $this->statement = '';
         
@@ -24,10 +27,14 @@ class WhereClauseStatement {
             'comparisonOperator' => '=',
             'logicalOperator' => 'AND'
         ];
+        
+        $this->characterFugitiveStrategy = new CharacterFugitive\StrategyContext(new CharacterFugitive\SingleQuote\Strategies\SingleQuote());
     }
     
     function like($columnName, $value, $options = []) {
         $clone = $this->getClone();
+        
+        $value = $this->characterFugitiveStrategy->getEscaped([$value])[0];
         
         $value = SQL\ValueAdjuster::adjust([$value])[0];
         
@@ -113,13 +120,19 @@ class WhereClauseStatement {
         
         if (gettype($value) === 'array') {
             if (count($value)) {
+                $value = $this->characterFugitiveStrategy->getEscaped($value);
+                
                 $value = SQL\ValueAdjuster::adjust($value);
+                
                 $valuesStatement = implode(", ", $value);
                 $statement = "($columnStatement IN ($valuesStatement))";
             }
         }
         else {
+            $value = $this->characterFugitiveStrategy->getEscaped([$value])[0];
+            
             $value = SQL\ValueAdjuster::adjust([$value])[0];
+            
             $statement = "($columnStatement $comparisonOperator $value)";
         }
         

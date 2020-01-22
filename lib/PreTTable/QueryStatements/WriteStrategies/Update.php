@@ -17,7 +17,9 @@ class Update implements QueryStatements\StrategyInterface {
     function getStatement(array $attributes) {
         $settings = [];
         foreach ($attributes as $columnName => $value) {
-            array_push($settings, "$columnName = $value");
+            $settings[] = "$columnName = $value";
+            
+//             array_push($settings, "$columnName = $value");
         }
 
         $settingsStatement = implode(", ", $settings);

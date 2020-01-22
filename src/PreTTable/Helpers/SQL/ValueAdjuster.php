@@ -11,8 +11,6 @@ class ValueAdjuster {
             
             switch (gettype($value)) {
                 case 'string': {
-                    $value = preg_replace("/'/", "''", $value);
-                    
                     if (mb_detect_encoding($value) === 'UTF-8') {
                         $value = utf8_decode($value);
                     }
