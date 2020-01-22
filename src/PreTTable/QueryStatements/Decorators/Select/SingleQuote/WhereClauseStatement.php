@@ -5,28 +5,17 @@ namespace PreTTable\QueryStatements\Decorators\Select\SingleQuote;
 use
     PreTTable\Helpers\SQL
     , PreTTable\QueryStatements\CharacterFugitive
+    , PreTTable\QueryStatements\Decorators\Select
     , PreTTable\WhereClause
 ;
 
-class WhereClauseStatement {
-    
-    private $statement;
-    
-    private $involvedTableNames;
-    
-    private $options = [];
+
+class WhereClauseStatement extends Select\WhereClauseStatement {
     
     private $characterFugitiveStrategy;
     
     function __construct(WhereClause\InvolvedTableNames $involvedTableNames = null) {
-        $this->statement = '';
-        
-        $this->involvedTableNames = $involvedTableNames;
-        
-        $this->options = [
-            'comparisonOperator' => '=',
-            'logicalOperator' => 'AND'
-        ];
+        parent::__construct($involvedTableNames);
         
         $this->characterFugitiveStrategy = new CharacterFugitive\StrategyContext(new CharacterFugitive\SingleQuote\Strategies\SingleQuote());
     }
@@ -52,53 +41,6 @@ class WhereClauseStatement {
         $clone->addsStatement($statement, $options);
         
         return $clone;
-    }
-    
-    function between($columnName, $start, $end, $options = []) {
-        $clone = $this->getClone();
-        
-        $columnStatement = $columnName;
-        
-        if (isset($clone->involvedTableNames)) {
-            $tableName = $clone->involvedTableNames->getTableNameOfColumnName($columnName);
-            
-            if (isset($tableName)) {
-                $columnStatement = "$tableName.$columnName";
-            }
-        }
-        
-        $statement = "$columnStatement BETWEEN $start AND $end";
-        $clone->addsStatement($statement, $options);
-        
-        return $clone;
-    }
-    
-    function getStatement() {
-        return $this->statement;
-    }
-    
-    function addsStatements(array $params, $options = []) {
-        $clone = $this->getClone();
-        
-        foreach($params as $columnName => $value) {
-            $clone->addsStatement2($columnName, $value, $options);
-        }
-        
-        return $clone;
-    }
-    
-    private function addsStatement($statement, $options = []) {
-        if (array_key_exists('logicalOperator', $options)) {
-            $logicalOperator = $options['logicalOperator'];
-        } else {
-            $logicalOperator = $this->options['logicalOperator'];
-        }
-        
-        if (empty($this->statement)) {
-            $this->statement .= "$statement";
-        } else {
-            $this->statement .= "\n\n\t\t\t$logicalOperator $statement";
-        }
     }
     
 //     if there are equal columns, it is correct to add a statement manually for each one that repeats. These columns should not be mapped.
@@ -143,8 +85,14 @@ class WhereClauseStatement {
         return $this;
     }
     
-    private function getClone() {
-        return clone $this;
+    function addsStatements(array $params, $options = []) {
+        $clone = $this->getClone();
+        
+        foreach($params as $columnName => $value) {
+            $clone->addsStatement2($columnName, $value, $options);
+        }
+        
+        return $clone;
     }
     
 }
