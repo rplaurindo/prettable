@@ -1,6 +1,6 @@
 <?php
 
-namespace PreTTable\Helpers\SQL;
+namespace PreTTable\Helpers\SQL\SingleQuote;
 
 class ValueAdjuster {
 

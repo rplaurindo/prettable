@@ -3,7 +3,7 @@
 namespace PreTTable\QueryStatements\Decorators\Select\SingleQuote;
 
 use
-    PreTTable\Helpers\SQL
+    PreTTable\Helpers\SQL\SingleQuote
     , PreTTable\QueryStatements\CharacterFugitive
     , PreTTable\QueryStatements\Decorators\Select
     , PreTTable\WhereClause
@@ -25,7 +25,7 @@ class WhereClauseStatement extends Select\WhereClauseStatement {
         
         $value = $this->characterFugitiveStrategy->getEscaped([$value])[0];
         
-        $value = SQL\ValueAdjuster::adjust([$value])[0];
+        $value = SingleQuote\ValueAdjuster::adjust([$value])[0];
         
         $columnStatement = $columnName;
         
@@ -64,7 +64,7 @@ class WhereClauseStatement extends Select\WhereClauseStatement {
             if (count($value)) {
                 $value = $this->characterFugitiveStrategy->getEscaped($value);
                 
-                $value = SQL\ValueAdjuster::adjust($value);
+                $value = SingleQuote\ValueAdjuster::adjust($value);
                 
                 $valuesStatement = implode(", ", $value);
                 $statement = "($columnStatement IN ($valuesStatement))";
@@ -73,7 +73,7 @@ class WhereClauseStatement extends Select\WhereClauseStatement {
         else {
             $value = $this->characterFugitiveStrategy->getEscaped([$value])[0];
             
-            $value = SQL\ValueAdjuster::adjust([$value])[0];
+            $value = SingleQuote\ValueAdjuster::adjust([$value])[0];
             
             $statement = "($columnStatement $comparisonOperator $value)";
         }
