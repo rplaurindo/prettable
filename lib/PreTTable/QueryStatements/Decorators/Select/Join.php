@@ -21,6 +21,7 @@ class Join extends QueryStatements\AbstractDecorator {
     
     private $type;
 
+//     TODO: adds support to make join like WhereClauseStatement
     function __construct(AbstractComponent $component, $rightModelName, $rightColumnName, $leftModelName, $leftColumnName, $type = 'INNER') {
         InheritanceRelationship
             ::throwIfClassIsntA($rightModelName, 'PreTTable\ModelInterface');
